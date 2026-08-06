@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How DESI Works — The Light Path from Galaxy to CCD — Jim Rohlf</title>
+  <meta name="description" content="How a photon from a distant galaxy becomes a redshift: the DESI light path from the Mayall mirror through 5,000 fibers to three CCDs covering 360 to 980 nanometers.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/how-desi-works.html">
+    <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+</head>
+<body>
+  <main id="main">
+    <p class="breadcrumb"><a href="https://physics.bu.edu/desi/index.html">&larr; Home</a></p>
+
+    <h1>How DESI Works</h1>
+
+    <p class="lede">
+      Each DESI measurement begins as a stream of photons that left a galaxy billions of
+      years ago and ends as a distribution of electrons stored in a charge-coupled
+      device. The distribution of electrons across the face of the CCD is proportional
+      to the wavelength of the light at the time it reaches DESI, which has been
+      redshifted by the expansion of the universe during its long travel time. This page
+      follows that path through the instrument.
+    </p>
+
+    <h2 class="section-title" id="telescope">The telescope</h2>
+
+    <p class="prose">
+      The Mayall 4-meter telescope on Kitt Peak was built in 1973 and has been rebuilt
+      around DESI: a new corrector widens the usable field, and at the focus sits a
+      focal plane carrying <strong>5,000 optical fibers</strong>, each on its own robotic
+      positioner. Before an exposure the robots place every fiber on a chosen target to
+      a few microns. The petals holding those positioners were machined at Boston
+      University, and the positioners were prototyped at BU, along with the jigging
+      needed for the assembly work carried out at the University of Michigan.
+    </p>
+
+    <figure>
+      <a href="img/instrument/mayall-raytrace.jpg" target="_blank" rel="noopener">
+        <img src="img/instrument/mayall-raytrace.jpg" width="1093" height="835"
+             alt="Scale drawing of the Mayall 4-meter telescope tilted at 32 degrees, the Kitt Peak latitude, on its equatorial horseshoe-yoke mount. Five colored ray bundles spanning a 3.2 degree field of view enter the tube, reflect from the primary mirror, pass through the six-element DESI corrector and converge on the curved focal plane, which is labeled as having fibers pointing downward. A panel lists the specifications: 4 meter f/2.7 paraboloid, six-lens corrector, delivered f/3.9, 0.8 meter curved focal plane, 5,020 robotic fiber positioners.">
+      </a>
+      <figcaption>
+        The Mayall in its working pose, tilted to the Kitt Peak latitude of 32°. Five
+        ray bundles spanning the 3.2°&nbsp;field of view reflect from the
+        4&nbsp;m&nbsp;f/2.7 primary, pass the six-element corrector, and converge on the
+        curved focal plane. Geometry is to scale; the rays are traced geometrically
+        rather than element by element.
+        <br>
+        By J.&nbsp;W.&nbsp;Rohlf. Source:
+        <a href="https://github.com/jamesrohlf/jamesrohlf.github.io/blob/main/outreach/code/mayall_desi_raytrace.py">mayall_desi_raytrace.py</a>
+        (Python, matplotlib) — interactive when run locally, with a tilt slider and a
+        focal-plane zoom.
+      </figcaption>
+    </figure>
+
+    <figure>
+      <a href="img/instrument/mayall-focal-plane.jpg" target="_blank" rel="noopener">
+        <img src="img/instrument/mayall-focal-plane.jpg" width="1184" height="847" loading="lazy"
+             alt="Zoomed view of the DESI corrector barrel and focal plane. Five colored ray bundles pass through six lens elements and land at different radii along a curved focal surface at the top, where short pencils mark the fibers pointing downward from each landing point.">
+      </a>
+      <figcaption>
+        Zoomed on the corrector and focal plane. The five field angles land at
+        different radii on the curved focal surface — which is what the 5,000 fiber
+        positioners exist to follow, and why the focal plane is curved rather than flat.
+      </figcaption>
+    </figure>
+
+    <p class="prose">
+      That curvature has a direct consequence for the hardware. Each petal carries
+      <strong>500 positioners</strong> and, because the focal surface curves, no two of
+      their sockets sit at the same angle — every one is precision machined to its own
+      orientation, so that the fiber it holds points along the local normal to the
+      surface. Ten petals, each with 500 individually angled sockets, make up the 5,000.
+    </p>
+
+    <p class="prose">
+      Each fiber has a core 107&nbsp;µm across, subtending about one arcsecond on the
+      sky — which is why a DESI spectrum samples the central arcsecond of a galaxy
+      rather than all of its light. The fibers carry the light out of the telescope to
+      ten spectrographs housed in a temperature-controlled room below.
+    </p>
+
+    <h2 class="section-title" id="assignment">Assigning the fibers</h2>
+
+    <p class="prose">
+      Before any of that happens, something has to decide where each of the 5,000 fibers
+      points. A single field contains far more candidate targets than there are fibers —
+      about 30,000 against 5,000 — and the positioners cannot reach arbitrarily far or
+      overlap one another. Assignment is therefore a scheduling problem, solved
+      <em>by priority</em>: quasars first, then emission-line galaxies,
+      luminous red galaxies, bright galaxies and finally standard stars.
+    </p>
+
+    <div class="video-block">
+      <video controls preload="metadata" width="1400" height="572"
+             poster="img/instrument/fiber-assignment-poster.jpg">
+        <source src="media/fiber-assignment.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <p class="caption">
+        Assignment revealed one priority class at a time. <strong>Left:</strong> the whole
+        focal plane, 5,000 positioners against 30,613 candidate targets, colored by what
+        each fiber was given. <strong>Center:</strong> one petal, with the two-arm robots
+        drawn individually — each can only reach targets inside its own patrol disk, and
+        neighbors that would collide are rejected. <strong>Right:</strong> completeness by
+        class. Quasars are rare, so almost a quarter of them get a fiber; emission-line
+        galaxies are so numerous that only 15% do, and they still take 2,845 of the
+        fibers. This is why the survey visits each point on the sky more than once.
+        <br>
+        Animation by J.&nbsp;W.&nbsp;Rohlf. Source:
+        <a href="https://github.com/jamesrohlf/jamesrohlf.github.io/blob/main/outreach/code/desi_focal_plane.py">desi_focal_plane.py</a> (Python, matplotlib,
+        scipy) — interactive when run locally, with sliders for patrol radius, collision
+        distance and target density.
+      </p>
+    </div>
+
+    <p class="prose">
+      The priority order is a cosmological choice, not an engineering one. Quasars go
+      first because they are the scarcest tracer and the only route to the
+      <a href="https://physics.bu.edu/desi/lyman-alpha.html">Lyman-α forest</a>; stars go last because they are
+      calibration rather than signal. Which
+      <a href="https://physics.bu.edu/desi/tracers.html">tracer</a> a given fiber ends up observing is decided here,
+      seconds before the shutter opens.
+    </p>
+
+    <h2 class="section-title" id="light-path">The light path</h2>
+
+    <div class="video-block">
+      <video controls preload="metadata" width="1070" height="628"
+             poster="img/instrument/light-path-poster.jpg">
+        <source src="media/desi-light-path.mp4" type="video/mp4">
+        Your browser does not support the video tag. A still of the completed light path
+        is at <a href="img/instrument/light-path-poster.jpg">img/instrument/light-path-poster.jpg</a>.
+      </video>
+      <p class="caption">
+        From galaxy to CCD, light reaches the Mayall primary, passes
+        the corrector to the focal plane, enters a fiber, and is collimated; dichroic
+        <strong>D1</strong> peels off the blue, <strong>D2</strong> splits red from
+        near-infrared, and each arm is dispersed by its own grating onto its own
+        detector — so all three CCDs are illuminated at once, covering 360 to
+        980&nbsp;nm in a single exposure.
+        <br>
+        Animation by J.&nbsp;W.&nbsp;Rohlf; a still of the completed path appears in
+        <a href="https://physics.bu.edu/desi/papers/talks/rohlf2026-dpf.pdf">Results From DESI</a>, DPF 2026.
+        Source: <a href="https://github.com/jamesrohlf/jamesrohlf.github.io/blob/main/outreach/code/desi_light_path_ltr.py">desi_light_path_ltr.py</a>
+        (Python, matplotlib).
+      </p>
+    </div>
+
+    <h2 class="section-title" id="spectrograph">Inside a spectrograph</h2>
+
+    <p class="prose">
+      Five hundred fibers enter each spectrograph through a <strong>V-groove
+      block</strong> that holds them in a precise line, and a collimator turns the
+      diverging beams into parallel ones. Then the light is divided. The first dichroic,
+      <strong>D1</strong>, reflects the blue and passes everything else; the second,
+      <strong>D2</strong>, splits what remains into red and near-infrared. Each of the
+      three beams meets its own grating and its own CCD:
+    </p>
+
+    <div class="facts">
+      <dl>
+        <dt>CCD B</dt>
+        <dd>360–593 nm — the blue arm, where [O&nbsp;II] appears for the
+            emission-line galaxies</dd>
+        <dt>CCD R</dt>
+        <dd>566–772 nm — the red arm, carrying Hα at low redshift and the
+            4000&nbsp;Å break at <em>z</em>&nbsp;≈&nbsp;0.8</dd>
+        <dt>CCD NIR</dt>
+        <dd>747–980 nm — the near-infrared arm, which sets the upper redshift reach
+            of every galaxy sample</dd>
+      </dl>
+    </div>
+
+    <p class="prose">
+      Splitting the beam is what makes the survey possible. A single detector covering
+      360 to 980&nbsp;nm would have to compromise either resolution or efficiency
+      somewhere across that range; three optimized arms do not. It is also why the
+      <a href="https://physics.bu.edu/desi/tracers.html">tracer samples</a> have the redshift limits they do — each
+      is bounded by the wavelength at which its defining feature runs off the end of the
+      third CCD.
+    </p>
+
+    <h2 class="section-title" id="ccd">What lands on a CCD</h2>
+
+    <p class="prose">
+      Each fiber occupies its own strip of the CCD; in this view, wavelength runs up the
+      frame. Each exposure records 500 spectra side by side on each CCD.
+    </p>
+
+    <figure>
+      <a href="img/instrument/ccd-exposure.jpg" target="_blank" rel="noopener">
+        <img src="img/instrument/ccd-exposure.jpg" width="808" height="709" loading="lazy"
+             alt="Simulated red-arm CCD frame. Twenty fiber columns run across the image and wavelength increases upward from 550 to 720 nanometers, with a color bar at the left. Bright horizontal bands crossing every column are sky emission lines; short isolated dashes are cosmic-ray hits. A yellow box marks fiber 1. Below, the spectrum extracted from that fiber shows four broad sky-line peaks and one narrow marked peak near 710 nanometers.">
+      </a>
+      <figcaption>
+        A simulated red-arm exposure, 550–720&nbsp;nm, with twenty fibers rather than
+        500 so that the individual strips stay legible. Wavelength increases upward. The
+        bright horizontal bands crossing every
+        column are <strong>sky lines</strong> — the atmosphere, recorded identically in
+        every fiber and later subtracted. The short isolated dashes are
+        <strong>cosmic rays</strong>, which is what limits a dark-time exposure to about
+        twenty minutes. The yellow box marks the fiber whose extracted spectrum is
+        shown below: four sky peaks, and one narrow line at 710&nbsp;nm that is Hα from a
+        galaxy at <em>z</em>&nbsp;=&nbsp;0.08 — 656.3&nbsp;nm at rest, stretched by 8%
+        due to cosmic redshift.
+        <br>
+        By J.&nbsp;W.&nbsp;Rohlf. Source:
+        <a href="https://github.com/jamesrohlf/jamesrohlf.github.io/blob/main/outreach/code/ccd_mapping.py">ccd_mapping.py</a> (Python, matplotlib) —
+        interactive when run locally, with sliders for line strength, continuum, sky
+        level and read noise.
+      </figcaption>
+    </figure>
+
+    <h2 class="section-title" id="readout">Reading it out</h2>
+
+    <div class="video-block">
+      <video controls preload="metadata" width="734" height="644"
+             poster="img/instrument/ccd-readout-poster.jpg">
+        <source src="media/ccd-readout.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <p class="caption">
+        Charge does not stay on the chip. Clocking voltages march it step by step
+        towards a serial register at the edge, where it is amplified and digitized one
+        packet at a time — so the frame empties progressively, as here. The yellow box
+        marks the fiber whose extracted spectrum is shown below; watch it change as each new
+        column arrives, and the cosmic ray pass through it as a flat-topped block that no
+        real photon could produce.
+        <br>
+        By J.&nbsp;W.&nbsp;Rohlf. Source:
+        <a href="https://github.com/jamesrohlf/jamesrohlf.github.io/blob/main/outreach/code/ccd_mapping.py">ccd_mapping.py</a>.
+      </p>
+    </div>
+
+    <h2 class="section-title" id="sky">Subtracting the sky</h2>
+
+    <p class="prose">
+      A digitized frame is not yet a useful measurement until the night sky background,
+      glowing in OH bands that are hundreds of times brighter than the galaxies behind
+      them, is removed. This is why some fibers are deliberately pointed at dark sky —
+      they measure what has to be subtracted.
+    </p>
+
+    <div class="video-block">
+      <video controls preload="metadata" width="1232" height="806"
+             poster="img/instrument/sky-subtraction-poster.jpg">
+        <source src="media/sky-subtraction.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <p class="caption">
+        A 600-second exposure accumulating photon by photon, over 738–756&nbsp;nm.
+        <strong>Top:</strong> the raw galaxy fiber — four bright OH sky lines, with the
+        [O&nbsp;II] doublet at 746.2 and 746.8&nbsp;nm barely a ripple beside the
+        747.2&nbsp;nm sky line. <strong>Second:</strong> the sky model, the median of ten
+        sky fibers, with its ±1σ uncertainty. <strong>Third:</strong> the difference —
+        the doublet climbing out of the noise as the exposure grows, against the true
+        noiseless signal in red. <strong>Bottom:</strong> the residual, which should stay
+        inside the ±1σ envelope if the subtraction is unbiased. Watch the signal-to-noise
+        figures: by the end each line is above 90.
+        <br>
+        Animation by J.&nbsp;W.&nbsp;Rohlf. Source:
+        <a href="https://github.com/jamesrohlf/jamesrohlf.github.io/blob/main/outreach/code/desi_sky_subtraction.py">desi_sky_subtraction.py</a>
+        (Python, matplotlib).
+      </p>
+    </div>
+
+    <h2 class="section-title">Elsewhere on this site</h2>
+
+    <ul class="link-list">
+      <li><a href="https://physics.bu.edu/desi/tracers.html">Tracers of the expansion history
+        <span class="sub">what the instrument is pointed at, and why</span></a></li>
+      <li><a href="https://physics.bu.edu/desi/bao.html">Baryon acoustic oscillations
+        <span class="sub">what the redshifts are then used to measure</span></a></li>
+      <li><a href="https://physics.bu.edu/desi/photos.html">Photographs
+        <span class="sub">the cryostats and focal-plane hardware being built</span></a></li>
+      <li><a href="https://physics.bu.edu/desi/posters.html">Hardware posters
+        <span class="sub">the instrument in detail</span></a></li>
+    </ul>
+
+    <p class="footnote">
+      More to come: the same talk includes simulations of structure formation, of the
+      baryon acoustic oscillation feature, and of redshift-space distortions, which will
+      be added here.
+    </p>
+
+  </main>
+</body>
+</html>
