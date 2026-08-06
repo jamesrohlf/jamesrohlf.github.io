@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tracers — Galaxies, Quasars and the Lyman-α Forest — Jim Rohlf</title>
+  <meta name="description" content="The galaxy and quasar samples DESI uses to trace large-scale structure: the physics of each target class and the spectral features that give it a redshift.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/tracers.html">
+    <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+  <script src="assets/js/refs.js" defer></script>
+</head>
+<body>
+  <main id="main">
+    <p class="breadcrumb"><a href="https://physics.bu.edu/desi/index.html">&larr; Home</a></p>
+
+    <h1>Tracers of the Expansion History</h1>
+
+    <div class="ref-list" data-ids="dey2019-legacy"></div>
+
+    <p class="lede">
+      DESI measures the angles and redshift spectra of millions of galaxies and
+      quasars, and the expansion history is derived from this information by the
+      analysis pipeline. Everything
+      therefore depends on the objects chosen to do the tracing — the survey's
+      <strong>tracers</strong> — and on being able to
+      measure an accurate redshift for each one and a distance for the group via
+      <a href="https://physics.bu.edu/desi/bao.html">baryon acoustic oscillations</a>.
+    </p>
+
+    <p class="prose">
+      No single kind of tracer works across the whole survey. Bright galaxies are
+      abundant but nearby; quasars are rare — only about 60 per square degree lie
+      beyond <em>z</em>&nbsp;=&nbsp;2.1, where their spectra become usable as
+      backlights — but they reach to the edge of the observable matter distribution.
+      DESI uses four target classes plus the Lyman-α forest,
+      each covering a different slice of cosmic time, and each identified by a
+      characteristic set of spectral features. This page describes the physics of each
+      in turn, with an example spectrum showing the features the pipeline keys on.
+    </p>
+
+
+    <nav class="jump" aria-label="Jump to a tracer">
+      <span class="jump__label">Jump to a sample:</span>
+      <a href="#bgs">BGS</a>
+      <a href="#lrg">LRG</a>
+      <a href="#elg">ELG</a>
+      <a href="#qso">QSO</a>
+      <a href="https://physics.bu.edu/desi/lyman-alpha.html">Lyman-α &rarr;</a>
+    </nav>
+
+    <figure class="banner">
+      <a href="img/tracers/desi-tracers-overview.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/desi-tracers-overview.jpg" width="1747" height="983"
+             alt="Summary of the four DESI tracer classes. For each of the Bright Galaxy Survey, Luminous Red Galaxy, Emission Line Galaxy and Quasi-Stellar Object samples, the figure gives the redshift range, distance range and lookback age, a Legacy Surveys image of an example object circled in yellow, and its DESI spectrum with the key features labeled: the Balmer series and [O III] for the BGS galaxy, Ca K and H with the 4000 ångström break for the LRG, the [O II] doublet for the ELG, and Lyman-alpha and C IV for the quasar. The images run from a yellow-white nearby galaxy through a red point source and a faint smudge to a blue point source.">
+      </a>
+      <figcaption>
+        The four samples at a glance — redshift, distance and lookback time, with an
+        image and a spectrum for each. The progression down the left column is the
+        argument of this page: as redshift rises the objects get fainter and change
+        character, and the feature that carries the redshift changes with them.
+        <br>
+        From <a href="https://physics.bu.edu/desi/papers/talks/rohlf2026-dpf.pdf">Results From DESI</a>,
+        J.&nbsp;W.&nbsp;Rohlf, DPF 2026.
+      </figcaption>
+    </figure>
+
+    <h2 class="section-title">Why more than one</h2>
+
+    <p class="prose">
+      A tracer is useful over the redshift range where two conditions hold at once.
+      It must be numerous enough that the map is not dominated by <strong>shot
+      noise</strong> — the statistical error from having too few objects per unit
+      volume — and it must be bright enough, in the right lines, that DESI can measure
+      its redshift in a realistic exposure. Those two requirements pull in opposite
+      directions, and no class of object satisfies both across the survey's full span,
+      roughly 0&nbsp;&lt;&nbsp;<em>z</em>&nbsp;&lt;&nbsp;4.
+    </p>
+
+    <figure class="banner">
+      <a href="img/tracers/desi-tracer-galaxies.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/desi-tracer-galaxies.jpg" width="1800" height="1013" loading="lazy"
+             alt="Three stacked panels sharing a redshift axis from 0 to 4.2. The top panel shows which rest-frame spectral features fall inside DESI's wavelength window as horizontal bars: Hα 6563 up to z = 0.49, [O III] 5007 to z = 0.96, Hβ 4861 to z = 1.02, the 4000 ångström break to z = 1.45, [O II] 3727 to z = 1.63, Mg II 2798 from z = 0.29 to 2.5, C IV 1549 from z = 1.32, and Lyman-α 1216 from z = 1.96 upward. The middle panel plots apparent magnitude in the selection band against redshift, with shaded boxes for BGS at low redshift and bright magnitudes, LRG, ELG and QSO extending progressively fainter and further, an L-star galaxy track falling across them, and the region beyond z = 2.1 labeled the Lyman-α forest regime where quasar sightlines act as backlights. The bottom panel gives target densities: BGS 1400 per square degree, LRG 605, ELG 2400, QSO 310, with forest entry marked at z = 2.1.">
+      </a>
+      <figcaption>
+        The same argument quantitatively. <strong>Top:</strong> which spectral feature is
+        actually inside DESI's window at a given redshift — Hα is gone by
+        <em>z</em>&nbsp;=&nbsp;0.49, [O&nbsp;II] survives to 1.63, and Lyman-α only
+        arrives at 1.96. <strong>Middle:</strong> how faint each sample is, against the
+        track of an <em>L</em>* galaxy. <strong>Bottom:</strong> how many of each there
+        are per square degree. Every choice on this page is a compromise between those
+        three panels.
+        <br>
+        From <a href="https://physics.bu.edu/desi/papers/talks/rohlf2026-dpf.pdf">Results From DESI</a>,
+        J.&nbsp;W.&nbsp;Rohlf, DPF 2026.
+      </figcaption>
+    </figure>
+
+    <p class="prose">
+      Exposures are set differently in the two observing modes. In dark time the
+      spectrograph integrates until the signal-to-noise actually achieved is good
+      enough, so the exposure adapts to conditions; the ceiling of about twenty minutes
+      is not a photon-noise limit but a cosmic-ray one — beyond that, accumulated hits
+      on the CCDs become the dominant problem. BGS, in bright time, uses a fixed three
+      minutes.
+    </p>
+
+    <p class="prose">
+      There is a second constraint that runs the other way, and it decides which end of
+      the survey is hard. The precision of a baryon acoustic oscillation measurement
+      depends on how many independent wavelengths of the oscillation fit inside the
+      volume surveyed, and nearby shells enclose far less comoving volume than distant
+      ones. So the low-redshift samples are limited by <em>volume</em> however well
+      their spectra are measured, while the high-redshift ones are limited by
+      <em>shot noise</em> however large the volume. BGS and the quasars fail in
+      opposite ways, and neither is the easy case.
+    </p>
+
+    <p class="prose">
+      The samples also differ in how faithfully they follow the underlying structure.
+      Galaxies are biased tracers: they form in the peaks of the density field, so
+      their clustering is stronger than that of the matter itself, by a factor that
+      depends on the galaxy type and on redshift. Using several tracers with different
+      biases over overlapping volumes is what allows that factor to be separated from
+      the cosmological signal.
+    </p>
+
+    <h2 class="section-title" id="bgs">BGS — the Bright Galaxy Survey</h2>
+
+    <div class="ref-list" data-topic="bgs"></div>
+
+    <p class="prose">
+      BGS is the low-redshift anchor of the survey: a magnitude-limited sample of
+      bright, nearby galaxies covering 0.1&nbsp;&lt;&nbsp;<em>z</em>&nbsp;&lt;&nbsp;0.6,
+      the epoch in
+      which dark energy dominates the expansion. It is the most detailed map DESI
+      makes of that period, and the sample for which the physics is least ambiguous —
+      these are ordinary galaxies, bright enough that a redshift is rarely in doubt.
+    </p>
+
+    <div class="facts">
+      <dl>
+        <dt>Redshift range</dt>
+        <dd>0.1 &lt; <em>z</em> &lt; 0.6</dd>
+        <dt>Selection</dt>
+        <dd>BGS Bright: <em>r</em> &lt; 19.5, magnitude-limited<br>
+            BGS Faint: 19.5 &lt; <em>r</em> &lt; 20.175, color-selected for redshift efficiency<br>
+            plus a smaller low-<em>z</em> quasar sample</dd>
+        <dt>Galaxies</dt>
+        <dd>more than 10 million</dd>
+        <dt>Target density</dt>
+        <dd>about 1400 deg<sup>−2</sup></dd>
+        <dt>Footprint</dt>
+        <dd>14,000 deg², visited three times</dd>
+        <dt>Redshift success</dt>
+        <dd>above 95%, with no significant dependence on observing conditions</dd>
+        <dt>Stellar contamination</dt>
+        <dd>below 1%</dd>
+        <dt>Observing time</dt>
+        <dd>bright time — see below</dd>
+      </dl>
+    </div>
+
+    <h3>Why bright time</h3>
+
+    <p class="prose">
+      When the Moon is up the sky background rises, and the faint targets that make up
+      the rest of the survey become harder to observe: the exposure needed to reach
+      a given signal-to-noise grows with the background. Bright galaxies are much less
+      affected, because their own flux dominates. Scheduling BGS into bright time
+      therefore costs the rest of the program nothing and buys a low-redshift survey
+      that would otherwise not fit. Dark time accounts for about two thirds of DESI's
+      observing; the remaining third, when the Moon would make the faint samples
+      inefficient, is BGS's.
+    </p>
+
+    <p class="prose">
+      The exposures are correspondingly short: a fixed three minutes, against the up-to
+      twenty of a dark-time field. Three minutes on a galaxy at
+      <em>r</em>&nbsp;&lt;&nbsp;19.5 is enough for a redshift better than 95% of the
+      time, and a fixed exposure keeps the finished map statistically uniform — which
+      matters more for clustering measurements than depth does, since a survey whose
+      selection varies with position imprints a spurious signal on large scales.
+    </p>
+
+    <h3>What the spectrum shows</h3>
+
+    <p class="prose">
+      Because BGS galaxies sit at low redshift, DESI's wavelength coverage — roughly
+      3600 to 9800&nbsp;Å — captures the whole optical rest frame, and the features
+      are the familiar ones of galaxy spectroscopy.
+    </p>
+
+    <p class="prose">
+      In a <strong>quiescent</strong> galaxy — the massive early-type systems that
+      dominate the bright end of the sample — the light comes from an old stellar
+      population and the spectrum is a composite of cool stellar atmospheres. The
+      defining feature is the <strong>4000&nbsp;Å break</strong>, a sharp drop in flux
+      caused by the accumulated opacity of ionized metals in stellar photospheres,
+      reinforced by the Ca&nbsp;II H and K absorption lines at 3934 and 3969&nbsp;Å.
+      Below it the continuum is weak; above it, strong. That step is unmistakable and
+      is what pins the redshift even when no emission line is present. The G band near
+      4300&nbsp;Å, the Mg&nbsp;b triplet near 5175&nbsp;Å and Na&nbsp;D near
+      5893&nbsp;Å follow as broad absorption features.
+    </p>
+
+    <p class="prose">
+      In a <strong>star-forming</strong> galaxy the picture inverts. Young massive
+      stars ionize the surrounding gas, and the spectrum carries strong emission
+      lines from the recombining nebula: Hα at 6563&nbsp;Å, Hβ at 4861&nbsp;Å, the
+      [O&nbsp;III] doublet at 4959 and 5007&nbsp;Å, [N&nbsp;II] flanking Hα, and
+      [O&nbsp;II] at 3727&nbsp;Å. These are narrow and high-contrast, so a single
+      well-measured line is enough for a redshift.
+    </p>
+
+    <p class="prose">
+      A magnitude-limited sample contains both, in proportions that shift with
+      luminosity and redshift, which is one reason BGS is useful for more than
+      distance measurements: the same spectra record what the galaxies are doing, not
+      only where they are.
+    </p>
+
+    <h3>Two BGS galaxies</h3>
+
+    <p class="prose">
+      The two cases above are easiest to see side by side in real data. Both of these
+      are DESI BGS targets at almost the same redshift, and their spectra could hardly
+      look less alike. The imaging gives the first clue: one has a yellow core of old
+      stars, the other is bluer and more diffuse.
+    </p>
+
+    <div class="fig-pair">
+      <figure>
+        <a href="img/tracers/bgs-galaxy-quiescent.jpg" target="_blank" rel="noopener">
+          <img src="img/tracers/bgs-galaxy-quiescent.jpg" width="1100" height="710" loading="lazy"
+               alt="Legacy Surveys imaging of a quiescent BGS galaxy: a small disk galaxy seen at an angle with a bright yellow core, circled in yellow, with a fainter companion below and to the left against a noisy dark sky.">
+        </a>
+        <figcaption>
+          <strong>Quiescent</strong> &mdash; RA&nbsp;185.7672, Dec&nbsp;+55.9238.
+          The yellow core is the old stellar population that produces the
+          4000&nbsp;Å break.
+        </figcaption>
+      </figure>
+      <figure>
+        <a href="img/tracers/bgs-galaxy-starforming.jpg" target="_blank" rel="noopener">
+          <img src="img/tracers/bgs-galaxy-starforming.jpg" width="1100" height="710" loading="lazy"
+               alt="Legacy Surveys imaging of a star-forming BGS galaxy: a diffuse bluish-white galaxy circled in yellow, with a brighter yellow-white galaxy at upper right against a noisy dark sky.">
+        </a>
+        <figcaption>
+          <strong>Star-forming</strong> &mdash; RA&nbsp;184.6036, Dec&nbsp;+54.4618.
+          Bluer and more diffuse: young stars, and the ionized gas that gives the
+          emission lines.
+        </figcaption>
+      </figure>
+    </div>
+
+    <p class="aside">
+      The yellow circle is 10 arcseconds across in both frames. A DESI fiber subtends
+      about 1 arcsecond — so the spectrum comes from a small central patch of the
+      galaxy, not from all the light you see here. Credit: DESI Legacy Imaging Surveys
+      / Legacy Survey Viewer.
+    </p>
+
+    <figure class="banner">
+      <a href="img/tracers/bgs-spectrum-quiescent.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/bgs-spectrum-quiescent.jpg" width="2592" height="490" loading="lazy"
+             alt="DESI spectrum of BGS target 39633335672114298, fitted as a galaxy at redshift 0.1990. Flux in units of 10 to the minus 17 erg per square centimeter per second per ångström is plotted against observed wavelength from 3600 to 9800 ångström. The continuum is weak below about 4800 ångström and strong above it, forming the redshifted 4000 ångström break, with the Ca II H and K absorption lines marked just blueward of the step. The G band, Mg I and the Na D1 and D2 lines appear as further absorption features. No emission lines are present. The pipeline fit is overlaid on the data and the noise curve runs along the bottom.">
+      </a>
+      <figcaption>
+        <strong>A quiescent galaxy.</strong> BGS target 39633335672114298 at
+        <em>z</em>&nbsp;=&nbsp;0.1990. The 4000&nbsp;Å break has moved to about
+        4800&nbsp;Å, with Ca&nbsp;II&nbsp;H and K immediately blueward of it — the step
+        in the continuum, not any emission line, is what fixes the redshift. Further
+        along are the G band, Mg&nbsp;I and the Na&nbsp;D doublet, all in absorption.
+        Nothing is in emission.
+      </figcaption>
+    </figure>
+
+    <figure class="banner">
+      <a href="img/tracers/bgs-spectrum-starforming.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/bgs-spectrum-starforming.jpg" width="2544" height="472" loading="lazy"
+             alt="DESI spectrum of BGS target 39633314918697075, fitted as a galaxy at redshift 0.1761, shown over the wavelength range 7300 to 8250 ångström. A strong narrow Hα emission line rises near 7720 ångström with the weaker [N II] line beside it, and the [S II] doublet appears near 7900 ångström. The continuum is nearly flat and faint. The pipeline fit is overlaid on the data.">
+      </a>
+      <figcaption>
+        <strong>A star-forming galaxy.</strong> BGS target 39633314918697075 at
+        <em>z</em>&nbsp;=&nbsp;0.1761, zoomed on the red end. Hα stands well clear of
+        the continuum near 7720&nbsp;Å, with [N&nbsp;II] alongside it and the
+        [S&nbsp;II] doublet near 7900&nbsp;Å. Here a single line would have been enough
+        for a redshift — the reverse of the case above.
+      </figcaption>
+    </figure>
+
+    <h2 class="section-title" id="lrg">LRG — Luminous Red Galaxies</h2>
+
+    <div class="ref-list" data-topic="lrg"></div>
+
+    <p class="prose">
+      Where BGS takes whatever is bright, the luminous red galaxy sample is chosen for
+      a type. LRGs are the most massive galaxies in the universe: old, gas-poor
+      ellipticals that finished forming stars billions of years ago and have been
+      reddening passively ever since. They are intrinsically luminous, which makes them
+      visible far away, and remarkably uniform, which makes them easy to recognize
+      photometrically. DESI uses them to carry the survey from
+      <em>z</em>&nbsp;=&nbsp;0.4 out to <em>z</em>&nbsp;=&nbsp;1.1, the range in
+      which the expansion is turning over from deceleration to acceleration.
+    </p>
+
+    <div class="facts">
+      <dl>
+        <dt>Redshift range</dt>
+        <dd>0.4 &lt; <em>z</em> &lt; 1.1</dd>
+        <dt>Selection</dt>
+        <dd><em>g</em>, <em>r</em>, <em>z</em> optical plus <em>W1</em> infrared from
+            the DESI Legacy Imaging Surveys</dd>
+        <dt>Galaxies</dt>
+        <dd>8 million</dd>
+        <dt>Target density</dt>
+        <dd>605 deg<sup>−2</sup>, a comoving density of
+            5&nbsp;×&nbsp;10<sup>−4</sup>&nbsp;<em>h</em><sup>3</sup>&nbsp;Mpc<sup>−3</sup>
+            over 0.4&nbsp;&lt;&nbsp;<em>z</em>&nbsp;&lt;&nbsp;0.8 —
+            <em>substantially denser than SDSS, BOSS or eBOSS, and reaching further</em></dd>
+        <dt>Redshift success</dt>
+        <dd>98.9% confident, with a 0.2% catastrophic failure rate</dd>
+        <dt>Stellar contamination</dt>
+        <dd>0.5%</dd>
+        <dt>Observing time</dt>
+        <dd>dark time</dd>
+      </dl>
+    </div>
+
+    <h3>Why the infrared band matters</h3>
+
+    <p class="prose">
+      The problem with selecting distant red galaxies from optical colors alone is
+      that they are degenerate with nearby faint red things — cool stars, and dusty
+      galaxies at low redshift all look similar in <em>g</em>, <em>r</em> and
+      <em>z</em>. The 4000&nbsp;Å break is what distinguishes them, and by
+      <em>z</em>&nbsp;≈&nbsp;1 that break has moved out of the optical bands
+      altogether, past 8000&nbsp;Å.
+    </p>
+
+    <p class="prose">
+      WISE's <em>W1</em> band at 3.4&nbsp;µm solves this. An old stellar population is
+      bright in the near-infrared, where the light of the cool giants that dominate it
+      peaks, while stars and dusty low-redshift galaxies are not. Adding
+      <em>W1</em> to the optical colors therefore separates massive quiescent
+      galaxies at <em>z</em>&nbsp;≈&nbsp;1 from the foreground that would otherwise
+      swamp them — which is why the LRG selection is robust enough that only half a
+      percent of the targets turn out to be stars.
+    </p>
+
+    <h3>What the spectrum shows</h3>
+
+    <p class="prose">
+      An LRG spectrum is the extreme case of the quiescent galaxy described above: no
+      emission lines to speak of, and a strong 4000&nbsp;Å break with deep
+      Ca&nbsp;II&nbsp;H and K absorption on its blue side. There is nothing else to
+      work with — which sounds like a handicap and is not, because the break is a
+      sharp, high-contrast feature and these galaxies are uniform enough that the same
+      template fits almost all of them. Nearly 99% yield a confident redshift.
+    </p>
+
+    <p class="prose">
+      What does become difficult is the wavelength. At <em>z</em>&nbsp;=&nbsp;1 the
+      4000&nbsp;Å break lands near 8000&nbsp;Å, at the red end of DESI's coverage where
+      the sky is brighter and the CCD response is falling. That, rather than any
+      property of the galaxies, is what sets the upper redshift limit of the sample.
+    </p>
+
+    <p class="prose">
+      LRGs are also strongly biased tracers — being the most massive galaxies, they sit
+      in the rarest peaks of the density field, so their clustering amplitude is well
+      above that of the matter. That makes the BAO signal easy to detect and the bias
+      factor something the analysis must model carefully.
+    </p>
+
+    <h3>An LRG at <em>z</em> = 0.8</h3>
+
+    <p class="prose">
+      This is what all that luminosity amounts to in an image: a small red point. At
+      <em>z</em>&nbsp;=&nbsp;0.8 the light has traveled about seven billion years, and
+      the galaxy — one of the most massive in the universe — is a few pixels across.
+      Its color is the whole story. Compare it with the yellow-white galaxy to its
+      right, which is much nearer.
+    </p>
+
+    <figure>
+      <a href="img/tracers/lrg-galaxy.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/lrg-galaxy.jpg" width="1100" height="710" loading="lazy"
+             alt="Legacy Surveys imaging of a luminous red galaxy: a small, distinctly red, nearly point-like object circled in yellow against a noisy dark sky. A brighter yellow-white galaxy lies to the upper right and other faint objects are scattered around the frame.">
+      </a>
+      <figcaption>
+        The circled object is the DESI target, at RA&nbsp;119.4978,
+        Dec&nbsp;+36.9677. The circle is 10&nbsp;arcseconds across; the fiber samples
+        about 1&nbsp;arcsecond at its center.
+        <br>
+        Credit: DESI Legacy Imaging Surveys / Legacy Survey Viewer.
+      </figcaption>
+    </figure>
+
+    <figure class="banner">
+      <a href="img/tracers/lrg-spectrum.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/lrg-spectrum.jpg" width="2592" height="486" loading="lazy"
+             alt="DESI spectrum of LRG target 39633019211876573, fitted as a galaxy at redshift 0.8007. Flux in units of 10 to the minus 17 erg per square centimeter per second per ångström is plotted against observed wavelength from 3600 to 9800 ångström. Blueward of about 7200 ångström the flux is close to zero and dominated by noise; at that wavelength the continuum steps up sharply, forming the redshifted 4000 ångström break, with the Ca II K and H absorption lines marked just blueward of the step. The G band and Mg I appear further red. No emission lines are present. The green noise curve rises steeply at the blue end.">
+      </a>
+      <figcaption>
+        LRG target 39633019211876573 at <em>z</em>&nbsp;=&nbsp;0.8007. Everything the
+        redshift rests on is in the right-hand third of the spectrum: the
+        4000&nbsp;Å break has moved to about 7200&nbsp;Å, with Ca&nbsp;II&nbsp;K and H
+        immediately blueward of it, then the G band and Mg&nbsp;I. Below the break there
+        is essentially no signal — which is exactly why the sample cannot be pushed much
+        past <em>z</em>&nbsp;=&nbsp;1.1, where the break would leave the detector
+        altogether.
+      </figcaption>
+    </figure>
+
+    <h2 class="section-title" id="elg">ELG — Emission-Line Galaxies</h2>
+
+    <div class="ref-list" data-topic="elg"></div>
+
+    <p class="prose">
+      The emission-line galaxies are the opposite selection to the LRGs, and the
+      largest sample DESI takes: about a third of all its tracers. Rather than massive
+      dead ellipticals, these are ordinary star-forming galaxies — smaller, bluer, and
+      far more numerous. They are also faint, and would be nearly impossible to measure
+      were it not for one thing: a galaxy that is forming stars announces itself with
+      emission lines, and a single strong line is enough to fix a redshift.
+    </p>
+
+    <div class="facts">
+      <dl>
+        <dt>Redshift range</dt>
+        <dd>0.6 &lt; <em>z</em> &lt; 1.6, with 1.1 &lt; <em>z</em> &lt; 1.6 expected to
+            give the tightest constraints</dd>
+        <dt>Selection</dt>
+        <dd>a <em>g</em>-band magnitude cut with a
+            (<em>g</em>&nbsp;&minus;&nbsp;<em>r</em>) versus
+            (<em>r</em>&nbsp;&minus;&nbsp;<em>z</em>) color box</dd>
+        <dt>Galaxies</dt>
+        <dd>roughly 13 million — about one third of DESI's ~40 million extragalactic
+            redshifts</dd>
+        <dt>Target density</dt>
+        <dd>two disjoint subsamples, ~1940 deg<sup>−2</sup> and ~460 deg<sup>−2</sup></dd>
+        <dt>Redshift criterion</dt>
+        <dd>based on the [O&nbsp;II] flux; more than 400 deg<sup>−2</sup> reliable
+            redshifts in each of 0.6&nbsp;&lt;&nbsp;<em>z</em>&nbsp;&lt;&nbsp;1.1 and
+            1.1&nbsp;&lt;&nbsp;<em>z</em>&nbsp;&lt;&nbsp;1.6</dd>
+        <dt>Observing time</dt>
+        <dd>dark time</dd>
+      </dl>
+    </div>
+
+    <h3>Why [O II] does the work</h3>
+
+    <p class="prose">
+      In an LRG the redshift comes from a break in the continuum. In an ELG it comes
+      from a line — specifically the [O&nbsp;II] doublet at 3726 and 3729&nbsp;Å,
+      emitted by singly ionized oxygen in gas photoionized by young stars. Two
+      properties make it the most useful line in the survey.
+    </p>
+
+    <p class="prose">
+      First, its rest wavelength is short. A line at 3727&nbsp;Å is still inside DESI's
+      coverage at <em>z</em>&nbsp;=&nbsp;1.6, where it has moved to about
+      9700&nbsp;Å. Hα, by contrast, leaves the red end of the spectrograph by
+      <em>z</em>&nbsp;≈&nbsp;0.5. If the survey had to rely on Hα, the ELG sample
+      would stop before it began.
+    </p>
+
+    <p class="prose">
+      Second, it is a <em>doublet</em>. The two components sit about 3&nbsp;Å apart, and
+      DESI's resolution separates them. That turns a single peak of uncertain identity
+      into a pair with a known separation and a known ratio — a distinctive signature
+      that can be recognized with confidence even when the signal is weak. A lone
+      unidentified line at 7000&nbsp;Å could be almost anything; a correctly spaced
+      doublet at 7000&nbsp;Å is [O&nbsp;II] at <em>z</em>&nbsp;=&nbsp;0.88 and very
+      little else.
+    </p>
+
+    <p class="prose">
+      This is why the sample's redshift criterion is written in terms of [O&nbsp;II]
+      flux rather than continuum magnitude. What matters is not how bright the galaxy
+      is but how bright its line is, and the color box is designed to select galaxies
+      likely to have a strong one.
+    </p>
+
+    <h3>What the spectrum shows</h3>
+
+    <p class="prose">
+      An ELG spectrum is mostly noise with a few spikes in it — a faint blue continuum
+      that may barely register, and the emission lines standing well clear of it.
+      [O&nbsp;II] is the strongest and the most useful, but it is far from alone: the
+      Balmer series contributes Hβ at 4861&nbsp;Å, Hγ at 4340&nbsp;Å and Hδ at
+      4102&nbsp;Å, and the [O&nbsp;III] doublet at 4959 and 5007&nbsp;Å is often
+      prominent. Several lines at a known spacing make a redshift far more secure than
+      one line ever could.
+    </p>
+
+    <p class="prose">
+      Which of them are available depends on redshift, because they sit at longer rest
+      wavelengths than [O&nbsp;II] and so leave DESI's window sooner. [O&nbsp;III] runs
+      out near <em>z</em>&nbsp;=&nbsp;0.96 and Hβ near 1.02; the bluer Balmer lines
+      survive a little further. Above <em>z</em>&nbsp;≈&nbsp;1 they have moved into the
+      infrared and [O&nbsp;II] is working alone — which is precisely why the sample is
+      selected on it. The contrast with an LRG spectrum, all continuum and no lines, is
+      about as complete as two galaxy spectra can be.
+    </p>
+
+    <p class="prose">
+      Being young, low-mass systems, ELGs are also weakly biased tracers: they inhabit
+      more ordinary regions of the density field than LRGs, so their clustering is
+      closer to that of the matter itself. Combined with the sheer number of them, that
+      is what makes the 1.1&nbsp;&lt;&nbsp;<em>z</em>&nbsp;&lt;&nbsp;1.6 range DESI's
+      most constraining.
+    </p>
+
+    <h3>An ELG at <em>z</em> = 1.08</h3>
+
+    <p class="prose">
+      ELGs are typically very weak in the optical — in imaging they are barely there at
+      all — yet they carry a very strong [O&nbsp;II] signature. The pair of figures
+      below is the clearest illustration on this page of why the survey works the way it
+      does.
+    </p>
+
+    <figure>
+      <a href="img/tracers/elg-galaxy.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/elg-galaxy.jpg" width="1100" height="710" loading="lazy"
+             alt="Legacy Surveys imaging of an emission-line galaxy: inside the yellow circle there is only a faint bluish smudge, barely distinguishable from the noise of the sky background. A brighter object sits at the top right corner of the frame.">
+      </a>
+      <figcaption>
+        The DESI target is inside the circle — a faint bluish smudge close to the
+        noise, at RA&nbsp;176.6730, Dec&nbsp;+25.4955. The circle is 10&nbsp;arcseconds
+        across. On the imaging alone there is almost nothing to work with.
+        <br>
+        Credit: DESI Legacy Imaging Surveys / Legacy Survey Viewer.
+      </figcaption>
+    </figure>
+
+    <figure class="banner">
+      <a href="img/tracers/elg-spectrum.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/elg-spectrum.jpg" width="2602" height="494" loading="lazy"
+             alt="DESI spectrum of ELG target 39628384313020974, fitted as a galaxy at redshift 1.0845, shown over the narrow wavelength range 7650 to 7870 ångström. The continuum is indistinguishable from zero and the data scatter about it, but two narrow emission peaks rise clearly near 7768 and 7775 ångström, both labeled [O II], with the pipeline fit tracing the resolved doublet. The noise curve sits at a comparable level to the continuum.">
+      </a>
+      <figcaption>
+        The same object, spectroscopically. ELG target 39628384313020974 at
+        <em>z</em>&nbsp;=&nbsp;1.0845. The continuum is not detected — it sits at zero
+        with the data scattering either side — but the [O&nbsp;II] doublet is
+        unmistakable, resolved into its two components near 7768 and 7775&nbsp;Å. Those
+        two peaks, and nothing else, give the redshift. A single line here could have
+        been anything; a correctly spaced pair could hardly be anything else.
+      </figcaption>
+    </figure>
+
+    <h2 class="section-title" id="qso">QSO — Quasars</h2>
+
+    <div class="ref-list" data-topic="qso"></div>
+
+    <p class="prose">
+      Quasars are not galaxies being surveyed for their starlight. They are the
+      accreting supermassive black holes at the centers of galaxies, radiating as
+      matter spirals in — luminous enough to be seen across most of the observable
+      universe, and so compact that they appear as points. That single fact shapes
+      everything about how DESI uses them, and everything about the difficulty of
+      finding them.
+    </p>
+
+    <p class="prose">
+      They are also the only DESI target with two jobs. Between
+      <em>z</em>&nbsp;=&nbsp;0.8 and 2.1 they are tracers in their own right, marking
+      positions in the density field where no galaxy sample reaches. Beyond
+      <em>z</em>&nbsp;=&nbsp;2.1 their own position matters less than the light they
+      send: passing through the intergalactic medium, it is absorbed by neutral
+      hydrogen and arrives carrying a record of every cloud it crossed. The quasar
+      stops being the object of study and becomes the lamp — the
+      <a href="https://physics.bu.edu/desi/lyman-alpha.html">Lyman-α forest</a>.
+    </p>
+
+    <div class="facts">
+      <dl>
+        <dt>As direct tracers</dt>
+        <dd>0.8 &lt; <em>z</em> &lt; 2.1</dd>
+        <dt>As backlights</dt>
+        <dd><em>z</em> &gt; 2.1, for the Lyman-α forest</dd>
+        <dt>Selection</dt>
+        <dd><em>g</em>, <em>r</em>, <em>z</em> optical from the Legacy Imaging Surveys
+            with <em>W1</em> and <em>W2</em> infrared from WISE</dd>
+        <dt>Target density</dt>
+        <dd>310 deg<sup>−2</sup>, yielding more than 200 confirmed quasars
+            deg<sup>−2</sup></dd>
+        <dt>Lyman-α quasars</dt>
+        <dd>about 60 deg<sup>−2</sup> at <em>z</em> &gt; 2.1</dd>
+        <dt>Purity</dt>
+        <dd>71% quasars; the remainder galaxies (16%), stars (6%) and inconclusive
+            spectra (7%)</dd>
+        <dt>Observing time</dt>
+        <dd>dark time</dd>
+      </dl>
+    </div>
+
+    <h3>The problem: quasars look like stars</h3>
+
+    <p class="prose">
+      A galaxy is extended, so an image alone distinguishes it from a star. A quasar is
+      not. On the sky it is a point of light, indistinguishable in shape from any of the
+      millions of faint stars in our own Galaxy that lie along the same line of sight.
+      Selecting quasars is therefore a problem of color rather than shape, and the
+      contaminant vastly outnumbers the target.
+    </p>
+
+    <p class="prose">
+      The infrared bands are what break the degeneracy. A star radiates roughly as a
+      blackbody, and its flux is falling by 3 to 5&nbsp;µm. A quasar does not: hot dust
+      surrounding the accretion disc re-radiates in the near-infrared, so the spectrum
+      continues as a power law where a star's would be dropping away. In the
+      <em>W1</em>&nbsp;&minus;&nbsp;<em>W2</em> color that WISE measures, quasars are
+      distinctly red and stars are not — a separation clean enough to build a sample
+      from, and the reason the selection uses two infrared bands rather than one.
+    </p>
+
+    <p class="prose">
+      Even so, this is the least pure of DESI's samples: 71%, against the LRGs' 99.5%.
+      Roughly one target in six turns out to be a galaxy and one in sixteen a star.
+      That is not a failure of the selection so much as the price of the population —
+      and it is why the quasar targeting uses machine-learning classification on the
+      photometry rather than the simple color boxes that suffice for LRGs and ELGs.
+    </p>
+
+    <h3>What the spectrum shows</h3>
+
+    <p class="prose">
+      A quasar spectrum looks like nothing else in the survey. The continuum is a strong
+      blue power law rather than a stellar composite, and on it sit <strong>broad</strong>
+      emission lines — hundreds of ångström wide, corresponding to velocities of
+      thousands of kilometers per second in gas orbiting close to the black hole. Which
+      lines are visible depends entirely on redshift, because they originate in the
+      ultraviolet:
+    </p>
+
+    <p class="prose">
+      Mg&nbsp;II at 2798&nbsp;Å is the workhorse at the low-redshift end. C&nbsp;III] at
+      1909&nbsp;Å and C&nbsp;IV at 1549&nbsp;Å enter the observed window as redshift
+      increases, and by <em>z</em>&nbsp;≈&nbsp;2.1 Lyman-α itself at 1216&nbsp;Å has
+      moved past 3600&nbsp;Å into DESI's coverage. That last arrival is what makes
+      <em>z</em>&nbsp;=&nbsp;2.1 the boundary in the table above: it is the redshift at
+      which the forest becomes observable from the ground, not a property of quasars.
+    </p>
+
+    <p class="prose">
+      Broad lines are easy to detect and harder to measure precisely. A line thousands
+      of kilometers per second wide, often asymmetric and sometimes velocity-shifted
+      relative to the host galaxy, does not define a redshift as sharply as a narrow
+      [O&nbsp;II] doublet does. Quasar redshifts are consequently less precise than
+      galaxy redshifts — acceptable when the quasar is a backlight, since what matters
+      then is the absorption pattern along the line of sight rather than the position of
+      the lamp.
+    </p>
+
+    <p class="prose">
+      Quasars are strongly biased tracers, inhabiting massive haloes at early times, and
+      they are sparse. Both facts push their clustering measurements towards being
+      limited by shot noise rather than by volume — the opposite regime to BGS, and the
+      reason the two samples fail in opposite ways.
+    </p>
+
+    <h3>A quasar at <em>z</em> = 2.94</h3>
+
+    <p class="prose">
+      Compare the image below with the luminous red galaxy above. Both are essentially
+      point sources; the only difference an image offers is color, and here it is
+      blue rather than red. That is the whole of the photometric handle in the optical,
+      and it is why the infrared bands matter so much.
+    </p>
+
+    <figure>
+      <a href="img/tracers/qso-galaxy.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/qso-galaxy.jpg" width="1100" height="710" loading="lazy"
+             alt="Legacy Surveys imaging of a quasar: a small, distinctly blue point source circled in yellow against a noisy dark sky, with several redder faint objects scattered across the frame.">
+      </a>
+      <figcaption>
+        The circled object is the quasar — point-like, and blue. Nothing about its shape
+        distinguishes it from a faint star in our own Galaxy. The circle is
+        10&nbsp;arcseconds across.
+        <br>
+        Credit: DESI Legacy Imaging Surveys / Legacy Survey Viewer.
+      </figcaption>
+    </figure>
+
+    <figure class="banner">
+      <a href="img/tracers/qso-spectrum.jpg" target="_blank" rel="noopener">
+        <img src="img/tracers/qso-spectrum.jpg" width="2598" height="480" loading="lazy"
+             alt="DESI spectrum of target 39632975825994040, classified as a QSO at redshift 2.9416. Flux in units of 10 to the minus 17 erg per square centimeter per second per ångström is plotted against observed wavelength from 3600 to 9800 ångström. A very strong broad Lyman-α emission peak rises near 4790 ångström, with broad C IV near 6110 and C III] near 7525 ångström, all sitting on a declining continuum. Blueward of the Lyman-α peak the spectrum is broken up into dense narrow absorption features, the Lyman-α forest. The pipeline fit is overlaid on the data.">
+      </a>
+      <figcaption>
+        Target 39632975825994040, fitted as a QSO at <em>z</em>&nbsp;=&nbsp;2.9416 —
+        and doing both of the sample's jobs at once. The broad emission lines are
+        Lyman-α near 4790&nbsp;Å, C&nbsp;IV near 6110&nbsp;Å and C&nbsp;III] near
+        7525&nbsp;Å, each hundreds of ångström wide. Then look
+        <em>blueward</em> of the Lyman-α peak: the smooth continuum breaks up into a
+        dense thicket of narrow absorption lines. That is the
+        <a href="https://physics.bu.edu/desi/lyman-alpha.html">Lyman-α forest</a> — every line a cloud of neutral
+        hydrogen somewhere between this quasar and the telescope, and the reason a
+        single object can serve as both a tracer and a lamp.
+      </figcaption>
+    </figure>
+
+    <h2 class="section-title">Beyond the four samples</h2>
+
+    <p class="prose">
+      Those four target classes are what DESI selects and observes. The fifth tracer is
+      not a target at all: the <a href="https://physics.bu.edu/desi/lyman-alpha.html">Lyman-α forest</a> is
+      extracted from the spectra of the quasars above, turning each one into a
+      one-dimensional map of intergalactic hydrogen along its line of sight. It reaches
+      beyond <em>z</em>&nbsp;=&nbsp;2 and gives DESI its longest lever arm on the
+      expansion history — and it has a page of its own.
+    </p>
+
+  </main>
+</body>
+</html>

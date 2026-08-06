@@ -1,0 +1,916 @@
+{
+  "_comment": "Single source of truth for every paper cited on this site. Add an entry here and it appears on any page that requests its topic or id. Fields: id (unique slug), title, authors, journal, year, section (grouping on publications.html), topics (array, drives filtering), pdf (local path or URL), doi (bare DOI), arxiv (bare id), hosted (why a local copy exists: author | oa-ccby | reading-list), extras (array of {label, href}). HOSTING POLICY: link by default; host locally only when you are an author, the paper is open access, or it belongs to a curated reading set - and always record doi or arxiv too. A locally hosted PDF must be named <id>.pdf in papers/.",
+  "refs": [
+    {
+      "id": "levi2013-snowmass",
+      "title": "The DESI Experiment, a whitepaper for Snowmass",
+      "authors": "M. Levi, C. Bebek, T. Beers et al.",
+      "journal": "arXiv",
+      "year": 2013,
+      "section": "Instrument",
+      "topics": [
+        "instrument"
+      ],
+      "pdf": "https://arxiv.org/pdf/1308.0847",
+      "arxiv": "1308.0847"
+    },
+    {
+      "id": "desi2016-part1",
+      "title": "The DESI Experiment Part I: Science, Targeting, and Survey Design",
+      "authors": "DESI Collaboration",
+      "journal": "arXiv",
+      "year": 2016,
+      "section": "Instrument",
+      "topics": [
+        "instrument"
+      ],
+      "pdf": "https://arxiv.org/pdf/1611.00036",
+      "arxiv": "1611.00036"
+    },
+    {
+      "id": "desi2016-part2",
+      "title": "The DESI Experiment Part II: Instrument Design",
+      "authors": "DESI Collaboration",
+      "journal": "arXiv",
+      "year": 2016,
+      "section": "Instrument",
+      "topics": [
+        "instrument"
+      ],
+      "pdf": "https://arxiv.org/pdf/1611.00037",
+      "arxiv": "1611.00037"
+    },
+    {
+      "id": "desi2022-instrumentation",
+      "title": "Overview of the Instrumentation for the Dark Energy Spectroscopic Instrument",
+      "authors": "DESI Collaboration",
+      "journal": "The Astronomical Journal",
+      "year": 2022,
+      "section": "Instrument",
+      "topics": [
+        "instrument"
+      ],
+      "pdf": "https://inspirehep.net/files/e714f7297597b5c2dfee0437f2759191",
+      "doi": "10.3847/1538-3881/ac882b"
+    },
+    {
+      "id": "silber2023-focalplane",
+      "title": "The Robotic Multiobject Focal Plane System of the Dark Energy Spectroscopic Instrument (DESI)",
+      "authors": "J. H. Silber, P. Fagrelius, K. Fanning et al.",
+      "journal": "The Astronomical Journal",
+      "year": 2023,
+      "section": "Instrument",
+      "topics": [
+        "instrument"
+      ],
+      "pdf": "https://inspirehep.net/files/8a59d313a762e3ee2330f80630f3b92a",
+      "doi": "10.3847/1538-3881/ac9ab1"
+    },
+    {
+      "id": "schlafly2024-dithering",
+      "title": "Measuring Fiber Positioning Accuracy and Throughput with Fiber Dithering for the Dark Energy Spectroscopic Instrument",
+      "authors": "E. F. Schlafly, D. Schlegel, S. BenZvi et al.",
+      "journal": "The Astronomical Journal",
+      "year": 2024,
+      "section": "Instrument",
+      "topics": [
+        "instrument"
+      ],
+      "pdf": "https://inspirehep.net/files/c2352f68af83bf5a9db4d15f5581b2c2",
+      "doi": "10.3847/1538-3881/ad4d8c"
+    },
+    {
+      "id": "kent2023-astrometric",
+      "title": "Astrometric Calibration and Performance of the Dark Energy Spectroscopic Instrument Focal Plane",
+      "authors": "S. Kent, E. Neilsen, K. Honscheid et al.",
+      "journal": "The Astronomical Journal",
+      "year": 2023,
+      "section": "Instrument",
+      "topics": [
+        "instrument"
+      ],
+      "pdf": "https://inspirehep.net/files/e366434105b4673a528a12379cbb7873",
+      "doi": "10.3847/1538-3881/acf7c3"
+    },
+    {
+      "id": "perruchot2021-spectrographs",
+      "title": "Testing the 10 Spectrograph Units for DESI: approach and results",
+      "authors": "S. Perruchot, P. E. Blanc, J. Guy et al.",
+      "journal": "arXiv",
+      "year": 2021,
+      "section": "Instrument",
+      "topics": [
+        "instrument"
+      ],
+      "pdf": "https://arxiv.org/pdf/2101.12181",
+      "arxiv": "2101.12181"
+    },
+    {
+      "id": "desi-dr1",
+      "title": "Data Release 1 of the Dark Energy Spectroscopic Instrument",
+      "authors": "DESI Collaboration",
+      "journal": "The Astronomical Journal",
+      "year": 2026,
+      "section": "Data",
+      "topics": [
+        "data",
+        "rohlf"
+      ],
+      "pdf": "https://inspirehep.net/files/9869cc62d711d8a992e7b54f6f550f2e",
+      "doi": "10.3847/1538-3881/ae4c43",
+      "arxiv": "2503.14745",
+      "date": "2025-03-18"
+    },
+    {
+      "id": "desi-edr",
+      "title": "The Early Data Release of the Dark Energy Spectroscopic Instrument",
+      "authors": "DESI Collaboration",
+      "journal": "The Astronomical Journal",
+      "year": 2024,
+      "section": "Data",
+      "topics": [
+        "data"
+      ],
+      "pdf": "https://inspirehep.net/files/b205f7bd62a2bd6d5d5380ceee1ff4b5",
+      "doi": "10.3847/1538-3881/ad3217"
+    },
+    {
+      "id": "dey2019-legacy",
+      "title": "Overview of the DESI Legacy Imaging Surveys",
+      "authors": "A. Dey, D. J. Schlegel, D. Lang et al.",
+      "journal": "The Astronomical Journal 157, 168",
+      "year": 2019,
+      "section": "Data",
+      "topics": [
+        "data",
+        "lya-pipeline"
+      ],
+      "pdf": "https://arxiv.org/pdf/1804.08657",
+      "doi": "10.3847/1538-3881/ab089d",
+      "arxiv": "1804.08657"
+    },
+    {
+      "id": "hahn2023-bgs",
+      "title": "The DESI Bright Galaxy Survey: Final Target Selection, Design, and Validation",
+      "authors": "C. Hahn, M. J. Wilson, O. Ruiz-Macias et al.",
+      "journal": "The Astronomical Journal",
+      "year": 2023,
+      "section": "Data",
+      "topics": [
+        "data",
+        "tracers",
+        "bgs"
+      ],
+      "pdf": "https://inspirehep.net/files/ef9b14d47b0c48cd4454c0a3d508cede",
+      "doi": "10.3847/1538-3881/accff8",
+      "arxiv": "2208.08512"
+    },
+    {
+      "id": "zhou2023-lrg",
+      "title": "Target Selection and Validation of DESI Luminous Red Galaxies",
+      "authors": "R. Zhou, B. Dey, J. A. Newman et al.",
+      "journal": "The Astronomical Journal",
+      "year": 2023,
+      "section": "Data",
+      "topics": [
+        "data",
+        "tracers",
+        "lrg"
+      ],
+      "pdf": "https://inspirehep.net/files/487fbf9fd3149e208fba057b23409fa9",
+      "doi": "10.3847/1538-3881/aca5fb",
+      "arxiv": "2208.08515"
+    },
+    {
+      "id": "raichoor2023-elg",
+      "title": "Target Selection and Validation of DESI Emission Line Galaxies",
+      "authors": "A. Raichoor, J. Moustakas, J. A. Newman et al.",
+      "journal": "The Astronomical Journal",
+      "year": 2023,
+      "section": "Data",
+      "topics": [
+        "data",
+        "tracers",
+        "elg"
+      ],
+      "pdf": "https://inspirehep.net/files/f76e00555b1f4483486dc53dbc18674a",
+      "doi": "10.3847/1538-3881/acb213"
+    },
+    {
+      "id": "guy2023-pipeline",
+      "title": "The Spectroscopic Data Processing Pipeline for the Dark Energy Spectroscopic Instrument",
+      "authors": "J. Guy, S. Bailey, A. Kremin et al.",
+      "journal": "The Astronomical Journal",
+      "year": 2023,
+      "section": "Data",
+      "topics": [
+        "data"
+      ],
+      "pdf": "https://inspirehep.net/files/c2d6f04828ff7426e7b241d762609a0d",
+      "doi": "10.3847/1538-3881/acb212"
+    },
+    {
+      "id": "lasker2025-fiberassign",
+      "title": "Production of alternate realizations of DESI fiber assignment for unbiased clustering measurement in data and simulations",
+      "authors": "J. Lasker et al.",
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "year": 2025,
+      "section": "Data",
+      "topics": [
+        "data",
+        "gq-bao"
+      ],
+      "pdf": "https://inspirehep.net/files/a502ce3f91eda294bfec62cff9893ad5",
+      "doi": "10.1088/1475-7516/2025/01/127"
+    },
+    {
+      "id": "paillas2025-reconstruction",
+      "title": "Optimal reconstruction of baryon acoustic oscillations for DESI 2024",
+      "authors": "E. Paillas et al.",
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "year": 2025,
+      "section": "Data",
+      "topics": [
+        "data",
+        "gq-bao"
+      ],
+      "pdf": "https://inspirehep.net/files/79f0d5956b19eb78e387b2dfa29751d8",
+      "doi": "10.1088/1475-7516/2025/01/142"
+    },
+    {
+      "id": "guy2025-lya-contaminants",
+      "title": "Characterization of contaminants in the Lyman-alpha forest auto-correlation with DESI",
+      "authors": "J. Guy et al.",
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "year": 2025,
+      "section": "Data",
+      "topics": [
+        "data",
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "https://inspirehep.net/files/db30f63201ec2b3497b077a9f7829f4f",
+      "doi": "10.1088/1475-7516/2025/01/140",
+      "arxiv": "2404.03003"
+    },
+    {
+      "id": "garciaquintero2025-hod",
+      "title": "HOD-dependent systematics in Emission Line Galaxies for the DESI 2024 BAO analysis",
+      "authors": "C. Garcia-Quintero et al.",
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "year": 2025,
+      "section": "Data",
+      "topics": [
+        "data",
+        "gq-bao"
+      ],
+      "pdf": "https://inspirehep.net/files/cb3b49490c3e9cf06c95812dfef20d71",
+      "doi": "10.1088/1475-7516/2025/01/132"
+    },
+    {
+      "id": "mccullough2024-dc3r2",
+      "title": "DESI complete calibration of the colour–redshift relation (DC3R2): results from early DESI data",
+      "authors": "J. McCullough et al.",
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "year": 2024,
+      "section": "Data",
+      "topics": [
+        "data"
+      ],
+      "pdf": "https://inspirehep.net/files/c844e0f87dbc88261cbb58aad40d360c",
+      "doi": "10.1093/mnras/stae1316"
+    },
+    {
+      "id": "desi2024-ii",
+      "title": "DESI 2024 II: sample definitions, characteristics, and two-point clustering statistics",
+      "authors": "DESI Collaboration",
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "gq-bao",
+        "gq-fs"
+      ],
+      "pdf": "https://inspirehep.net/files/8533ccd65d075307850b58cbfe65c236",
+      "doi": "10.1088/1475-7516/2025/07/017",
+      "arxiv": "2411.12020"
+    },
+    {
+      "id": "desi2024-iii",
+      "title": "DESI 2024 III: baryon acoustic oscillations from galaxies and quasars",
+      "authors": "DESI Collaboration",
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "gq-bao"
+      ],
+      "pdf": "https://inspirehep.net/files/622287f263ecc7b7be948ede1778bf9e",
+      "doi": "10.1088/1475-7516/2025/04/012",
+      "arxiv": "2404.03000"
+    },
+    {
+      "id": "desi2024-iv-lya",
+      "title": "DESI 2024 IV: Baryon Acoustic Oscillations from the Lyman-α forest",
+      "authors": "DESI Collaboration",
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "https://inspirehep.net/files/26f054d8191b772a58dee99a980b3729",
+      "doi": "10.1088/1475-7516/2025/01/124",
+      "arxiv": "2404.03001"
+    },
+    {
+      "id": "desi2024-vi",
+      "title": "DESI 2024 VI: cosmological constraints from the measurements of baryon acoustic oscillations",
+      "authors": "DESI Collaboration",
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "cpe"
+      ],
+      "pdf": "https://inspirehep.net/files/2cdd8512d91038b079b33eaaedb3337d",
+      "doi": "10.1088/1475-7516/2025/02/021",
+      "arxiv": "2404.03002"
+    },
+    {
+      "id": "desi2024-vii",
+      "title": "DESI 2024 VII: cosmological constraints from the full-shape modeling of clustering measurements",
+      "authors": "DESI Collaboration",
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "gq-fs"
+      ],
+      "pdf": "https://inspirehep.net/files/e11e7a96a007d42ff5f26c2f63da3ab6",
+      "doi": "10.1088/1475-7516/2025/07/028",
+      "arxiv": "2411.12022"
+    },
+    {
+      "id": "ahlen2025-neutrino-mass",
+      "title": "Positive neutrino masses with DESI DR2 via matter conversion to dark energy",
+      "authors": "S. P. Ahlen, A. Aviles, B. Cartwright, K. S. Croker, W. Elbers, D. Farrah, N. Fernandez, G. Niz, J. W. Rohlf et al. (DESI Collaboration)",
+      "journal": "Physical Review Letters",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "rohlf",
+        "cpe"
+      ],
+      "pdf": "https://journals.aps.org/prl/pdf/10.1103/yb2k-kn7h",
+      "doi": "10.1103/yb2k-kn7h",
+      "extras": [
+        {
+          "label": "cover",
+          "href": "papers/notes/LE19494_crvfig.pdf"
+        },
+        {
+          "label": "index",
+          "href": "papers/notes/LE19494_toc.pdf"
+        },
+        {
+          "label": "dear-author",
+          "href": "papers/notes/LE19494suggltr.pdf"
+        }
+      ],
+      "arxiv": "2504.20338",
+      "date": "2025-04-28"
+    },
+    {
+      "id": "brodzeller2025-dla",
+      "title": "Construction of the damped Lyα absorber catalog for DESI DR2 Lyα BAO",
+      "authors": "A. Brodzeller et al. (DESI Collaboration)",
+      "journal": "Physical Review D 112, 083510",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "lya",
+        "lya-dr2-bao",
+        "rohlf"
+      ],
+      "pdf": "https://inspirehep.net/files/bd1e932e731792981fd78b0fb6bb1ce5",
+      "doi": "10.1103/wxyv-46kb",
+      "arxiv": "2503.14740",
+      "date": "2025-03-18"
+    },
+    {
+      "id": "desi-dr2-results-ii",
+      "title": "DESI DR2 Results II: Measurements of Baryon Acoustic Oscillations and Cosmological Constraints",
+      "authors": "M. Abdul Karim et al. (DESI Collaboration)",
+      "journal": "Physical Review D 112, 083515",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "rohlf",
+        "gq-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2503.14738",
+      "doi": "10.1103/tr6y-kpc6",
+      "arxiv": "2503.14738",
+      "date": "2025-03-18"
+    },
+    {
+      "id": "elbers2025-neutrino",
+      "title": "Constraints on neutrino physics from DESI DR2 BAO and DR1 full shape",
+      "authors": "W. Elbers et al. (DESI Collaboration)",
+      "journal": "Physical Review D 112, 083513",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "rohlf",
+        "cpe"
+      ],
+      "pdf": "https://inspirehep.net/files/79fa6374a505836f7f8b51728ce07107",
+      "doi": "10.1103/w9pk-xsk7",
+      "arxiv": "2503.14744",
+      "date": "2025-03-18"
+    },
+    {
+      "id": "lodha2025-extended-de",
+      "title": "Extended dark energy analysis using DESI DR2 BAO measurements",
+      "authors": "K. Lodha, R. Calderon, W. L. Matthewson, A. Shafieloo, M. Ishak, J. Pan, C. Garcia-Quintero, D. Huterer, G. Valogiannis, L. A. Ureña-López, N. V. Kamble, D. Parkinson, A. G. Kim, G. B. Zhao, J. L. Cervantes-Cota, J. Rohlf et al. (DESI Collaboration)",
+      "journal": "Physical Review D 112, 083511",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "rohlf",
+        "cpe"
+      ],
+      "pdf": "https://inspirehep.net/files/ccf9a9542060a58e9e71713d3f866c96",
+      "doi": "10.1103/w4c6-1r5j",
+      "arxiv": "2503.14743",
+      "date": "2025-03-18"
+    },
+    {
+      "id": "garciaquintero2025-act",
+      "title": "Cosmological implications of DESI DR2 BAO measurements in light of the latest ACT DR6 CMB data",
+      "authors": "C. Garcia-Quintero, H. E. Noriega, A. de Mattia, A. Aviles, K. Lodha, D. Chebat, J. Rohlf et al. (DESI Collaboration)",
+      "journal": "Physical Review D 112, 083529",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "rohlf",
+        "cpe"
+      ],
+      "pdf": "https://inspirehep.net/files/5a93fe66d635db755b24e5993eb2d235",
+      "doi": "10.1103/d6yc-xpqb",
+      "arxiv": "2504.18464",
+      "date": "2025-04-25"
+    },
+    {
+      "id": "chebat2026-frequentist",
+      "title": "Cosmological neutrino mass: a frequentist overview in light of DESI",
+      "authors": "D. Chebat, C. Yèche, E. Armengaud, N. Schöneberg, M. Walther, A. de Mattia, J. Rohlf et al. (DESI Collaboration)",
+      "journal": "Journal of Cosmology and Astroparticle Physics 01, 041",
+      "year": 2026,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "rohlf",
+        "cpe"
+      ],
+      "pdf": "https://inspirehep.net/files/02a4f4c1fffa0e99136c375a0437844d",
+      "doi": "10.1088/1475-7516/2026/01/041",
+      "arxiv": "2507.12401",
+      "date": "2025-07-16"
+    },
+    {
+      "id": "yeche2020-qso-target",
+      "title": "Preliminary Target Selection for the DESI Quasar (QSO) Sample",
+      "authors": "C. Yèche et al.",
+      "journal": "Research Notes of the AAS 4, 179",
+      "year": 2020,
+      "section": "Lyman-α pipeline",
+      "topics": [
+        "lya-pipeline"
+      ],
+      "pdf": "papers/yeche2020-qso-target.pdf",
+      "doi": "10.3847/2515-5172/abc01a",
+      "hosted": "oa-ccby"
+    },
+    {
+      "id": "chaussidon2023-qso",
+      "title": "Target Selection and Validation of DESI Quasars",
+      "authors": "E. Chaussidon, C. Yèche, N. Palanque-Delabrouille et al.",
+      "journal": "The Astrophysical Journal 944, 107",
+      "year": 2023,
+      "section": "Lyman-α pipeline",
+      "topics": [
+        "lya-pipeline",
+        "tracers",
+        "qso"
+      ],
+      "pdf": "papers/chaussidon2023-qso.pdf",
+      "doi": "10.3847/1538-4357/acb3c2",
+      "hosted": "oa-ccby"
+    },
+    {
+      "id": "busca2018-quasarnet",
+      "title": "QuasarNET: Human-level spectral classification and redshifting with Deep Neural Networks",
+      "authors": "N. G. Busca and C. Balland",
+      "journal": "arXiv",
+      "year": 2018,
+      "section": "Lyman-α pipeline",
+      "topics": [
+        "lya-pipeline"
+      ],
+      "pdf": "papers/busca2018-quasarnet.pdf",
+      "arxiv": "1808.09955",
+      "hosted": "reading-list"
+    },
+    {
+      "id": "farr2020-qso-strategies",
+      "title": "Optimal strategies for identifying quasars in DESI",
+      "authors": "J. Farr, A. Font-Ribera, A. Pontzen",
+      "journal": "Journal of Cosmology and Astroparticle Physics 11, 015",
+      "year": 2020,
+      "section": "Lyman-α pipeline",
+      "topics": [
+        "lya-pipeline"
+      ],
+      "pdf": "papers/farr2020-qso-strategies.pdf",
+      "doi": "10.1088/1475-7516/2020/11/015",
+      "hosted": "reading-list"
+    },
+    {
+      "id": "alexander2023-vi",
+      "title": "The DESI Survey Validation: Results from Visual Inspection of the Quasar Survey Spectra",
+      "authors": "D. M. Alexander, T. M. Davis, E. Chaussidon et al.",
+      "journal": "The Astronomical Journal 165, 124",
+      "year": 2023,
+      "section": "Lyman-α pipeline",
+      "topics": [
+        "lya-pipeline"
+      ],
+      "pdf": "papers/alexander2023-vi.pdf",
+      "doi": "10.3847/1538-3881/acacfc",
+      "hosted": "oa-ccby"
+    },
+    {
+      "id": "brodzeller2023-templates",
+      "title": "Performance of the Quasar Spectral Templates for the Dark Energy Spectroscopic Instrument",
+      "authors": "A. Brodzeller, K. Dawson, S. Bailey et al.",
+      "journal": "The Astronomical Journal 166, 66",
+      "year": 2023,
+      "section": "Lyman-α pipeline",
+      "topics": [
+        "lya-pipeline"
+      ],
+      "pdf": "papers/brodzeller2023-templates.pdf",
+      "doi": "10.3847/1538-3881/ace35d",
+      "hosted": "oa-ccby"
+    },
+    {
+      "id": "napolitano2023-mgii",
+      "title": "Detecting and Characterizing Mg II Absorption in DESI Survey Validation Quasar Spectra",
+      "authors": "L. Napolitano, A. Pandey, A. D. Myers et al.",
+      "journal": "The Astronomical Journal 166, 99",
+      "year": 2023,
+      "section": "Lyman-α pipeline",
+      "topics": [
+        "lya-pipeline"
+      ],
+      "pdf": "papers/napolitano2023-mgii.pdf",
+      "doi": "10.3847/1538-3881/ace62c",
+      "hosted": "oa-ccby"
+    },
+    {
+      "id": "bault2025-redshift-errors",
+      "title": "Impact of systematic redshift errors on the cross-correlation of the Lyman-α forest with quasars at small scales using DESI Early Data",
+      "authors": "A. Bault et al. (DESI Collaboration)",
+      "journal": "Journal of Cosmology and Astroparticle Physics 01, 130",
+      "year": 2025,
+      "section": "Lyman-α pipeline",
+      "topics": [
+        "lya-pipeline",
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "papers/bault2025-redshift-errors.pdf",
+      "doi": "10.1088/1475-7516/2025/01/130",
+      "hosted": "author",
+      "arxiv": "2402.18009"
+    },
+    {
+      "id": "desi-dr2-iv-lya-ap",
+      "title": "DESI DR2 Results IV: Alcock-Paczyński Measurements from the Lyman-α Forest and Cosmological Constraints",
+      "authors": "A. G. Adame, J. Aguilar, S. Ahlen, O. Alves et al. (DESI Collaboration)",
+      "journal": "arXiv",
+      "year": 2026,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr2-fs",
+        "rohlf"
+      ],
+      "pdf": "papers/desi-dr2-iv-lya-ap.pdf",
+      "hosted": "author",
+      "arxiv": "2607.27410",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "cuceu2023-expansion-rate",
+      "title": "Constraints on the Cosmic Expansion Rate at Redshift 2.3 from the Lyman-α Forest",
+      "authors": "A. Cuceu, A. Font-Ribera, S. Nadathur, B. Joachimi, P. Martini",
+      "journal": "Physical Review Letters 130, 191003",
+      "year": 2023,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr1-fs"
+      ],
+      "pdf": "https://arxiv.org/pdf/2209.13942",
+      "doi": "10.1103/PhysRevLett.130.191003",
+      "arxiv": "2209.13942"
+    },
+    {
+      "id": "cuceu2025-dr1-lya-fs",
+      "title": "DESI DR1 Lyα forest: 3D full-shape analysis and cosmological constraints",
+      "authors": "A. Cuceu, H. K. Herrera-Alcantar, C. Gordon, C. Ramírez-Pérez, E. Armengaud et al.",
+      "journal": "arXiv",
+      "year": 2025,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr1-fs"
+      ],
+      "pdf": "https://arxiv.org/pdf/2509.15308",
+      "arxiv": "2509.15308"
+    },
+    {
+      "id": "desi-dr2-i-lya-bao",
+      "title": "DESI DR2 Results I: Baryon Acoustic Oscillations from the Lyman-α Forest",
+      "authors": "M. Abdul Karim, J. Aguilar, S. Ahlen, C. Allende Prieto, O. Alves et al. (DESI Collaboration)",
+      "journal": "Physical Review D 112, 083514",
+      "year": 2025,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr2-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2503.14739",
+      "doi": "10.1103/2wwn-xjm5",
+      "arxiv": "2503.14739"
+    },
+    {
+      "id": "desi-dr2-lya-fs-validation",
+      "title": "Validation of the DESI DR2 Lyα forest full-shape analysis",
+      "authors": "M. Herbold, A. Cuceu, P. Martini, H. K. Herrera-Alcantar, J. Guy et al. (DESI Collaboration)",
+      "journal": "arXiv",
+      "year": 2026,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr2-fs",
+        "rohlf"
+      ],
+      "pdf": "papers/desi-dr2-lya-fs-validation.pdf",
+      "hosted": "author",
+      "arxiv": "2607.27411",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "colore2lpt-lya-mocks",
+      "title": "CoLoRe-2LPT: Lyman-α mock catalogues for the validation of DESI cosmological analyses",
+      "authors": "M. F. Ruiz-Herrera Bernal, S. Avila, A. Font-Ribera, H. K. Herrera-Alcantar, D. Alonso et al. (DESI Collaboration)",
+      "journal": "arXiv",
+      "year": 2026,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr2-fs",
+        "rohlf"
+      ],
+      "pdf": "papers/colore2lpt-lya-mocks.pdf",
+      "hosted": "author",
+      "arxiv": "2607.27412",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "chavesmontero2026-holography",
+      "title": "Lyman-α forest holography: 3D predictions from 1D measurements",
+      "authors": "J. Chaves-Montero, A. Font-Ribera et al. (DESI Collaboration)",
+      "journal": "arXiv",
+      "year": 2026,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr2-fs",
+        "rohlf"
+      ],
+      "pdf": "papers/chavesmontero2026-holography.pdf",
+      "arxiv": "2607.27413",
+      "hosted": "author",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "casas2026-dr2-bao-validation",
+      "title": "Validation of the DESI DR2 Lyα BAO analysis using synthetic datasets",
+      "authors": "L. Casas, H. K. Herrera-Alcantar, J. Chaves-Montero, A. Cuceu et al. (DESI Collaboration)",
+      "journal": "Physical Review D 113, 023520",
+      "year": 2026,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr2-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2503.14741",
+      "doi": "10.1103/fvgh-kswf",
+      "arxiv": "2503.14741"
+    },
+    {
+      "id": "karacayli2026-lya-multipoles",
+      "title": "DESI DR2 Baryon Acoustic Oscillations from the Lyman-α Forest Multipoles",
+      "authors": "N. G. Karaçaylı, A. Cuceu, J. Aguilar, S. Ahlen et al. (DESI Collaboration)",
+      "journal": "Physical Review D",
+      "year": 2026,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr2-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2603.04281",
+      "doi": "10.1103/yl3v-cyck",
+      "arxiv": "2603.04281"
+    },
+    {
+      "id": "herreraalcantar2026-multiredshift-bao",
+      "title": "Probing the matter-dominated expansion with multi-redshift Lyman-α BAO from DESI DR2",
+      "authors": "H. K. Herrera-Alcantar, J. Guy, A. X. Gonzalez-Morales, E. Armengaud et al. (DESI Collaboration)",
+      "journal": "arXiv",
+      "year": 2026,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr2-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2607.19619",
+      "arxiv": "2607.19619"
+    },
+    {
+      "id": "cuceu2024-dr1-bao-validation",
+      "title": "Validation of the DESI 2024 Lyα forest BAO analysis using synthetic datasets",
+      "authors": "A. Cuceu, H. K. Herrera-Alcantar, C. Gordon, P. Martini et al. (DESI Collaboration)",
+      "journal": "Journal of Cosmology and Astroparticle Physics 01, 148",
+      "year": 2025,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2404.03004",
+      "doi": "10.1088/1475-7516/2025/01/148",
+      "arxiv": "2404.03004"
+    },
+    {
+      "id": "martini2024-bal-masking",
+      "title": "Validation of the DESI 2024 Lyman-α forest BAL masking strategy",
+      "authors": "P. Martini, A. Cuceu, L. Ennesser, A. Brodzeller et al. (DESI Collaboration)",
+      "journal": "Journal of Cosmology and Astroparticle Physics 01, 137",
+      "year": 2025,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2405.09737",
+      "doi": "10.1088/1475-7516/2025/01/137",
+      "arxiv": "2405.09737"
+    },
+    {
+      "id": "turner2024-lycan-continuum",
+      "title": "New measurements of the Lyman-α forest continuum and effective optical depth with LyCAN and DESI Y1 data",
+      "authors": "W. Turner, P. Martini, N. G. Karaçaylı, J. Aguilar et al. (DESI Collaboration)",
+      "journal": "The Astrophysical Journal 976, 143",
+      "year": 2024,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2405.06743",
+      "doi": "10.3847/1538-4357/ad8239",
+      "arxiv": "2405.06743"
+    },
+    {
+      "id": "karacayli2024-p1d-qmle",
+      "title": "Optimal 1D Lyα Forest Power Spectrum Estimation III: DESI early data",
+      "authors": "N. G. Karaçaylı, P. Martini, J. Guy, C. Ravoux, M. L. Abdul-Karim et al. (DESI Collaboration)",
+      "journal": "Monthly Notices of the Royal Astronomical Society 528, 3941",
+      "year": 2024,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-p1d"
+      ],
+      "pdf": "https://arxiv.org/pdf/2306.06316",
+      "doi": "10.1093/mnras/stae171",
+      "arxiv": "2306.06316"
+    },
+    {
+      "id": "ramirezperez2024-lya-catalog",
+      "title": "The Lyman-α forest catalog from the Dark Energy Spectroscopic Instrument Early Data Release",
+      "authors": "C. Ramírez-Pérez, I. Pérez-Ràfols, A. Font-Ribera et al. (DESI Collaboration)",
+      "journal": "Monthly Notices of the Royal Astronomical Society 528, 6666",
+      "year": 2024,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2306.06312",
+      "doi": "10.1093/mnras/stad3781",
+      "arxiv": "2306.06312"
+    },
+    {
+      "id": "gordon2023-3d-correlations",
+      "title": "3D Correlations in the Lyman-α Forest from Early DESI Data",
+      "authors": "C. Gordon, A. Cuceu, J. Chaves-Montero et al. (DESI Collaboration)",
+      "journal": "Journal of Cosmology and Astroparticle Physics 11, 045",
+      "year": 2023,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2308.10950",
+      "doi": "10.1088/1475-7516/2023/11/045",
+      "arxiv": "2308.10950"
+    },
+    {
+      "id": "filbert2024-bal-quasars",
+      "title": "Broad absorption line quasars in the Dark Energy Spectroscopic Instrument Early Data Release",
+      "authors": "S. Filbert, P. Martini, K. Seebaluck et al. (DESI Collaboration)",
+      "journal": "Monthly Notices of the Royal Astronomical Society 532, 3669",
+      "year": 2024,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2309.03434",
+      "doi": "10.1093/mnras/stae1610",
+      "arxiv": "2309.03434"
+    },
+    {
+      "id": "herreraalcantar2025-synthetic-spectra",
+      "title": "Synthetic spectra for Lyman-α forest analysis in the Dark Energy Spectroscopic Instrument",
+      "authors": "H. K. Herrera-Alcantar, A. Muñoz-Gutiérrez, T. Tan et al. (DESI Collaboration)",
+      "journal": "Journal of Cosmology and Astroparticle Physics 01, 141",
+      "year": 2025,
+      "section": "Lyman-α",
+      "topics": [
+        "lya",
+        "lya-dr1-bao"
+      ],
+      "pdf": "https://arxiv.org/pdf/2401.00303",
+      "doi": "10.1088/1475-7516/2025/01/141",
+      "arxiv": "2401.00303"
+    },
+    {
+      "id": "divalentino2025-cosmoverse",
+      "title": "The CosmoVerse White Paper: Addressing observational tensions in cosmology with systematics and fundamental physics",
+      "authors": "E. Di Valentino, J. Levi Said, A. Riess, A. Pollo et al.",
+      "journal": "Physics of the Dark Universe 49, 101965",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology",
+        "cpe"
+      ],
+      "pdf": "https://arxiv.org/pdf/2504.01669",
+      "doi": "10.1016/j.dark.2025.101965",
+      "arxiv": "2504.01669"
+    },
+    {
+      "id": "ahlen2025-black-holes-higgs",
+      "title": "Black Holes and Higgs Dark Energy",
+      "authors": "S. P. Ahlen, J. W. Rohlf, G. Tarlé",
+      "journal": "arXiv",
+      "year": 2025,
+      "section": "Cosmology",
+      "topics": [
+        "cosmology"
+      ],
+      "pdf": "https://arxiv.org/pdf/2502.05361",
+      "arxiv": "2502.05361"
+    }
+  ]
+}

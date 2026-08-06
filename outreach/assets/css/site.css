@@ -827,3 +827,18 @@ h1[id], h2[id], h3[id] { scroll-margin-top: 4.5rem; }
 .jump a:hover {
   background: var(--scarlet); color: #fff; border-color: var(--scarlet);
 }
+
+
+/* --- classes these pages arrived with -------------------------------------
+   how-desi-works.html and tracers.html use .aside and .footnote, which were
+   only ever defined in the personal site's stylesheet. On the group site they
+   rendered as ordinary body paragraphs. Defining them here restores the
+   intended emphasis now that this section has its own copy. */
+.aside,
+.footnote {
+  color: var(--ink-faint);
+  font-size: .92rem;
+  line-height: 1.6;
+}
+.aside a,
+.footnote a { color: var(--scarlet); }

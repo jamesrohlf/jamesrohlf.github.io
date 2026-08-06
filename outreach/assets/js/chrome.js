@@ -10,6 +10,7 @@
   var NAV = [
     { href: "index.html",          label: "Outreach" },
     { href: "how-desi-works.html", label: "How DESI Works" },
+    { href: "tracers.html",        label: "Tracers" },
     { href: "https://jamesrohlf.github.io/", label: "Talks & papers" }
   ];
 
