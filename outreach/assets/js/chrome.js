@@ -11,6 +11,8 @@
     { href: "index.html",          label: "Outreach" },
     { href: "how-desi-works.html", label: "How DESI Works" },
     { href: "tracers.html",        label: "Tracers" },
+    { href: "results.html",        label: "Results" },
+    { href: "dr1.html",            label: "Data Release 1" },
     { href: "https://jamesrohlf.github.io/", label: "Talks & papers" }
   ];
 

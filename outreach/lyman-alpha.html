@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lyman-α — Jim Rohlf</title>
+  <meta name="description" content="The DESI Lyman-α forest program: how a forest measurement is built, the pipeline reference set, and the 1D power spectrum.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/lyman-alpha.html">
+    <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+  <script src="assets/js/refs.js" defer></script>
+</head>
+<body>
+  <main id="main">
+    <p class="breadcrumb"><a href="results.html">&larr; Results</a></p>
+
+    <h1>Lyman-α</h1>
+
+    <figure class="banner">
+      <a href="img/lya/dr2-quasar-spectrum.png" target="_blank" rel="noopener">
+        <img src="img/lya/dr2-quasar-spectrum.png" width="1800" height="831"
+             alt="Spectrum of a quasar at redshift 3.20 from DESI DR2. Flux is plotted against observed wavelength from 3600 to 8000 ångström, with rest-frame wavelength on the top axis. Two shaded regions mark where the Lyman-α forest is measured: region B in purple from 920 to 1020 ångström rest frame, and region A in indigo from 1040 to 1205 ångström. The C IV and C III regions are shaded in teal and green, and a strong Lyman-α emission peak rises near 5100 ångström.">
+      </a>
+      <figcaption>
+        A DESI DR2 quasar at z&nbsp;=&nbsp;3.20 (TargetID 39627696665266273). The shaded
+        bands mark the two regions where the Lyman-α forest is measured — region&nbsp;A
+        (1040–1205&nbsp;Å rest frame) and region&nbsp;B (920–1020&nbsp;Å) — with the C&nbsp;IV
+        and C&nbsp;III regions used to check spectro-photometric calibration.
+        <br>
+        Figure&nbsp;2 from
+        <a href="https://arxiv.org/abs/2503.14739" target="_blank" rel="noopener">DESI
+        DR2 Results&nbsp;I: Baryon Acoustic Oscillations from the Lyman-α Forest</a>,
+        M.&nbsp;Abdul&nbsp;Karim et al. (DESI Collaboration),
+        <em>Physical Review&nbsp;D</em>&nbsp;112, 083514 (2025).
+      </figcaption>
+    </figure>
+
+    <p class="lede">
+      Absorption by neutral hydrogen along the line of sight to distant quasars traces
+      the intergalactic medium at redshifts beyond 2, and gives DESI its longest lever
+      arm on the expansion history — the only probe reaching deep into the
+      matter-dominated era.
+    </p>
+
+    <p class="prose">
+      This page covers the forest program itself: how a measurement is built, and the
+      one-dimensional power spectrum. The forest's distance and growth results are grouped
+      with the other tracers by method.
+    </p>
+
+    <div class="card-grid">
+      <a class="card" href="bao.html#lyman-alpha">
+        <h3>Lyman-α BAO &rarr;</h3>
+        <p>The standard ruler at z&nbsp;≈&nbsp;2.3, from DR1 and DR2, with the validation
+           and catalog papers behind each.</p>
+      </a>
+      <a class="card" href="full-shape.html#lyman-alpha">
+        <h3>Lyman-α Full Shape &rarr;</h3>
+        <p>The Alcock-Paczyński measurement from the broadband — a 1% constraint, twice
+           as tight as BAO from the same data.</p>
+      </a>
+      <a class="card" href="lya-pipeline.html">
+        <h3>Pipeline references &rarr;</h3>
+        <p>How a forest measurement is built: imaging, target selection, classification,
+           visual inspection, templates and absorber catalogs. Nine papers, in order.</p>
+      </a>
+    </div>
+
+    <!-- ==================== 1D power spectrum ==================== -->
+    <h2 class="section-title" id="p1d">1D Power Spectrum</h2>
+    <p class="prose">
+      A separate observable from the three-dimensional correlation functions: the power
+      spectrum measured <em>along</em> individual lines of sight. P<sub>1D</sub> reaches
+      much smaller scales, and constrains warm dark matter, the sum of the neutrino masses
+      and the thermal state of the intergalactic medium.
+    </p>
+
+    <div class="ref-list" data-ids="karacayli2024-p1d-qmle">
+      <p class="muted">Loading references&hellip;</p>
+    </div>
+
+    <figure class="banner">
+      <a href="img/lya/p1d-quasar-sidebands.png" target="_blank" rel="noopener">
+        <img src="img/lya/p1d-quasar-sidebands.png" width="1800" height="787" loading="lazy"
+             alt="Spectrum of a quasar at redshift 2.94 from DESI survey validation. Flux is plotted against observed wavelength from 3500 to 6600 ångström, with rest-frame wavelength on the top axis. A blue shaded band marks the Lyman-α forest between the Lyman-β and Lyman-α emission lines, and two further shaded bands mark the side bands used to quantify contamination: SB 1 in orange between Lyman-α and Si IV, and SB 2 in green between Si IV and C IV. Emission lines Lyman-β, Lyman-α, N V, Si IV and C IV are labeled.">
+      </a>
+      <figcaption>
+        A quasar at z&nbsp;=&nbsp;2.94 from DESI survey validation (TargetID 39627871806818826).
+        The Lyman-α forest lies between the quasar's Lyman-α and Lyman-β emission lines.
+        The two <em>side bands</em> — SB&nbsp;1 between Lyman-α and Si&nbsp;IV, SB&nbsp;2
+        between Si&nbsp;IV and C&nbsp;IV — sit redward of the forest, where absorption is
+        due to metal systems rather than Lyman-α, and are used to quantify metal
+        contamination together with noise and flux calibration.
+        <br>
+        Figure&nbsp;1 from
+        <a href="https://arxiv.org/abs/2306.06316" target="_blank" rel="noopener">Optimal
+        1D Lyman-α Forest Power Spectrum Estimation&nbsp;III: DESI early data</a>,
+        N.&nbsp;G.&nbsp;Karaçaylı et al. (DESI Collaboration),
+        <em>MNRAS</em>&nbsp;528, 3941 (2024).
+      </figcaption>
+    </figure>
+  </main>
+</body>
+</html>
