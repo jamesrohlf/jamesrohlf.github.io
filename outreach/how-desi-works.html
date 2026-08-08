@@ -222,6 +222,14 @@
 
     <h2 class="section-title" id="readout">Reading it out</h2>
 
+    <p class="prose">
+      Readout is the last thing that happens inside the instrument, and it is not
+      instantaneous. A CCD holds charge, not numbers, and turning one into the other
+      means moving that charge physically across the chip to a single amplifier at the
+      edge. The readout electronics do this row by row, and whatever they add along the
+      way — the read noise — sets the floor beneath every spectrum DESI records.
+    </p>
+
     <div class="video-block">
       <video controls preload="metadata" width="734" height="644"
              poster="img/instrument/ccd-readout-poster.jpg">
