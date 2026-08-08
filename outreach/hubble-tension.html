@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Hubble Tension — Every Route to H&#8320; — Jim Rohlf</title>
+  <meta name="description" content="Why the early-universe and local measurements of the Hubble constant disagree, shown as the distance-ladder network: thirteen routes from geometric anchors through stellar candles to H0, each with its own measured value.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/hubble-tension.html">
+    <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+  <style>
+    /* --- Local distance network figure (self-contained) --- */
+    .ldn { margin: 1.6rem 0 2.2rem; }
+    .ldn-panel { background:#0b0d17; border-radius:10px; padding:.4rem; margin:.5rem 0; }
+    .ldn svg { display:block; width:100%; height:auto; }
+    .ldn-bg { fill:#0b0d17; }
+    .ldn-skel polyline { fill:none; stroke:#ffffff; stroke-opacity:.22;
+                         stroke-width:1.6; stroke-linejoin:round; stroke-linecap:round; }
+    .ldn-route polyline { fill:none; stroke:var(--rc); stroke-width:2.6;
+                          stroke-opacity:.9; stroke-linejoin:round; stroke-linecap:round;
+                          transition:stroke-opacity .18s, stroke-width .18s; }
+    .ldn-node { fill:#161b2b; stroke:#7f8aa8; stroke-width:1.2; }
+    .ldn-node-lab { fill:#eceadf; font:600 13px system-ui,sans-serif; text-anchor:middle; }
+    .ldn-h0 { fill:#ffd35c; stroke:#fff3c4; stroke-width:2; }
+    .ldn-h0-lab { fill:#231d05; font:700 16px system-ui,sans-serif; text-anchor:middle; }
+    .ldn-tier { fill:#95a0bd; font:600 11px system-ui,sans-serif; text-anchor:middle;
+                letter-spacing:.09em; text-transform:uppercase; }
+    .ldn-err { stroke:var(--rc); stroke-width:3; }
+    .ldn-cap { stroke:var(--rc); stroke-width:2.2; }
+    .ldn-pt  { fill:var(--rc); }
+    .ldn-bar { transition:opacity .18s; }
+    .ldn-bar-lab { fill:#dcd9cf; font:600 13px system-ui,sans-serif; text-anchor:end; }
+    .ldn-val { fill:#a8b0c4; font:400 12px ui-monospace,monospace; }
+    .ldn-cmb { stroke:#ff5c5c; stroke-width:2; stroke-dasharray:6 4; }
+    .ldn-cmb-band { fill:#ff5c5c; fill-opacity:.10; }
+    .ldn-cons { stroke:#63d4a0; stroke-width:2; stroke-dasharray:6 4; }
+    .ldn-ref-lab { font:600 12px system-ui,sans-serif; text-anchor:middle; }
+    .ldn-cmb-lab { fill:#ff8080; }
+    .ldn-cons-lab { fill:#63d4a0; }
+    .ldn-tick { stroke:#6d7691; stroke-width:1.4; }
+    .ldn-axis { fill:#95a0bd; font:400 12px system-ui,sans-serif; text-anchor:middle; }
+    .ldn-axis-title { fill:#95a0bd; font:600 12px system-ui,sans-serif; }
+
+    .ldn-legend { display:flex; flex-wrap:wrap; gap:.4rem; margin:.6rem 0 .2rem; }
+    .ldn-key { display:inline-flex; align-items:center; gap:.45rem; cursor:pointer;
+               font:600 13px system-ui,sans-serif; color:inherit;
+               background:transparent; border:1.5px solid var(--rule, #ccc);
+               border-radius:999px; padding:.28rem .7rem; transition:all .15s; }
+    .ldn-key:hover { border-color:var(--rc); }
+    .ldn-key[aria-pressed="true"] { border-color:var(--rc); background:var(--rc);
+                                    color:#0b0d17; }
+    .ldn-swatch { width:12px; height:12px; border-radius:3px; background:var(--rc);
+                  flex:0 0 auto; box-shadow:0 0 0 1px rgba(0,0,0,.25) inset; }
+    .ldn-ref { font-weight:400; opacity:.62; font-size:11px; }
+
+    /* isolation */
+    .ldn[data-active] .ldn-route polyline { stroke-opacity:.07; stroke-width:1.8; }
+    .ldn[data-active] .ldn-route.is-on polyline { stroke-opacity:1; stroke-width:4; }
+    .ldn[data-active] .ldn-skel polyline { stroke-opacity:.10; }
+    .ldn[data-active] .ldn-bar { opacity:.22; }
+    .ldn[data-active] .ldn-bar.is-on { opacity:1; }
+    .ldn-hint { font-size:.9rem; opacity:.72; margin:.2rem 0 0; }
+</style>
+</head>
+<body>
+  <main id="main">
+    <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
+
+    <h1>The Hubble Tension</h1>
+    <p class="lede">
+      Measure how fast the universe expands today by two different routes and you get two
+      different answers. The early-universe route, anchored in the cosmic microwave
+      background, gives about 67. The local route, climbing a ladder of distance
+      indicators, gives about 74. The gap is far larger than either side's error bars.
+    </p>
+    <p class="prose muted">
+      The model both routes are compared against is on the
+      <a href="lcdm.html">&Lambda;CDM page</a>. This page is about the local side — how the
+      ladder is actually built, and what happens to the answer when you change the rungs.
+    </p>
+
+    <h2 class="section-title">Why it is hard to dismiss</h2>
+
+    <p class="prose">
+      The obvious explanation is that somebody made a mistake. That has become steadily
+      harder to sustain, because the local measurement is not one measurement. It is a
+      <em>network</em>: several geometric anchors, several kinds of standard candle, several
+      long-range indicators, and many possible paths through them. If a single rung were
+      wrong, the routes that avoid it would disagree with the routes that use it.
+    </p>
+
+    <p class="prose">
+      Mostly, they do not. That is what the figure below shows.
+    </p>
+
+    <h2 class="section-title">The distance network</h2>
+
+    <p class="prose">
+      Distance in cosmology is measured in stages. Geometry — water masers in distant
+      galaxies, detached eclipsing binaries, stellar parallax — gives absolute distances
+      without assuming anything. Those calibrate stellar candles: the tip of the red giant
+      branch, J-region asymptotic giant branch stars, Miras, Cepheids. Those in turn
+      calibrate indicators bright enough to be seen far into the Hubble flow: surface
+      brightness fluctuations, the fundamental plane, Type&nbsp;Ia and Type&nbsp;II
+      supernovae, Tully&ndash;Fisher. Only at the end does an expansion rate come out.
+    </p>
+
+    <div class="ldn" id="ldn">
+      <div class="ldn-legend" role="group" aria-label="Routes — click to isolate">
+<button type="button" class="ldn-key" data-route="baseline" style="--rc:#ffffff" aria-pressed="false"><span class="ldn-swatch"></span>Baseline<span class="ldn-ref">H0DN: A&amp;A, 708, A166 (2026)</span></button>
+<button type="button" class="ldn-key" data-route="v01" style="--rc:#ff5577" aria-pressed="false"><span class="ldn-swatch"></span>Baseline + JAGB</button>
+<button type="button" class="ldn-key" data-route="v02" style="--rc:#a00000" aria-pressed="false"><span class="ldn-swatch"></span>Baseline + Miras</button>
+<button type="button" class="ldn-key" data-route="v06" style="--rc:#a892d4" aria-pressed="false"><span class="ldn-swatch"></span>Baseline + TF</button>
+<button type="button" class="ldn-key" data-route="sh0es" style="--rc:#2a5fd9" aria-pressed="false"><span class="ldn-swatch"></span>SH0ES<span class="ldn-ref">Riess et al. 2022</span></button>
+<button type="button" class="ldn-key" data-route="cchp_edd" style="--rc:#a09428" aria-pressed="false"><span class="ldn-swatch"></span>CCHP/EDD<span class="ldn-ref">Freedman et al. 2025</span></button>
+<button type="button" class="ldn-key" data-route="popii" style="--rc:#d12b8a" aria-pressed="false"><span class="ldn-swatch"></span>Pop-II<span class="ldn-ref">Jensen et al. 2025</span></button>
+<button type="button" class="ldn-key" data-route="mcp" style="--rc:#2f8a40" aria-pressed="false"><span class="ldn-swatch"></span>MCP<span class="ldn-ref">Pesce et al. 2020a</span></button>
+<button type="button" class="ldn-key" data-route="popi" style="--rc:#ee7a2a" aria-pressed="false"><span class="ldn-swatch"></span>Pop-I<span class="ldn-ref">de Jaeger et al. 2022</span></button>
+<button type="button" class="ldn-key" data-route="cf4" style="--rc:#a892d4" aria-pressed="false"><span class="ldn-swatch"></span>CF4<span class="ldn-ref">Kourkchi et al. 2020</span></button>
+<button type="button" class="ldn-key" data-route="popmix" style="--rc:#ff8dc7" aria-pressed="false"><span class="ldn-swatch"></span>Pop-Mix<span class="ldn-ref">Riess et al. 2024</span></button>
+<button type="button" class="ldn-key" data-route="desi" style="--rc:#55cc55" aria-pressed="false"><span class="ldn-swatch"></span>DESI<span class="ldn-ref">Said et al. 2025</span></button>
+<button type="button" class="ldn-key" data-route="adh0cc" style="--rc:#e0a070" aria-pressed="false"><span class="ldn-swatch"></span>adh0cc<span class="ldn-ref">Vogl et al. 2025</span></button>
+</div>
+      <p class="ldn-hint">Click any route to isolate it; click again, or press Escape, to
+        restore all thirteen.</p>
+      <div class="ldn-panel"><svg id="ldn-net" viewBox="0 0 1000 520" role="img" aria-labelledby="netTitle netDesc" preserveAspectRatio="xMidYMid meet">
+<title id="netTitle">The local distance network</title>
+<desc id="netDesc">Distance-ladder network. Geometric anchors — masers, detached eclipsing binaries and parallax — calibrate stellar candles: TRGB, JAGB, Miras and Cepheids. Those calibrate long-range indicators: surface brightness fluctuations, the fundamental plane, Type Ia supernovae, Tully-Fisher and Type II supernovae, which together give the Hubble constant. Thirteen coloured routes trace different paths through the network.</desc>
+<rect x="0" y="0" width="1000" height="520" rx="10" class="ldn-bg"/>
+<text x="123.4" y="26" class="ldn-tier">Geometry</text>
+<text x="369.8" y="26" class="ldn-tier">Stellar candles</text>
+<text x="644.3" y="26" class="ldn-tier">Long-range indicators</text>
+<text x="876.6" y="26" class="ldn-tier">Result</text>
+<g class="ldn-skel">
+<polyline points="609.1,145.3 665.4,145.3 876.6,258.1"/>
+<polyline points="348.7,145.3 609.1,145.3"/>
+<polyline points="390.9,378.5 390.9,337.1 609.1,220.5 609.1,145.3"/>
+<polyline points="123.4,175.4 123.4,235.6 390.9,378.5 609.1,258.1"/>
+<polyline points="123.4,265.6 123.4,288.2 292.4,378.5 390.9,378.5"/>
+<polyline points="123.4,337.1 200.9,378.5 390.9,378.5"/>
+<polyline points="609.1,258.1 876.6,258.1"/>
+<polyline points="123.4,175.4 123.4,73.8 876.6,73.8 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="baseline" style="--rc:#ffffff">
+<polyline points="609.1,145.3 665.4,145.3 876.6,258.1"/>
+<polyline points="348.7,145.3 609.1,145.3"/>
+<polyline points="390.9,378.5 390.9,337.1 609.1,220.5 609.1,145.3"/>
+<polyline points="123.4,175.4 123.4,235.6 390.9,378.5 609.1,258.1"/>
+<polyline points="123.4,265.6 123.4,288.2 292.4,378.5 390.9,378.5"/>
+<polyline points="123.4,337.1 200.9,378.5 390.9,378.5"/>
+<polyline points="609.1,258.1 876.6,258.1"/>
+<polyline points="123.4,175.4 123.4,73.8 876.6,73.8 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="v01" style="--rc:#ff5577">
+<polyline points="123.4,175.4 207.9,220.5 348.7,220.5 419.1,258.1 609.1,258.1"/>
+</g>
+<g class="ldn-route" data-route="v02" style="--rc:#a00000">
+<polyline points="123.4,175.4 348.7,295.7 419.1,258.1 609.1,258.1"/>
+</g>
+<g class="ldn-route" data-route="v06" style="--rc:#a892d4">
+<polyline points="348.7,145.3 348.7,190.4 588.0,318.3 651.3,318.3 764.0,318.3 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="sh0es" style="--rc:#2a5fd9">
+<polyline points="123.4,265.6 123.4,288.2 292.4,378.5 390.9,378.5 609.1,258.1 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="cchp_edd" style="--rc:#a09428">
+<polyline points="123.4,175.4 179.7,145.3 348.7,145.3 397.9,145.3 609.1,258.1 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="popii" style="--rc:#d12b8a">
+<polyline points="123.4,175.4 179.7,145.3 348.7,145.3 609.1,145.3 665.4,145.3 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="mcp" style="--rc:#2f8a40">
+<polyline points="123.4,175.4 123.4,73.8 876.6,73.8 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="popi" style="--rc:#ee7a2a">
+<polyline points="390.9,378.5 609.1,378.5 651.3,378.5 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="cf4" style="--rc:#a892d4">
+<polyline points="348.7,145.3 348.7,190.4 588.0,318.3 651.3,318.3 764.0,318.3 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="popmix" style="--rc:#ff8dc7">
+<polyline points="390.9,378.5 390.9,337.1 609.1,220.5 609.1,145.3"/>
+</g>
+<g class="ldn-route" data-route="desi" style="--rc:#55cc55">
+<polyline points="609.1,145.3 714.7,201.7 771.0,201.7 876.6,258.1"/>
+</g>
+<g class="ldn-route" data-route="adh0cc" style="--rc:#e0a070">
+<polyline points="559.8,446.2 876.6,446.2 876.6,258.1"/>
+</g>
+<rect x="84.9" y="160.4" width="77.0" height="30" rx="6" class="ldn-node"/>
+<text x="123.4" y="180.4" class="ldn-node-lab">MASERs</text>
+<rect x="94.4" y="250.6" width="58.0" height="30" rx="6" class="ldn-node"/>
+<text x="123.4" y="270.6" class="ldn-node-lab">DEB</text>
+<rect x="75.4" y="322.1" width="96.0" height="30" rx="6" class="ldn-node"/>
+<text x="123.4" y="342.1" class="ldn-node-lab">Parallax</text>
+<rect x="319.7" y="130.3" width="58.0" height="30" rx="6" class="ldn-node"/>
+<text x="348.7" y="150.3" class="ldn-node-lab">TRGB</text>
+<rect x="319.7" y="205.5" width="58.0" height="30" rx="6" class="ldn-node"/>
+<text x="348.7" y="225.5" class="ldn-node-lab">JAGB</text>
+<rect x="314.9" y="280.7" width="67.5" height="30" rx="6" class="ldn-node"/>
+<text x="348.7" y="300.7" class="ldn-node-lab">Miras</text>
+<rect x="342.9" y="363.5" width="96.0" height="30" rx="6" class="ldn-node"/>
+<text x="390.9" y="383.5" class="ldn-node-lab">Cepheids</text>
+<rect x="580.1" y="130.3" width="58.0" height="30" rx="6" class="ldn-node"/>
+<text x="609.1" y="150.3" class="ldn-node-lab">SBF</text>
+<rect x="685.7" y="186.7" width="58.0" height="30" rx="6" class="ldn-node"/>
+<text x="714.7" y="206.7" class="ldn-node-lab">FP</text>
+<rect x="570.6" y="243.1" width="77.0" height="30" rx="6" class="ldn-node"/>
+<text x="609.1" y="263.1" class="ldn-node-lab">SNe Ia</text>
+<rect x="622.3" y="303.3" width="58.0" height="30" rx="6" class="ldn-node"/>
+<text x="651.3" y="323.3" class="ldn-node-lab">TF</text>
+<rect x="570.6" y="363.5" width="77.0" height="30" rx="6" class="ldn-node"/>
+<text x="609.1" y="383.5" class="ldn-node-lab">SNe II</text>
+<rect x="502.3" y="431.2" width="115.0" height="30" rx="6" class="ldn-node"/>
+<text x="559.8" y="451.2" class="ldn-node-lab">SNe II EPM</text>
+<circle cx="876.6" cy="258.1" r="26" class="ldn-h0"/>
+<text x="876.6" y="264.1" class="ldn-h0-lab">H₀</text>
+</svg></div>
+      <div class="ldn-panel"><svg id="ldn-h0" viewBox="0 0 1000 494" role="img" aria-labelledby="h0Title h0Desc" preserveAspectRatio="xMidYMid meet">
+<title id="h0Title">Hubble constant by route</title>
+<desc id="h0Desc">CCHP/EDD 70.39 plus or minus 1.81; Pop-Mix 72.60 plus or minus 2.00; SH0ES 73.04 plus or minus 1.04; Baseline + JAGB 73.49 plus or minus 0.82; Baseline 73.50 plus or minus 0.81; Baseline + Miras 73.51 plus or minus 0.81; DESI 73.60 plus or minus 0.80; Pop-II 73.80 plus or minus 2.40; MCP 73.90 plus or minus 3.00; Baseline + TF 73.96 plus or minus 0.79; adh0cc 74.83 plus or minus 1.85; CF4 75.10 plus or minus 3.01; Pop-I 75.40 plus or minus 3.80; compared with the CMB value 67.24 plus or minus 0.35 and the local consensus 73.99 plus or minus 0.7, in kilometres per second per megaparsec.</desc>
+<rect x="0" y="0" width="1000" height="494" rx="10" class="ldn-bg"/>
+<rect x="224.1" y="34" width="37.3" height="410" class="ldn-cmb-band"/>
+<line x1="242.8" y1="34" x2="242.8" y2="444" class="ldn-cmb"/>
+<text x="242.8" y="26" class="ldn-ref-lab ldn-cmb-lab">CMB 67.24 ± 0.35</text>
+<line x1="602.8" y1="34" x2="602.8" y2="444" class="ldn-cons"/>
+<text x="602.8" y="26" class="ldn-ref-lab ldn-cons-lab">local 73.99 ± 0.70</text>
+<g class="ldn-bar" data-route="cchp_edd" style="--rc:#a09428">
+<text x="140" y="56" class="ldn-bar-lab">CCHP/EDD</text>
+<line x1="314.3" y1="52" x2="507.3" y2="52" class="ldn-err"/>
+<line x1="314.3" y1="47" x2="314.3" y2="57" class="ldn-cap"/>
+<line x1="507.3" y1="47" x2="507.3" y2="57" class="ldn-cap"/>
+<circle cx="410.8" cy="52" r="5" class="ldn-pt"/>
+<text x="517.3" y="56" class="ldn-val">70.39 ± 1.81</text>
+</g>
+<g class="ldn-bar" data-route="popmix" style="--rc:#ff8dc7">
+<text x="140" y="86" class="ldn-bar-lab">Pop-Mix</text>
+<line x1="422.0" y1="82" x2="635.3" y2="82" class="ldn-err"/>
+<line x1="422.0" y1="77" x2="422.0" y2="87" class="ldn-cap"/>
+<line x1="635.3" y1="77" x2="635.3" y2="87" class="ldn-cap"/>
+<circle cx="528.7" cy="82" r="5" class="ldn-pt"/>
+<text x="645.3" y="86" class="ldn-val">72.60 ± 2.00</text>
+</g>
+<g class="ldn-bar" data-route="sh0es" style="--rc:#2a5fd9">
+<text x="140" y="116" class="ldn-bar-lab">SH0ES</text>
+<line x1="496.7" y1="112" x2="607.6" y2="112" class="ldn-err"/>
+<line x1="496.7" y1="107" x2="496.7" y2="117" class="ldn-cap"/>
+<line x1="607.6" y1="107" x2="607.6" y2="117" class="ldn-cap"/>
+<circle cx="552.1" cy="112" r="5" class="ldn-pt"/>
+<text x="617.6" y="116" class="ldn-val">73.04 ± 1.04</text>
+</g>
+<g class="ldn-bar" data-route="v01" style="--rc:#ff5577">
+<text x="140" y="146" class="ldn-bar-lab">Baseline + JAGB</text>
+<line x1="532.4" y1="142" x2="619.9" y2="142" class="ldn-err"/>
+<line x1="532.4" y1="137" x2="532.4" y2="147" class="ldn-cap"/>
+<line x1="619.9" y1="137" x2="619.9" y2="147" class="ldn-cap"/>
+<circle cx="576.1" cy="142" r="5" class="ldn-pt"/>
+<text x="629.9" y="146" class="ldn-val">73.49 ± 0.82</text>
+</g>
+<g class="ldn-bar" data-route="baseline" style="--rc:#ffffff">
+<text x="140" y="176" class="ldn-bar-lab">Baseline</text>
+<line x1="533.5" y1="172" x2="619.9" y2="172" class="ldn-err"/>
+<line x1="533.5" y1="167" x2="533.5" y2="177" class="ldn-cap"/>
+<line x1="619.9" y1="167" x2="619.9" y2="177" class="ldn-cap"/>
+<circle cx="576.7" cy="172" r="5" class="ldn-pt"/>
+<text x="629.9" y="176" class="ldn-val">73.50 ± 0.81</text>
+</g>
+<g class="ldn-bar" data-route="v02" style="--rc:#a00000">
+<text x="140" y="206" class="ldn-bar-lab">Baseline + Miras</text>
+<line x1="534.0" y1="202" x2="620.4" y2="202" class="ldn-err"/>
+<line x1="534.0" y1="197" x2="534.0" y2="207" class="ldn-cap"/>
+<line x1="620.4" y1="197" x2="620.4" y2="207" class="ldn-cap"/>
+<circle cx="577.2" cy="202" r="5" class="ldn-pt"/>
+<text x="630.4" y="206" class="ldn-val">73.51 ± 0.81</text>
+</g>
+<g class="ldn-bar" data-route="desi" style="--rc:#55cc55">
+<text x="140" y="236" class="ldn-bar-lab">DESI</text>
+<line x1="539.3" y1="232" x2="624.7" y2="232" class="ldn-err"/>
+<line x1="539.3" y1="227" x2="539.3" y2="237" class="ldn-cap"/>
+<line x1="624.7" y1="227" x2="624.7" y2="237" class="ldn-cap"/>
+<circle cx="582.0" cy="232" r="5" class="ldn-pt"/>
+<text x="634.7" y="236" class="ldn-val">73.60 ± 0.80</text>
+</g>
+<g class="ldn-bar" data-route="popii" style="--rc:#d12b8a">
+<text x="140" y="266" class="ldn-bar-lab">Pop-II</text>
+<line x1="464.7" y1="262" x2="720.7" y2="262" class="ldn-err"/>
+<line x1="464.7" y1="257" x2="464.7" y2="267" class="ldn-cap"/>
+<line x1="720.7" y1="257" x2="720.7" y2="267" class="ldn-cap"/>
+<circle cx="592.7" cy="262" r="5" class="ldn-pt"/>
+<text x="730.7" y="266" class="ldn-val">73.80 ± 2.40</text>
+</g>
+<g class="ldn-bar" data-route="mcp" style="--rc:#2f8a40">
+<text x="140" y="296" class="ldn-bar-lab">MCP</text>
+<line x1="438.0" y1="292" x2="758.0" y2="292" class="ldn-err"/>
+<line x1="438.0" y1="287" x2="438.0" y2="297" class="ldn-cap"/>
+<line x1="758.0" y1="287" x2="758.0" y2="297" class="ldn-cap"/>
+<circle cx="598.0" cy="292" r="5" class="ldn-pt"/>
+<text x="768.0" y="296" class="ldn-val">73.90 ± 3.00</text>
+</g>
+<g class="ldn-bar" data-route="v06" style="--rc:#a892d4">
+<text x="140" y="326" class="ldn-bar-lab">Baseline + TF</text>
+<line x1="559.1" y1="322" x2="643.3" y2="322" class="ldn-err"/>
+<line x1="559.1" y1="317" x2="559.1" y2="327" class="ldn-cap"/>
+<line x1="643.3" y1="317" x2="643.3" y2="327" class="ldn-cap"/>
+<circle cx="601.2" cy="322" r="5" class="ldn-pt"/>
+<text x="653.3" y="326" class="ldn-val">73.96 ± 0.79</text>
+</g>
+<g class="ldn-bar" data-route="adh0cc" style="--rc:#e0a070">
+<text x="140" y="356" class="ldn-bar-lab">adh0cc</text>
+<line x1="548.9" y1="352" x2="746.3" y2="352" class="ldn-err"/>
+<line x1="548.9" y1="347" x2="548.9" y2="357" class="ldn-cap"/>
+<line x1="746.3" y1="347" x2="746.3" y2="357" class="ldn-cap"/>
+<circle cx="647.6" cy="352" r="5" class="ldn-pt"/>
+<text x="756.3" y="356" class="ldn-val">74.83 ± 1.85</text>
+</g>
+<g class="ldn-bar" data-route="cf4" style="--rc:#a892d4">
+<text x="140" y="386" class="ldn-bar-lab">CF4</text>
+<line x1="501.5" y1="382" x2="822.5" y2="382" class="ldn-err"/>
+<line x1="501.5" y1="377" x2="501.5" y2="387" class="ldn-cap"/>
+<line x1="822.5" y1="377" x2="822.5" y2="387" class="ldn-cap"/>
+<circle cx="662.0" cy="382" r="5" class="ldn-pt"/>
+<text x="832.5" y="386" class="ldn-val">75.10 ± 3.01</text>
+</g>
+<g class="ldn-bar" data-route="popi" style="--rc:#ee7a2a">
+<text x="140" y="416" class="ldn-bar-lab">Pop-I</text>
+<line x1="475.3" y1="412" x2="880.7" y2="412" class="ldn-err"/>
+<line x1="475.3" y1="407" x2="475.3" y2="417" class="ldn-cap"/>
+<line x1="880.7" y1="407" x2="880.7" y2="417" class="ldn-cap"/>
+<circle cx="678.0" cy="412" r="5" class="ldn-pt"/>
+<text x="890.7" y="416" class="ldn-val">75.40 ± 3.80</text>
+</g>
+<line x1="176.7" y1="444" x2="176.7" y2="450" class="ldn-tick"/>
+<text x="176.7" y="466" class="ldn-axis">66</text>
+<line x1="283.3" y1="444" x2="283.3" y2="450" class="ldn-tick"/>
+<text x="283.3" y="466" class="ldn-axis">68</text>
+<line x1="390.0" y1="444" x2="390.0" y2="450" class="ldn-tick"/>
+<text x="390.0" y="466" class="ldn-axis">70</text>
+<line x1="496.7" y1="444" x2="496.7" y2="450" class="ldn-tick"/>
+<text x="496.7" y="466" class="ldn-axis">72</text>
+<line x1="603.3" y1="444" x2="603.3" y2="450" class="ldn-tick"/>
+<text x="603.3" y="466" class="ldn-axis">74</text>
+<line x1="710.0" y1="444" x2="710.0" y2="450" class="ldn-tick"/>
+<text x="710.0" y="466" class="ldn-axis">76</text>
+<line x1="816.7" y1="444" x2="816.7" y2="450" class="ldn-tick"/>
+<text x="816.7" y="466" class="ldn-axis">78</text>
+<line x1="923.3" y1="444" x2="923.3" y2="450" class="ldn-tick"/>
+<text x="923.3" y="466" class="ldn-axis">80</text>
+<text x="500" y="486" class="ldn-axis-title" style="text-anchor:middle">H₀  [km s⁻¹ Mpc⁻¹]</text>
+</svg></div>
+    </div>
+
+    <p class="prose">
+      The lower panel is the point. Thirteen routes, using different anchors and different
+      candles, land between about 70 and 76 &mdash; and the CMB value sits at
+      67.24&nbsp;&plusmn;&nbsp;0.35, outside all of them. Isolate <strong>CCHP/EDD</strong>,
+      the lowest at 70.39, and you are looking at the most serious attempt to find a route
+      that agrees with the CMB; it still does not reach.
+    </p>
+
+    <p class="prose">
+      Note also how little the answer moves when you swap rungs. <strong>Baseline</strong>
+      gives 73.50&nbsp;&plusmn;&nbsp;0.81. Adding JAGB gives 73.49. Adding Miras gives
+      73.51. Adding Tully&ndash;Fisher gives 73.96. Whatever is happening, it is not
+      sensitive to which candle you trust &mdash; which is precisely what makes a single
+      unfound systematic an uncomfortable explanation.
+    </p>
+
+    <h2 class="section-title">What would resolve it</h2>
+
+    <p class="prose">
+      Three possibilities, and they are not equally comfortable. There is an unfound
+      systematic in the distance ladder, shared across enough rungs to move every route
+      together. There is an unfound systematic in the CMB analysis. Or &Lambda;CDM is
+      incomplete somewhere between recombination and now, and the early-universe value is
+      being extracted with the wrong model &mdash; which is why the tension keeps being
+      discussed alongside <a href="lcdm.html">evolving dark energy</a> rather than as a
+      separate curiosity.
+    </p>
+
+    <p class="prose">
+      What the network does not permit is the comfortable version, where one bad rung
+      explains everything and the rest of cosmology is untouched.
+    </p>
+
+    <h2 class="section-title">Run it yourself</h2>
+
+    <p class="prose">
+      The figure above is a static rendering of an interactive tool. The full version adds
+      per-route sensitivity analysis, leave-one-out tests, posterior overlays and the
+      supporting literature for every rung. It is a desktop application &mdash; it uses
+      Tk for its panels, so it cannot run in a browser &mdash; and it is public:
+    </p>
+
+    <pre class="prose"><code>git clone https://github.com/jamesrohlf/local-distance-network.git
+cd local-distance-network
+python local_distance_network.py</code></pre>
+
+    <p class="prose muted">
+      Route values are drawn from the cited literature: SH0ES (Riess et al. 2022),
+      CCHP/EDD (Freedman et al. 2025), Pop-II (Jensen et al. 2025), MCP (Pesce et al.
+      2020a), Pop-I (de Jaeger et al. 2022), CF4 (Kourkchi et al. 2020), Pop-Mix (Riess et
+      al. 2024), DESI (Said et al. 2025), adh0cc (Vogl et al. 2025). The Baseline network
+      and its variants follow H0DN, <em>Astronomy &amp; Astrophysics</em> 708, A166 (2026),
+      <a href="https://arxiv.org/abs/2510.23823">arXiv:2510.23823</a>. All values in
+      km&nbsp;s<sup>&minus;1</sup>&nbsp;Mpc<sup>&minus;1</sup>.
+    </p>
+
+    <h2 class="section-title">Elsewhere on this site</h2>
+
+    <ul class="link-list">
+      <li><a href="lcdm.html">&Lambda;CDM
+        <span class="sub">the model both measurements are compared against</span></a></li>
+      <li><a href="bao.html">Baryon acoustic oscillations
+        <span class="sub">why BAO measures H&#8320;r_d rather than H&#8320;</span></a></li>
+      <li><a href="results.html">Results
+        <span class="sub">what DESI adds to the expansion history</span></a></li>
+    </ul>
+  </main>
+  <script>
+(function () {
+  var wrap = document.getElementById('ldn');
+  if (!wrap) return;
+  var keys = wrap.querySelectorAll('.ldn-key');
+  function apply(id) {
+    if (id) { wrap.setAttribute('data-active', id); }
+    else { wrap.removeAttribute('data-active'); }
+    wrap.querySelectorAll('.ldn-route, .ldn-bar').forEach(function (el) {
+      el.classList.toggle('is-on', !!id && el.getAttribute('data-route') === id);
+    });
+    keys.forEach(function (k) {
+      k.setAttribute('aria-pressed', String(!!id && k.getAttribute('data-route') === id));
+    });
+  }
+  keys.forEach(function (k) {
+    k.addEventListener('click', function () {
+      var id = k.getAttribute('data-route');
+      apply(wrap.getAttribute('data-active') === id ? null : id);
+    });
+  });
+  wrap.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') apply(null);
+  });
+})();
+</script>
+</body>
+</html>
