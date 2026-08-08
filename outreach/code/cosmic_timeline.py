@@ -89,7 +89,7 @@ for s in ax_mid.spines.values(): s.set_visible(False)
 transitions = [
     # (t_yr, label, color, label_x, tick_h_above_band, label_y)
     (5.1e4,  'z_eq ≈ 3400\n(matter–rad eq.)',  '#aa0000', 0.45, 0.18, 1.28),
-    (3.71e5, 'z ≈ 1090\n(recombination)',       '#cc4400', 0.51, 0.62, 1.72),
+    (3.71e5, 'z ≈ 1090\n(recombination)',       '#cc4400', 0.42, 0.62, 1.72),
     (1.8e8,  'z ≈ 20\n(1st stars)',             '#5a3a8f', 0.56, 0.20, 1.28),
     (3.27e9, 'z ≈ 2\n(cosmic noon)',            '#1a6633', None, 0.20, 1.28),
     (9.85e9, 'z ≈ 0.3\n(matter–Λ eq.)',         '#996600', None, 0.20, 1.28),
@@ -131,26 +131,25 @@ for t_s, t_e, label, color, label_x, label_y in below_labels:
     ax_mid.text(label_x, label_y, label, ha='center', va='top',
                 fontsize=8, color=color, fontweight='bold')
 
-# Where the BAO standard ruler is set. The sound horizon stops growing at the
-# drag epoch, essentially coincident with recombination on this axis, and the
-# scale is frozen from then on.
+# BAO scale is set at the drag epoch, the same instant as recombination on
+# this axis. Plain vertical line above the band.
 x_bao = tx(3.71e5)
-ax_mid.plot([x_bao, x_bao], [-0.02, -0.20], color='#00695c', lw=2.2, zorder=6)
-ax_mid.plot([x_bao, 0.28], [-0.20, -0.27], color='#00695c', lw=1.6, zorder=6)
-ax_mid.text(0.28, -0.31, 'BAO scale frozen here\n($r_d \\approx 147$ Mpc)',
-            ha='center', va='top', fontsize=13, color='#00695c', fontweight='bold')
+ax_mid.plot([x_bao, x_bao], [1.02, 1.90], color='#00695c', lw=2.0, zorder=4)
+ax_mid.text(x_bao + 0.012, 1.91, 'BAO scale frozen  ($r_d \\approx 147$ Mpc)',
+            ha='left', va='bottom', fontsize=13, color='#00695c', fontweight='bold')
 
-# The redshift range DESI actually measures, drawn as a span under the band.
+# The redshift range DESI measures, as a horizontal span above the band.
 Z_DESI_LO, Z_DESI_HI = 0.1, 4.2
 x_d_hi = tx(t_for_z(Z_DESI_HI))
 x_d_lo = tx(t_for_z(Z_DESI_LO))
-y_br = -0.16
+y_desi = 1.55
+ax_mid.plot([x_d_hi, x_d_lo], [y_desi, y_desi], color='#0d47a1', lw=3.0, zorder=6)
 for x_end in (x_d_hi, x_d_lo):
-    ax_mid.plot([x_end, x_end], [-0.02, y_br], color='#0d47a1', lw=2.2, zorder=6)
-ax_mid.plot([x_d_hi, x_d_lo], [y_br, y_br], color='#0d47a1', lw=3.0, zorder=6)
-ax_mid.text(0.5*(x_d_hi + x_d_lo), y_br - 0.06,
+    ax_mid.plot([x_end, x_end], [y_desi-0.06, y_desi+0.06],
+                color='#0d47a1', lw=2.4, zorder=6)
+ax_mid.text(0.5*(x_d_hi + x_d_lo), y_desi + 0.10,
             'DESI measurements  ($z = 0.1 - 4.2$)',
-            ha='center', va='top', fontsize=13, color='#0d47a1', fontweight='bold')
+            ha='center', va='bottom', fontsize=13, color='#0d47a1', fontweight='bold')
 
 # Title above
 fig.suptitle('Cosmic Timeline  —  Age, Redshift, and Major Eras',
