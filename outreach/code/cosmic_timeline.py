@@ -135,22 +135,22 @@ for t_s, t_e, label, color, label_x, label_y in below_labels:
 # drag epoch, essentially coincident with recombination on this axis, and the
 # scale is frozen from then on.
 x_bao = tx(3.71e5)
-ax_mid.plot([x_bao, x_bao], [-0.02, -0.18], color='#007766', lw=1.2, zorder=5)
-ax_mid.plot([x_bao, 0.30], [-0.18, -0.25], color='#007766', lw=0.7, zorder=5)
-ax_mid.text(0.30, -0.28, 'BAO scale frozen here\n($r_d \\approx 147$ Mpc)',
-            ha='center', va='top', fontsize=8, color='#007766', fontweight='bold')
+ax_mid.plot([x_bao, x_bao], [-0.02, -0.20], color='#00695c', lw=2.2, zorder=6)
+ax_mid.plot([x_bao, 0.28], [-0.20, -0.27], color='#00695c', lw=1.6, zorder=6)
+ax_mid.text(0.28, -0.31, 'BAO scale frozen here\n($r_d \\approx 147$ Mpc)',
+            ha='center', va='top', fontsize=13, color='#00695c', fontweight='bold')
 
 # The redshift range DESI actually measures, drawn as a span under the band.
 Z_DESI_LO, Z_DESI_HI = 0.1, 4.2
 x_d_hi = tx(t_for_z(Z_DESI_HI))
 x_d_lo = tx(t_for_z(Z_DESI_LO))
-y_br = -0.15
+y_br = -0.16
 for x_end in (x_d_hi, x_d_lo):
-    ax_mid.plot([x_end, x_end], [-0.02, y_br], color='#1a4fa0', lw=1.0, zorder=5)
-ax_mid.plot([x_d_hi, x_d_lo], [y_br, y_br], color='#1a4fa0', lw=1.8, zorder=5)
-ax_mid.text(0.5*(x_d_hi + x_d_lo), y_br - 0.05,
+    ax_mid.plot([x_end, x_end], [-0.02, y_br], color='#0d47a1', lw=2.2, zorder=6)
+ax_mid.plot([x_d_hi, x_d_lo], [y_br, y_br], color='#0d47a1', lw=3.0, zorder=6)
+ax_mid.text(0.5*(x_d_hi + x_d_lo), y_br - 0.06,
             'DESI measurements  ($z = 0.1 - 4.2$)',
-            ha='center', va='top', fontsize=8, color='#1a4fa0', fontweight='bold')
+            ha='center', va='top', fontsize=13, color='#0d47a1', fontweight='bold')
 
 # Title above
 fig.suptitle('Cosmic Timeline  —  Age, Redshift, and Major Eras',
