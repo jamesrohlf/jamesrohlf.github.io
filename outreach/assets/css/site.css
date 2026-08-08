@@ -103,6 +103,16 @@ h1 { font-size: var(--size-h1); margin-top: var(--sp-2); }
 h2 { font-size: var(--size-h2); margin-top: var(--sp-7); }
 h3 { font-size: 1.15rem; margin-top: var(--sp-5); }
 
+/* Standfirst under an h1 — the long form of a short title. */
+.subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.35rem);
+  font-style: italic;
+  color: var(--ink-soft);
+  text-wrap: balance;
+  margin: calc(-1 * var(--sp-3)) 0 var(--sp-5);
+}
+
 p { margin: 0 0 var(--sp-4); color: var(--ink-soft); }
 
 a { color: var(--scarlet); text-decoration-thickness: 1px; text-underline-offset: 2px; }
