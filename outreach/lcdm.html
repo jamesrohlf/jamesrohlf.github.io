@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ΛCDM — Six Parameters and the Cosmic Timeline — Jim Rohlf</title>
+  <meta name="description" content="The standard cosmological model: six independent parameters, the cosmic timeline from the Planck era to the dark-energy era, and how the baryon acoustic oscillation standard ruler is frozen in at recombination.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/lcdm.html">
+    <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+</head>
+<body>
+  <main id="main">
+    <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
+
+    <h1>&Lambda;CDM</h1>
+    <p class="lede">
+      The standard cosmological model is specified by six independent numbers. Fix those,
+      and everything else follows — the age of the universe, the distance to any redshift,
+      the size of the sound horizon, the growth of structure. Lambda is the cosmological
+      constant; CDM is cold dark matter.
+    </p>
+    <p class="prose muted">
+      This page is about the model itself: what it assumes, what it predicts, and where the
+      predictions are now under strain. What DESI measures against it is on the
+      <a href="results.html">results page</a>, and the standard ruler it uses is on the
+      <a href="bao.html">BAO page</a>.
+    </p>
+
+    <!-- ==================== Timeline ==================== -->
+    <h2 class="section-title">The cosmic timeline</h2>
+
+    <figure>
+      <a href="img/lcdm/cosmic-timeline.png" target="_blank" rel="noopener">
+        <img src="img/lcdm/cosmic-timeline.png" width="1047" height="584"
+             alt="Horizontal timeline of the universe under flat Lambda-CDM, running from the Planck era on the left to the present on the right, with colored blocks for each epoch: Planck era, inflation, quark-gluon plasma, Big Bang nucleosynthesis, radiation domination, the Dark Ages, galaxy assembly, mature galaxies, and the dark-energy era. Tick marks above the bar label matter-radiation equality at redshift 3400, recombination at redshift 1090, the first stars at redshift 20, cosmic noon at redshift 2, and matter-Lambda equality at redshift 0.3. Three axes below give the same points in time, in redshift, and in one plus redshift, with the time axis logarithmic from 10 to the minus 43 seconds up to about one billion years and linear from there to 13.8 billion years.">
+      </a>
+      <figcaption>
+        The whole history on one axis, for flat &Lambda;CDM with the Planck 2018 parameters:
+        <em>H</em><sub>0</sub>&nbsp;=&nbsp;67.36&nbsp;km&nbsp;s<sup>&minus;1</sup>&nbsp;Mpc<sup>&minus;1</sup>,
+        &Omega;<sub>m</sub>&nbsp;=&nbsp;0.3153,
+        &Omega;<sub>&Lambda;</sub>&nbsp;=&nbsp;0.6847,
+        <em>t</em><sub>0</sub>&nbsp;=&nbsp;13.80&nbsp;Gyr.
+        Note the break in the time axis: logarithmic up to about a billion years, linear
+        after. Without it the entire early universe — inflation, nucleosynthesis, the whole
+        radiation era — collapses into an invisible sliver at the left edge, and everything
+        interesting about the first million years disappears.
+        <br>
+        Two crossings do most of the work. At
+        <em>z</em><sub>eq</sub>&nbsp;&asymp;&nbsp;3400 matter overtakes radiation, and
+        structure can begin to grow. At <em>z</em>&nbsp;&asymp;&nbsp;0.3 dark energy
+        overtakes matter, and the expansion begins to accelerate. Everything DESI observes
+        lies between cosmic noon and now — the right-hand third of the bar.
+        <br>
+        By J.&nbsp;W.&nbsp;Rohlf. Source:
+        <a href="https://github.com/jamesrohlf/jamesrohlf.github.io/blob/main/outreach/code/cosmic_timeline.py">cosmic_timeline.py</a>
+        (Python, matplotlib).
+      </figcaption>
+    </figure>
+
+    <!-- ==================== Six parameters ==================== -->
+    <h2 class="section-title">The six parameters</h2>
+
+    <p class="prose">
+      In its minimal form &Lambda;CDM has six free parameters. They are not the quantities
+      you usually hear quoted — the age, the Hubble constant, the dark energy fraction are
+      all <em>derived</em>. These six are what the fits actually vary.
+    </p>
+
+    <ul class="prose">
+      <li><strong>&omega;<sub>b</sub> = &Omega;<sub>b</sub><em>h</em><sup>2</sup></strong>
+        — the physical baryon density. Sets the baryon-to-photon ratio, which fixes the
+        relative heights of odd and even acoustic peaks in the CMB and the freeze-out
+        conditions of Big Bang nucleosynthesis.</li>
+      <li><strong>&omega;<sub>c</sub> = &Omega;<sub>c</sub><em>h</em><sup>2</sup></strong>
+        — the physical cold dark matter density. Controls how deep the gravitational
+        potential wells are, and when matter-radiation equality happens.</li>
+      <li><strong>&theta;<sub>s</sub></strong> — the angular size of the sound horizon at
+        recombination. The most precisely measured parameter in all of cosmology, and the
+        one that pins the acoustic scale.</li>
+      <li><strong>&tau;</strong> — the optical depth to reionization. Suppresses small-scale
+        CMB power by <em>e</em><sup>&minus;2&tau;</sup> and produces the large-scale
+        polarization bump.</li>
+      <li><strong><em>A</em><sub>s</sub></strong> — the amplitude of the primordial scalar
+        power spectrum. The overall normalization of every fluctuation that follows.</li>
+      <li><strong><em>n</em><sub>s</sub></strong> — its spectral index. That
+        <em>n</em><sub>s</sub>&nbsp;&lt;&nbsp;1 is firmly established, and slow-roll
+        inflation predicts exactly this sort of small departure from scale invariance.</li>
+    </ul>
+
+    <p class="prose">
+      Six numbers is a remarkably small budget for a model that has to reproduce the CMB
+      power spectra, the abundance of light elements, the clustering of galaxies across ten
+      billion years, and the acceleration of the expansion. That it does so at all is the
+      reason &Lambda;CDM is the standard model rather than one option among many.
+    </p>
+
+    <!-- ==================== The ruler ==================== -->
+    <h2 class="section-title">Where the standard ruler comes from</h2>
+
+    <p class="prose">
+      Before recombination the universe is a plasma, and photons and baryons are locked
+      together. An overdensity launches a pressure wave that travels outward at roughly
+      <em>c</em>/&radic;3. Cold dark matter feels no pressure and stays put; only the
+      baryons ride the wave. At recombination the photons decouple, the pressure
+      disappears, and the wave stops where it stands — leaving a shell of baryons frozen at
+      the distance sound could travel in that time.
+    </p>
+
+    <div class="video-block">
+      <video controls preload="metadata" width="800" height="578"
+             poster="img/lcdm/bao-shell-poster.jpg">
+        <source src="media/bao-shell.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <p class="caption">
+        One overdensity, followed from <em>z</em>&nbsp;=&nbsp;6000 to the present. Blue is
+        cold dark matter, orange is baryons, and the green ring is the sound wave front.
+        Watch the two components separate: the baryons are swept outward while the dark
+        matter stays concentrated at the center. At
+        <em>z</em>&nbsp;&asymp;&nbsp;1090 the ring stops expanding and the pattern freezes —
+        a central clump plus a shell, which is why the galaxy correlation function has both
+        a peak at zero separation and a bump at about 150&nbsp;Mpc.
+        <br>
+        Animation by J.&nbsp;W.&nbsp;Rohlf. Source:
+        <a href="https://github.com/jamesrohlf/jamesrohlf.github.io/blob/main/outreach/code/bao_animation.py">bao_animation.py</a>
+        (Python, matplotlib) — interactive when run locally, with a speed control and frame
+        export.
+      </p>
+    </div>
+
+    <p class="prose">
+      That frozen scale is the standard ruler. &Lambda;CDM predicts its length from
+      &omega;<sub>b</sub> and &omega;<sub>c</sub> — the sound horizon at the drag epoch,
+      <em>r</em><sub>d</sub>&nbsp;&asymp;&nbsp;147&nbsp;Mpc for Planck parameters. Measuring
+      its apparent size at a range of redshifts is how DESI turns a survey of galaxy
+      positions into an expansion history.
+    </p>
+
+    <!-- ==================== Strain ==================== -->
+    <h2 class="section-title">Where the model is under strain</h2>
+
+    <p class="prose">
+      &Lambda;CDM assumes the dark energy density is constant — that is what the &Lambda;
+      means. Allowing it to evolve, in the usual two-parameter form where the equation of
+      state runs from <em>w</em><sub>0</sub> today to <em>w</em><sub>0</sub>&nbsp;+&nbsp;<em>w</em><sub>a</sub>
+      in the past, DESI's BAO combined with CMB and supernova data prefers evolution over a
+      constant. The preference has persisted from the first-year measurement into DR2.
+    </p>
+
+    <p class="prose">
+      There is a second strain in the same fits: when the neutrino mass sum is left free,
+      &Lambda;CDM fits prefer a negative value — which is unphysical, and a sign that
+      something in the model is being asked to absorb a discrepancy it was not built for.
+      Neither result is yet a discovery. Both are what the next data release is aimed at.
+    </p>
+
+    <h2 class="section-title">Elsewhere on this site</h2>
+
+    <ul class="link-list">
+      <li><a href="bao.html">Baryon acoustic oscillations
+        <span class="sub">the ruler, and how DESI measures it</span></a></li>
+      <li><a href="results.html">Results
+        <span class="sub">what the measurements say about the expansion history</span></a></li>
+      <li><a href="cpe.html">Cosmological parameter estimation
+        <span class="sub">fitting the six parameters, and the extensions beyond them</span></a></li>
+      <li><a href="how-desi-works.html">How DESI works
+        <span class="sub">the light path from galaxy to CCD</span></a></li>
+    </ul>
+  </main>
+</body>
+</html>
