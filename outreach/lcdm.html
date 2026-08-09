@@ -9,6 +9,24 @@
     <link rel="stylesheet" href="assets/css/site.css">
   <link rel="icon" href="assets/img/desi-emblem.jpg">
   <script src="assets/js/chrome.js" defer></script>
+  <style>
+    .calc { border:1px solid var(--rule); border-radius:10px; padding:1rem 1.1rem;
+            margin:1.4rem 0 1.8rem; background:var(--paper); }
+    .calc__in { display:flex; flex-wrap:wrap; gap:.9rem 1.4rem; margin-bottom:.9rem; }
+    .calc__f { display:flex; flex-direction:column; gap:.15rem; font-size:.9rem; }
+    .calc__f label { color:var(--ink-soft); font-weight:600; }
+    .calc__f input { font:inherit; font-family:var(--font-mono); width:7.5rem;
+                     padding:.3rem .45rem; border:1px solid var(--rule);
+                     border-radius:5px; background:var(--cream); color:var(--ink); }
+    .calc__out { display:grid; grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));
+                 gap:.55rem 1.2rem; border-top:1px solid var(--rule); padding-top:.9rem; }
+    .calc__row { display:flex; justify-content:space-between; gap:.6rem;
+                 font-size:.92rem; border-bottom:1px dotted var(--rule); padding:.18rem 0; }
+    .calc__row span:first-child { color:var(--ink-soft); }
+    .calc__row output { font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+    .calc__hi output { color:var(--scarlet); font-weight:700; }
+    .calc__note { font-size:.85rem; color:var(--ink-faint); margin:.9rem 0 0; }
+  </style>
 </head>
 <body>
   <main id="main">
@@ -167,6 +185,54 @@
       reason &Lambda;CDM is the standard model rather than one option among many.
     </p>
 
+
+    <h3>Try it</h3>
+
+    <p class="prose">
+      Everything below is computed from the numbers in the four boxes. Change
+      <em>H</em><sub>0</sub> or &Omega;<sub>m</sub> and every derived quantity moves with
+      them — which is the claim at the top of this page, made checkable.
+    </p>
+
+    <div class="calc" id="calc">
+      <div class="calc__in">
+        <div class="calc__f"><label for="c-h0">H&#8320; [km/s/Mpc]</label>
+          <input id="c-h0" type="number" value="67.36" step="0.1" min="10" max="200"></div>
+        <div class="calc__f"><label for="c-om">&Omega;<sub>m</sub></label>
+          <input id="c-om" type="number" value="0.3153" step="0.005" min="0.01" max="0.99"></div>
+        <div class="calc__f"><label for="c-rd">r<sub>d</sub> [Mpc]</label>
+          <input id="c-rd" type="number" value="147.09" step="0.1" min="50" max="250"></div>
+        <div class="calc__f"><label for="c-z">redshift z</label>
+          <input id="c-z" type="number" value="1" step="0.1" min="0" max="1500"></div>
+      </div>
+      <div class="calc__out">
+        <div class="calc__row"><span>scale factor a</span><output id="o-a">0.5000</output></div>
+        <div class="calc__row"><span>H(z) [km/s/Mpc]</span><output id="o-hz">120.66</output></div>
+        <div class="calc__row"><span>age at z [Gyr]</span><output id="o-tz">5.842</output></div>
+        <div class="calc__row"><span>lookback time [Gyr]</span><output id="o-lb">7.953</output></div>
+        <div class="calc__row"><span>D<sub>M</sub> comoving [Mpc]</span><output id="o-dm">3402.3</output></div>
+        <div class="calc__row"><span>D<sub>A</sub> ang. diam. [Mpc]</span><output id="o-da">1701.1</output></div>
+        <div class="calc__row"><span>D<sub>L</sub> luminosity [Mpc]</span><output id="o-dl">6804.5</output></div>
+        <div class="calc__row calc__hi"><span>&theta;<sub>BAO</sub> [deg]</span><output id="o-th">2.477</output></div>
+      </div>
+      <p class="calc__note">
+        Age of the universe today: <output id="o-t0">13.795</output>&nbsp;Gyr.
+        Flat &Lambda;CDM with &Omega;<sub>&Lambda;</sub>&nbsp;=&nbsp;1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub>
+        and radiation included in <em>E</em>(<em>z</em>), the same convention as the
+        timeline figure above. The values shown are for the Planck 2018 parameters at
+        <em>z</em>&nbsp;=&nbsp;1.
+      </p>
+    </div>
+
+    <p class="prose">
+      &theta;<sub>BAO</sub> is the one worth playing with. It is the angle the
+      150&nbsp;Mpc ruler subtends at that redshift — the curve plotted on the
+      <a href="bao.html">BAO page</a> against DESI's 3.2° tile. Sweep <em>z</em> upward
+      and watch it fall through 3.2° at about <em>z</em>&nbsp;=&nbsp;0.72, which is where
+      a BAO-sized patch of sky stops spanning many pointings and starts fitting inside
+      one.
+    </p>
+
     <!-- ==================== The ruler ==================== -->
     <h2 class="section-title">Where the standard ruler comes from</h2>
 
@@ -292,5 +358,74 @@
         <span class="sub">the light path from galaxy to CCD</span></a></li>
     </ul>
   </main>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    if (!$('calc')) return;
+
+    var C = 299792.458, MPC_KM = 3.0857e19, YR_S = 3.1557e7;
+
+    // Simpson's rule. The integrands here are smooth, so this converges fast.
+    function simpson(f, a, b, n) {
+      if (b <= a) return 0;
+      n = n + (n % 2);
+      var h = (b - a) / n, s = f(a) + f(b), i;
+      for (i = 1; i < n; i++) s += f(a + i * h) * (i % 2 ? 4 : 2);
+      return s * h / 3;
+    }
+
+    function model(H0, Om) {
+      var h = H0 / 100, Og = 2.473e-5, Neff = 3.046;
+      var Or = (Og + Neff * (7 / 8) * Math.pow(4 / 11, 4 / 3) * Og) / (h * h);
+      var OL = 1 - Om;                       // same convention as cosmic_timeline.py
+      return {
+        Or: Or, OL: OL,
+        E: function (z) { var zp = 1 + z;
+          return Math.sqrt(Or * Math.pow(zp, 4) + Om * Math.pow(zp, 3) + OL); },
+        // t(a) in Gyr. Substituting a = 1/(1+z) removes the infinite upper limit:
+        // the integrand goes as a/sqrt(Or) near a = 0, so it is finite throughout.
+        tOfA: function (a) {
+          var tH = MPC_KM / H0 / YR_S;
+          return tH * simpson(function (x) {
+            return x <= 0 ? 0 : 1 / Math.sqrt(Or / (x * x) + Om / x + OL * x * x);
+          }, 0, a, 4000) / 1e9;
+        },
+        DC: function (z) {
+          var self = this;
+          return z <= 0 ? 0 : (C / H0) * simpson(function (zz) { return 1 / self.E(zz); }, 0, z, 2000);
+        }
+      };
+    }
+
+    function fmt(x, d) {
+      if (!isFinite(x)) return '—';
+      return x.toFixed(d);
+    }
+
+    function update() {
+      var H0 = parseFloat($('c-h0').value), Om = parseFloat($('c-om').value),
+          rd = parseFloat($('c-rd').value), z = parseFloat($('c-z').value);
+      if (!(H0 > 0) || !(Om > 0 && Om < 1) || !(z >= 0) || !(rd > 0)) return;
+
+      var m = model(H0, Om), a = 1 / (1 + z);
+      var t0 = m.tOfA(1), tz = m.tOfA(a), dm = m.DC(z);
+      var th = dm > 0 ? (rd / dm) * 180 / Math.PI : NaN;
+
+      $('o-a').textContent  = fmt(a, 4);
+      $('o-hz').textContent = fmt(H0 * m.E(z), 2);
+      $('o-tz').textContent = fmt(tz, 3);
+      $('o-lb').textContent = fmt(t0 - tz, 3);
+      $('o-dm').textContent = fmt(dm, 1);
+      $('o-da').textContent = fmt(dm / (1 + z), 1);
+      $('o-dl').textContent = fmt(dm * (1 + z), 1);
+      $('o-th').textContent = fmt(th, 3);
+      $('o-t0').textContent = fmt(t0, 3);
+    }
+
+    ['c-h0', 'c-om', 'c-rd', 'c-z'].forEach(function (id) {
+      $(id).addEventListener('input', update);
+    });
+  })();
+  </script>
 </body>
 </html>
