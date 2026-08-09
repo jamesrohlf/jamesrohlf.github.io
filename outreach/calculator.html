@@ -74,7 +74,8 @@
       </div>
       <p class="calc__title">Derived Quantities</p>
       <div class="calc__out">
-        <div class="calc__row"><span>&Omega;<sub>&Lambda;</sub> = 1 &minus; &Omega;<sub>m</sub></span><output id="o-ol">0.6850</output></div>
+        <div class="calc__row"><span>&Omega;<sub>r</sub> radiation</span><output id="o-or">9.21e-5</output></div>
+        <div class="calc__row"><span>&Omega;<sub>&Lambda;</sub> = 1 &minus; &Omega;<sub>m</sub> &minus; &Omega;<sub>r</sub></span><output id="o-ol">0.6849</output></div>
         <div class="calc__row"><span>scale factor <em>a</em></span><output id="o-a">1.0000</output></div>
         <div class="calc__row"><span><em>H</em>(<em>z</em>) [km/s/Mpc]</span><output id="o-hz">67.40</output></div>
         <div class="calc__row calc__row--head"><span></span><span>age</span><span>lookback</span></div>
@@ -104,7 +105,18 @@
       <em>E</em>(<em>z</em>)&nbsp;=&nbsp;&radic;(&Omega;<sub>r</sub>(1+<em>z</em>)<sup>4</sup>
       + &Omega;<sub>m</sub>(1+<em>z</em>)<sup>3</sup> + &Omega;<sub>&Lambda;</sub>), with
       &Omega;<sub>&Lambda;</sub>&nbsp;=&nbsp;1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub> and
-      radiation included.
+      radiation included, and &Omega;<sub>&Lambda;</sub> fixed by closure at
+      1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub>&nbsp;&minus;&nbsp;&Omega;<sub>r</sub>.
+    </p>
+
+    <p class="prose">
+      &Omega;<sub>r</sub> looks negligible at 9.2&times;10<sup>&minus;5</sup> and is, today.
+      It is not negligible early: radiation scales as (1+<em>z</em>)<sup>4</sup> against
+      matter's (1+<em>z</em>)<sup>3</sup>, so it overtakes matter above
+      <em>z</em>&nbsp;&asymp;&nbsp;3400 and dominates everything before that. Leaving it
+      out of the closure — writing &Omega;<sub>&Lambda;</sub>&nbsp;=&nbsp;1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub>
+      — makes the model sum to 1.000092 rather than 1, which is a curved universe by
+      accident. The value quoted is photons plus three species of massless neutrino.
     </p>
 
     <p class="prose">
@@ -155,7 +167,11 @@
     function model(H0, Om) {
       var h = H0 / 100, Og = 2.473e-5, Neff = 3.046;
       var Or = (Og + Neff * (7 / 8) * Math.pow(4 / 11, 4 / 3) * Og) / (h * h);
-      var OL = 1 - Om;                       // same convention as cosmic_timeline.py
+      // Close the universe on all three components. Using OL = 1 - Om alone
+      // leaves the model summing to 1 + Or, which is wrong in principle and
+      // matters once radiation is not negligible — it dominates above
+      // z_eq ~ 3400, where (1+z)^4 overtakes (1+z)^3.
+      var OL = 1 - Om - Or;
       return {
         Or: Or, OL: OL,
         E: function (z) { var zp = 1 + z;
@@ -185,9 +201,11 @@
           rd = parseFloat($('c-rd').value), z = parseFloat($('c-z').value);
       if (!(H0 > 0) || !(Om > 0 && Om < 1) || !(z >= 0) || !(rd > 0)) return;
 
-      $('o-ol').textContent = fmt(1 - Om, 4);
-
       var m = model(H0, Om), a = 1 / (1 + z);
+
+      $('o-or').textContent = m.Or.toExponential(2);
+      $('o-ol').textContent = fmt(m.OL, 4);
+
       var t0 = m.tOfA(1), tz = m.tOfA(a), dm = m.DC(z);
       var th = dm > 0 ? (rd / dm) * 180 / Math.PI : NaN;
 
