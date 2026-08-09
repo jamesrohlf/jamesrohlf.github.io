@@ -21,8 +21,7 @@
     .eb-markhead { fill:#c62828; }
     .eb-cap { font-size:.9rem; color:var(--ink-soft); margin:.1rem 0 1.4rem; }
     .eb-cap strong { color:var(--scarlet); }
-    .eb-warn { display:block; margin-top:.25rem; font-size:.85rem;
-               color:var(--ink-faint); }
+    .eb-warn { font-size:.85rem; color:var(--ink-faint); }
     .calc { border:1px solid var(--rule); border-radius:10px; padding:1rem 1.1rem;
             margin:1.4rem 0 1.8rem; background:var(--paper);
             width:fit-content; max-width:100%; }
@@ -330,6 +329,31 @@
       $('o-th').textContent = dm > 0 ? fmt(th, 3) : '\u2014';
       marker(z, tz);
     }
+
+    // Past the log/linear break of the timeline — t = 1 Gyr, z = 5.65 for the
+    // default cosmology — a 0.1 step is useless: 1000 to 1000.1 changes nothing
+    // visible. Above it the arrows double and halve instead.
+    var Z_BREAK = 5.65;
+    function zFmt(v) { return v >= 100 ? String(Math.round(v)) : v.toFixed(2).replace(/\.?0+$/, ''); }
+    var zBox = $('c-z'), zPrev = parseFloat(zBox.value);
+
+    zBox.addEventListener('keydown', function (e) {
+      var v = parseFloat(this.value);
+      if (!isFinite(v) || v < Z_BREAK) return;
+      if (e.key === 'ArrowUp')   { e.preventDefault(); this.value = zFmt(Math.min(v * 2, 1e7)); zPrev = parseFloat(this.value); update(); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); this.value = zFmt(v / 2);                zPrev = parseFloat(this.value); update(); }
+    });
+
+    // The spinner buttons fire input, not keydown, so catch a native +/-step
+    // that started from above the break and turn it into a doubling.
+    zBox.addEventListener('input', function () {
+      var v = parseFloat(this.value);
+      if (isFinite(v) && isFinite(zPrev) && zPrev >= Z_BREAK &&
+          Math.abs(Math.abs(v - zPrev) - 0.1) < 1e-9) {
+        this.value = zFmt(v > zPrev ? Math.min(zPrev * 2, 1e7) : zPrev / 2);
+      }
+      zPrev = parseFloat(this.value);
+    });
 
     var FIELDS = ['c-h0', 'c-om', 'c-rd', 'c-z'];
 
