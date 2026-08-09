@@ -216,23 +216,29 @@
         <tr><th>Parameter</th><th>Planck 2018</th></tr>
       </thead>
       <tbody>
-        <tr><td>&omega;<sub>b</sub> &nbsp;physical baryon density</td><td>0.02237 &plusmn; 0.00015</td></tr>
-        <tr><td>&omega;<sub>c</sub> &nbsp;physical cold dark matter density</td><td>0.1200 &plusmn; 0.0012</td></tr>
-        <tr><td>100&thinsp;&theta;<sub>s</sub> &nbsp;acoustic scale</td><td>1.04092 &plusmn; 0.00031</td></tr>
-        <tr><td>&tau; &nbsp;optical depth to reionization</td><td>0.0544 &plusmn; 0.0073</td></tr>
+        <tr><td>&omega;<sub>b</sub> &nbsp;physical baryon density</td><td>0.0224 &plusmn; 0.0001</td></tr>
+        <tr><td>&omega;<sub>c</sub> &nbsp;physical cold dark matter density</td><td>0.120 &plusmn; 0.001</td></tr>
+        <tr><td>100&thinsp;&theta;<sub>*</sub> &nbsp;acoustic scale</td><td>1.0411 &plusmn; 0.0003</td></tr>
+        <tr><td>&tau; &nbsp;optical depth to reionization</td><td>0.054 &plusmn; 0.007</td></tr>
         <tr><td>ln(10<sup>10</sup><em>A</em><sub>s</sub>) &nbsp;primordial amplitude</td><td>3.044 &plusmn; 0.014</td></tr>
-        <tr><td><em>n</em><sub>s</sub> &nbsp;spectral index</td><td>0.9649 &plusmn; 0.0042</td></tr>
+        <tr><td><em>n</em><sub>s</sub> &nbsp;spectral index</td><td>0.965 &plusmn; 0.004</td></tr>
         <tr class="ptable__sep"><th colspan="2">Derived from those six</th></tr>
         <tr><td><em>H</em><sub>0</sub> [km s<sup>&minus;1</sup> Mpc<sup>&minus;1</sup>]</td><td>67.4 &plusmn; 0.5</td></tr>
         <tr><td><em>h</em> = <em>H</em><sub>0</sub>/100</td><td>0.674</td></tr>
         <tr><td>&Omega;<sub>m</sub></td><td>0.315 &plusmn; 0.007</td></tr>
         <tr><td>&Omega;<sub>&Lambda;</sub></td><td>0.685 &plusmn; 0.007</td></tr>
-        <tr><td>&sigma;<sub>8</sub></td><td>0.8111 &plusmn; 0.0060</td></tr>
+        <tr><td>&sigma;<sub>8</sub></td><td>0.811 &plusmn; 0.006</td></tr>
         <tr><td><em>t</em><sub>0</sub> age of the universe [Gyr]</td><td>13.797 &plusmn; 0.023</td></tr>
         <tr><td><em>z</em><sub>eq</sub> matter&ndash;radiation equality</td><td>3402 &plusmn; 26</td></tr>
         <tr><td><em>z</em><sub>*</sub> recombination</td><td>1089.92 &plusmn; 0.25</td></tr>
+        <tr><td><em>r</em><sub>d</sub> sound horizon at drag [Mpc]</td><td>147.09 &plusmn; 0.26</td></tr>
       </tbody>
     </table>
+
+    <p class="prose muted">
+      Planck 2018 results VI, <a href="https://arxiv.org/abs/1807.06209">arXiv:1807.06209</a>,
+      TT,TE,EE+lowE+lensing.
+    </p>
 
 
     <p class="prose">
@@ -258,7 +264,7 @@
         <div class="calc__f"><label for="c-om">&Omega;<sub>m</sub></label>
           <input id="c-om" type="number" value="0.315" step="any" min="0.01" max="0.99"></div>
         <div class="calc__f"><label for="c-rd">r<sub>d</sub> [Mpc]</label>
-          <input id="c-rd" type="number" value="147.2" step="any" min="50" max="250"></div>
+          <input id="c-rd" type="number" value="147.09" step="any" min="50" max="250"></div>
         <div class="calc__f"><label for="c-z">redshift z</label>
           <input id="c-z" type="number" value="0" step="0.1" min="0" max="1500"></div>
         <div class="calc__f calc__f--act"><label aria-hidden="true">&nbsp;</label>
