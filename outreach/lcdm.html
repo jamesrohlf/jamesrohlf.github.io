@@ -223,10 +223,10 @@
         <tr><td>ln(10<sup>10</sup><em>A</em><sub>s</sub>) &nbsp;primordial amplitude</td><td>3.044 &plusmn; 0.014</td></tr>
         <tr><td><em>n</em><sub>s</sub> &nbsp;spectral index</td><td>0.9649 &plusmn; 0.0042</td></tr>
         <tr class="ptable__sep"><th colspan="2">Derived from those six</th></tr>
-        <tr><td><em>H</em><sub>0</sub> [km s<sup>&minus;1</sup> Mpc<sup>&minus;1</sup>]</td><td>67.36 &plusmn; 0.54</td></tr>
+        <tr><td><em>H</em><sub>0</sub> [km s<sup>&minus;1</sup> Mpc<sup>&minus;1</sup>]</td><td>67.4 &plusmn; 0.5</td></tr>
         <tr><td><em>h</em> = <em>H</em><sub>0</sub>/100</td><td>0.6736</td></tr>
-        <tr><td>&Omega;<sub>m</sub></td><td>0.3153 &plusmn; 0.0073</td></tr>
-        <tr><td>&Omega;<sub>&Lambda;</sub></td><td>0.6847 &plusmn; 0.0073</td></tr>
+        <tr><td>&Omega;<sub>m</sub></td><td>0.315 &plusmn; 0.007</td></tr>
+        <tr><td>&Omega;<sub>&Lambda;</sub></td><td>0.685 &plusmn; 0.007</td></tr>
         <tr><td>&sigma;<sub>8</sub></td><td>0.8111 &plusmn; 0.0060</td></tr>
         <tr><td><em>t</em><sub>0</sub> age of the universe [Gyr]</td><td>13.797 &plusmn; 0.023</td></tr>
         <tr><td><em>z</em><sub>eq</sub> matter&ndash;radiation equality</td><td>3402 &plusmn; 26</td></tr>
@@ -234,11 +234,6 @@
       </tbody>
     </table>
 
-    <p class="prose">
-      The line across the middle is the whole point. Everything above it is fitted to the
-      data; everything below it is arithmetic. The calculator below does that arithmetic —
-      change a number in the top group and watch the bottom group move.
-    </p>
 
     <p class="prose">
       Six numbers is a remarkably small budget for a model that has to reproduce the CMB
@@ -261,9 +256,9 @@
         <div class="calc__f"><label for="c-h0">H&#8320; [km/s/Mpc]</label>
           <input id="c-h0" type="number" value="67.4" step="0.1" min="0" max="200"></div>
         <div class="calc__f"><label for="c-om">&Omega;<sub>m</sub></label>
-          <input id="c-om" type="number" value="0.3153" step="any" min="0.01" max="0.99"></div>
+          <input id="c-om" type="number" value="0.315" step="any" min="0.01" max="0.99"></div>
         <div class="calc__f"><label for="c-rd">r<sub>d</sub> [Mpc]</label>
-          <input id="c-rd" type="number" value="147.09" step="any" min="50" max="250"></div>
+          <input id="c-rd" type="number" value="147.2" step="any" min="50" max="250"></div>
         <div class="calc__f"><label for="c-z">redshift z</label>
           <input id="c-z" type="number" value="0" step="0.1" min="0" max="1500"></div>
         <div class="calc__f calc__f--act"><label aria-hidden="true">&nbsp;</label>
@@ -271,10 +266,10 @@
       </div>
       <div class="calc__out">
         <div class="calc__row"><span>h = H&#8320;/100</span><output id="o-h">0.6740</output></div>
-        <div class="calc__row"><span>&Omega;<sub>&Lambda;</sub> = 1 &minus; &Omega;<sub>m</sub></span><output id="o-ol">0.6847</output></div>
+        <div class="calc__row"><span>&Omega;<sub>&Lambda;</sub> = 1 &minus; &Omega;<sub>m</sub></span><output id="o-ol">0.6850</output></div>
         <div class="calc__row"><span>scale factor a</span><output id="o-a">1.0000</output></div>
         <div class="calc__row"><span>H(z) [km/s/Mpc]</span><output id="o-hz">67.40</output></div>
-        <div class="calc__row"><span>age at z [Gyr]</span><output id="o-tz">13.787</output></div>
+        <div class="calc__row"><span>age at z [Gyr]</span><output id="o-tz">13.791</output></div>
         <div class="calc__row"><span>lookback time [Gyr]</span><output id="o-lb">0.000</output></div>
         <div class="calc__row"><span>D<sub>M</sub> comoving [Mpc]</span><output id="o-dm">0.0</output></div>
         <div class="calc__row"><span>D<sub>A</sub> ang. diam. [Mpc]</span><output id="o-da">0.0</output></div>
@@ -282,7 +277,7 @@
         <div class="calc__row calc__hi"><span>&theta;<sub>BAO</sub> [deg]</span><output id="o-th">—</output></div>
       </div>
       <p class="calc__note">
-        Age of the universe today: <output id="o-t0">13.787</output>&nbsp;Gyr.
+        Age of the universe today: <output id="o-t0">13.791</output>&nbsp;Gyr.
         Flat &Lambda;CDM with &Omega;<sub>&Lambda;</sub>&nbsp;=&nbsp;1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub>
         &Omega;<sub>m</sub> derived from the physical densities, the neutrino mass sum converted with &Omega;<sub>&nu;</sub><em>h</em><sup>2</sup>&nbsp;=&nbsp;&Sigma;m<sub>&nu;</sub>/93.14&nbsp;eV, and radiation included in <em>E</em>(<em>z</em>) — the same convention as the
         timeline figure above. The values shown are for the Planck 2018 parameters at
