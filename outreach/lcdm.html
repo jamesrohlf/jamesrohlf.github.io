@@ -34,9 +34,14 @@
     .ptable td:last-child, .ptable th:last-child { text-align:right;
                font-family:var(--font-mono); font-variant-numeric:tabular-nums;
                white-space:nowrap; }
+    .ptable tbody tr:nth-child(even) td {
+               background:color-mix(in srgb, var(--ink) 5%, transparent); }
+    .ptable tbody tr:hover td {
+               background:color-mix(in srgb, var(--scarlet) 10%, transparent); }
     .ptable__sep th { padding-top:1.1rem; font-size:.78rem; text-transform:uppercase;
                letter-spacing:.07em; color:var(--ink-soft); }
     .ptable__sep td { display:none; }
+    .ptable__sep th { background:none !important; }
     .calc__reset { font:600 .85rem var(--font-body); cursor:pointer;
                    padding:.36rem .7rem; border:1px solid var(--rule);
                    border-radius:5px; background:var(--cream); color:var(--ink);
