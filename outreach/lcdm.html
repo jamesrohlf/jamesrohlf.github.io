@@ -298,13 +298,6 @@
         <div class="calc__row"><span><em>D</em><sub>H</sub> = <em>c</em>/<em>H</em>(<em>z</em>)</span><output id="o-dh">4448.0</output><output id="o-dhr" class="calc__r2">30.24</output></div>
         <div class="calc__row calc__hi"><span><em>&theta;</em><sub>BAO</sub> [deg]</span><output id="o-th">—</output></div>
       </div>
-      <p class="calc__note">
-        Age of the universe today: <output id="o-t0">13.791</output>&nbsp;Gyr.
-        Flat &Lambda;CDM with &Omega;<sub>&Lambda;</sub>&nbsp;=&nbsp;1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub>
-        &Omega;<sub>m</sub> derived from the physical densities, the neutrino mass sum converted with &Omega;<sub>&nu;</sub><em>h</em><sup>2</sup>&nbsp;=&nbsp;&Sigma;m<sub>&nu;</sub>/93.14&nbsp;eV, and radiation included in <em>E</em>(<em>z</em>) — the same convention as the
-        timeline figure above. The values shown are for the Planck 2018 parameters at
-        <em>z</em>&nbsp;=&nbsp;1.
-      </p>
     </div>
 
     <p class="prose">
@@ -506,7 +499,6 @@
       $('o-dmr').textContent = fmt(dm / rd, 2);
       $('o-dhr').textContent = fmt(dh / rd, 2);
       $('o-th').textContent = dm > 0 ? fmt(th, 3) : '\u2014';
-      $('o-t0').textContent = fmt(t0, 3);
     }
 
     var FIELDS = ['c-h0', 'c-om', 'c-rd', 'c-z'];
