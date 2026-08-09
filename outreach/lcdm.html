@@ -283,6 +283,9 @@
         <div class="calc__row"><span>age at z [Gyr]</span><output id="o-tz">13.791</output></div>
         <div class="calc__row"><span>lookback time [Gyr]</span><output id="o-lb">0.000</output></div>
         <div class="calc__row"><span>D<sub>M</sub> comoving [Mpc]</span><output id="o-dm">0.0</output></div>
+        <div class="calc__row"><span>D<sub>H</sub> = c/H(z) [Mpc]</span><output id="o-dh">4448.0</output></div>
+        <div class="calc__row calc__hi"><span>D<sub>M</sub>/r<sub>d</sub></span><output id="o-dmr">0.00</output></div>
+        <div class="calc__row calc__hi"><span>D<sub>H</sub>/r<sub>d</sub></span><output id="o-dhr">30.24</output></div>
         <div class="calc__row"><span>D<sub>A</sub> ang. diam. [Mpc]</span><output id="o-da">0.0</output></div>
         <div class="calc__row"><span>D<sub>L</sub> luminosity [Mpc]</span><output id="o-dl">0.0</output></div>
         <div class="calc__row calc__hi"><span>&theta;<sub>BAO</sub> [deg]</span><output id="o-th">—</output></div>
@@ -297,9 +300,9 @@
     </div>
 
     <p class="prose">
-      &theta;<sub>BAO</sub> is the one worth playing with. It is the angle the
-      147.1&nbsp;Mpc ruler subtends at that redshift — the curve plotted on the
-      <a href="bao.html">BAO page</a> against DESI's 3.2° tile. Sweep <em>z</em> upward
+      &theta;<sub>BAO</sub> is the angle the 147.1&nbsp;Mpc ruler subtends at that
+      redshift — <a href="bao.html#angular-scale">the curve plotted on the BAO page</a>
+      against DESI's 3.2° tile. Sweep <em>z</em> upward
       and watch it fall through 3.2° at about <em>z</em>&nbsp;=&nbsp;0.72, which is where
       a BAO-sized patch of sky stops spanning many pointings and starts fitting inside
       one.
@@ -490,7 +493,11 @@
       $('o-hz').textContent = fmt(H0 * m.E(z), 2);
       $('o-tz').textContent = fmt(tz, 3);
       $('o-lb').textContent = fmt(t0 - tz, 3);
-      $('o-dm').textContent = fmt(dm, 1);
+      var dh = 299792.458 / (H0 * m.E(z));
+      $('o-dm').textContent  = fmt(dm, 1);
+      $('o-dh').textContent  = fmt(dh, 1);
+      $('o-dmr').textContent = fmt(dm / rd, 2);
+      $('o-dhr').textContent = fmt(dh / rd, 2);
       $('o-da').textContent = fmt(dm / (1 + z), 1);
       $('o-dl').textContent = fmt(dm * (1 + z), 1);
       $('o-th').textContent = dm > 0 ? fmt(th, 3) : '\u2014';
