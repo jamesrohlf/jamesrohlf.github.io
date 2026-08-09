@@ -25,6 +25,11 @@
     .calc__row span:first-child { color:var(--ink-soft); }
     .calc__row output { font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
     .calc__hi output { color:var(--scarlet); font-weight:700; }
+    .calc__reset { font:600 .85rem var(--font-body); cursor:pointer;
+                   padding:.36rem .7rem; border:1px solid var(--rule);
+                   border-radius:5px; background:var(--cream); color:var(--ink);
+                   transition:background var(--ease), border-color var(--ease); }
+    .calc__reset:hover { background:var(--scarlet); border-color:var(--scarlet); color:#fff; }
     .calc__note { font-size:.85rem; color:var(--ink-faint); margin:.9rem 0 0; }
   </style>
 </head>
@@ -204,6 +209,8 @@
           <input id="c-rd" type="number" value="147.09" step="0.1" min="50" max="250"></div>
         <div class="calc__f"><label for="c-z">redshift z</label>
           <input id="c-z" type="number" value="1" step="0.1" min="0" max="1500"></div>
+        <div class="calc__f calc__f--act"><label aria-hidden="true">&nbsp;</label>
+          <button type="button" id="c-reset" class="calc__reset">Reset to Planck 2018</button></div>
       </div>
       <div class="calc__out">
         <div class="calc__row"><span>scale factor a</span><output id="o-a">0.5000</output></div>
@@ -422,8 +429,18 @@
       $('o-t0').textContent = fmt(t0, 3);
     }
 
-    ['c-h0', 'c-om', 'c-rd', 'c-z'].forEach(function (id) {
-      $(id).addEventListener('input', update);
+    var FIELDS = ['c-h0', 'c-om', 'c-rd', 'c-z'];
+
+    // Read the defaults out of the markup rather than repeating them here, so
+    // the button always restores exactly what the page shipped with.
+    var DEFAULTS = {};
+    FIELDS.forEach(function (id) { DEFAULTS[id] = $(id).value; });
+
+    FIELDS.forEach(function (id) { $(id).addEventListener('input', update); });
+
+    $('c-reset').addEventListener('click', function () {
+      FIELDS.forEach(function (id) { $(id).value = DEFAULTS[id]; });
+      update();
     });
   })();
   </script>
