@@ -282,7 +282,6 @@
           <button type="button" id="c-reset" class="calc__reset">Reset to Planck 2018</button></div>
       </div>
       <div class="calc__out">
-        <div class="calc__row"><span><em>h</em> = <em>H</em>&#8320;/100</span><output id="o-h">0.6740</output></div>
         <div class="calc__row"><span>&Omega;<sub>&Lambda;</sub> = 1 &minus; &Omega;<sub>m</sub></span><output id="o-ol">0.6850</output></div>
         <div class="calc__row"><span>scale factor <em>a</em></span><output id="o-a">1.0000</output></div>
         <div class="calc__row"><span><em>H</em>(<em>z</em>) [km/s/Mpc]</span><output id="o-hz">67.40</output></div>
@@ -485,7 +484,6 @@
           rd = parseFloat($('c-rd').value), z = parseFloat($('c-z').value);
       if (!(H0 > 0) || !(Om > 0 && Om < 1) || !(z >= 0) || !(rd > 0)) return;
 
-      $('o-h').textContent  = fmt(H0 / 100, 4);
       $('o-ol').textContent = fmt(1 - Om, 4);
 
       var m = model(H0, Om), a = 1 / (1 + z);
