@@ -120,14 +120,14 @@
     <p class="eb-cap">At <em>z</em> = <strong id="eb-z">0</strong> the universe is
       <strong id="eb-t">13.791</strong> Gyr old, in the
       <strong id="eb-era">dark-energy</strong> era.
-      <span class="eb-warn">Era boundaries are drawn for the default cosmology. <em>H</em><sub>0</sub> sets the scale of the expansion, so a large change to it rescales the whole timeline and the bar becomes indicative rather than exact.</span></p>
+      <span class="eb-warn">Era boundaries are drawn for &Lambda;CDM.</span></p>
 
     <div class="calc" id="calc">
       <div class="calc__in">
         <div class="calc__f"><label for="c-h0"><em>H</em>&#8320; [km/s/Mpc]</label>
-          <input id="c-h0" type="number" autocomplete="off" value="67.4" step="0.1" min="50" max="100"></div>
+          <input id="c-h0" type="number" autocomplete="off" value="67.4" step="0.1" min="60" max="80"></div>
         <div class="calc__f"><label for="c-om">&Omega;<sub>m</sub></label>
-          <input id="c-om" type="number" autocomplete="off" value="0.315" step="any" min="0.1" max="0.6"></div>
+          <input id="c-om" type="number" autocomplete="off" value="0.315" step="any" min="0.25" max="0.35"></div>
         <div class="calc__f"><label for="c-rd"><em>r</em><sub>d</sub> [Mpc]</label>
           <input id="c-rd" type="number" autocomplete="off" value="147.1" step="any" min="50" max="250"></div>
         <div class="calc__f"><label for="c-z">redshift <em>z</em></label>
@@ -297,8 +297,8 @@
       // out-of-range, but a typed value still reaches here. Clamp so the
       // outputs stay physical whatever is in the box.
       function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
-      H0 = clamp(H0, 50, 100);
-      Om = clamp(Om, 0.1, 0.6);
+      H0 = clamp(H0, 60, 80);
+      Om = clamp(Om, 0.25, 0.35);
       rd = clamp(rd, 100, 200);
       z  = clamp(z, 0, 1e7);
 
