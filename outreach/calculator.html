@@ -59,7 +59,7 @@
     <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
 
     <h1>Cosmic Calculator with BAO Scale</h1>
-    <p class="subtitle">Distances, ages and the angular BAO scale at any redshift, for flat &Lambda;CDM</p>
+    <p class="subtitle">Distances, ages and the angular BAO scale at any redshift, for flat <a href="lcdm.html">&Lambda;CDM</a></p>
 
 
 
@@ -210,7 +210,11 @@
       // Density parameters at z, not today. Each term of E^2 over E^2, so the
       // three always sum to 1 — the flatness of the model, made visible.
       var zp = 1 + z, e2 = m.Or * Math.pow(zp, 4) + Om * Math.pow(zp, 3) + m.OL;
-      $('o-or').textContent  = (m.Or * Math.pow(zp, 4) / e2).toExponential(2);
+      // Exponential only while Omega_r is genuinely small. Above 1e-3 the three
+      // digits of exponential notation are too few for the row to visibly sum
+      // to 1, which is the point of showing all three.
+      var orz = m.Or * Math.pow(zp, 4) / e2;
+      $('o-or').textContent  = orz >= 1e-3 ? fmt(orz, 4) : orz.toExponential(2);
       $('o-omz').textContent = fmt(Om * Math.pow(zp, 3) / e2, 4);
       $('o-ol').textContent  = fmt(m.OL / e2, 4);
 
