@@ -34,10 +34,11 @@
                      border-radius:5px; background:var(--cream); color:var(--ink); }
     .calc__title { margin:.8rem 0 .1rem; font:700 .82rem var(--font-body);
                    text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); }
-    .calc__out { max-width:20rem; border-top:1px solid var(--rule); padding-top:.7rem; }
-    .calc__row { display:grid; grid-template-columns:1fr 4.9rem 4.9rem 4.9rem;
+    .calc__out { max-width:25rem; border-top:1px solid var(--rule); padding-top:.7rem; }
+    .calc__row { display:grid; grid-template-columns:1fr 4.6rem 4.6rem 4.6rem;
                  gap:.45rem; font-size:.92rem; border-bottom:1px dotted var(--rule);
                  padding:.18rem 0; }
+    .calc__row > * { white-space:nowrap; }
     .calc__row > *:not(:first-child) { text-align:right; }
     .calc__row--1 > *:nth-child(2) { grid-column:4; }
     .calc__row--2 > *:nth-child(2) { grid-column:3; }
@@ -71,7 +72,7 @@
     <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
 
     <h1>Cosmic Calculator with BAO Scale</h1>
-    <p class="subtitle">Distances, ages and the angular BAO scale at any redshift, for flat <a href="lcdm.html">&Lambda;CDM</a></p>
+    <p class="subtitle">Distances, ages and the <a href="bao.html">angular BAO scale</a> at any redshift, for flat <a href="lcdm.html">&Lambda;CDM</a></p>
 
 
 
@@ -139,7 +140,7 @@
         <div class="calc__row calc__row--1"><span>scale factor <em>a</em></span><output id="o-a">1.0000</output></div>
         <div class="calc__row calc__row--1"><span><em>H</em>(<em>z</em>) [km/s/Mpc]</span><output id="o-hz">67.40</output></div>
         <div class="calc__row calc__row--head calc__row--2"><span></span><span>age</span><span>lookback</span></div>
-        <div class="calc__row calc__row--2"><span>time at <em>z</em> [Gyr]</span><output id="o-tz">13.791</output><output id="o-lb" class="calc__c3">0.000</output></div>
+        <div class="calc__row calc__row--2"><span>time [Gyr]</span><output id="o-tz">13.791</output><output id="o-lb" class="calc__c3">0.000</output></div>
         <div class="calc__row calc__row--head calc__row--2"><span></span><span>Mpc</span><span>&divide;&thinsp;<em>r</em><sub>d</sub></span></div>
         <div class="calc__row calc__row--2"><span><em>D</em><sub>M</sub> comoving</span><output id="o-dm">0.0</output><output id="o-dmr" class="calc__r2">0.00</output></div>
         <div class="calc__row calc__row--2"><span><em>D</em><sub>H</sub> = <em>c</em>/<em>H</em>(<em>z</em>)</span><output id="o-dh">4448.0</output><output id="o-dhr" class="calc__r2">30.24</output></div>
