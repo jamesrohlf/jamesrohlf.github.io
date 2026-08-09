@@ -4,12 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ΛCDM — Six Parameters and the Cosmic Timeline — Jim Rohlf</title>
-  <meta name="description" content="The standard cosmological model: six independent parameters, the cosmic timeline from the Planck era to the dark-energy era, and how the baryon acoustic oscillation standard ruler is frozen in at recombination.">
+  <meta name="description" content="The standard cosmological model: six independent parameters, the cosmic timeline from the Planck era to the dark-energy era, and how the baryon acoustic oscillation standard ruler is frozen in at recombination. Includes a cosmic calculator giving distances, ages and the angular BAO scale at any redshift.">
   <link rel="canonical" href="https://jamesrohlf.github.io/outreach/lcdm.html">
     <link rel="stylesheet" href="assets/css/site.css">
   <link rel="icon" href="assets/img/desi-emblem.jpg">
   <script src="assets/js/chrome.js" defer></script>
   <style>
+    .jumplink { margin:.2rem 0 1.4rem; font-size:.95rem; }
+    .jumplink a { font-weight:700; color:var(--scarlet); text-decoration:none;
+                  border-bottom:2px solid color-mix(in srgb, var(--scarlet) 35%, transparent); }
+    .jumplink a:hover { border-bottom-color:var(--scarlet); }
+    .jumplink a::after { content:" \2193"; }
+    .jumplink span { color:var(--ink-faint); }
     .calc { border:1px solid var(--rule); border-radius:10px; padding:1rem 1.1rem;
             margin:1.4rem 0 1.8rem; background:var(--paper);
             width:fit-content; max-width:100%; }
@@ -62,6 +68,8 @@
 
     <h1>&Lambda;CDM</h1>
     <p class="subtitle">Dark energy and cold dark matter — the standard model of cosmology</p>
+    <p class="jumplink"><a href="#calculator">Cosmic Calculator with BAO Scale</a>
+      <span>distances, ages and &theta;<sub>BAO</sub> at any redshift</span></p>
     <p class="lede">
       The standard cosmological model is specified by six independent parameters
       (<a href="#six-parameters">see below</a>). Determine those, and everything else
@@ -260,7 +268,7 @@
     </p>
 
 
-    <h3>Cosmic calculator</h3>
+    <h3 id="calculator">Cosmic Calculator with BAO Scale</h3>
 
     <p class="prose">
       Everything below is computed from the numbers in the four boxes. Change
