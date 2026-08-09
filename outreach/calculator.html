@@ -11,6 +11,16 @@
   <script src="assets/js/chrome.js" defer></script>
   <style>
                   border-bottom:2px solid color-mix(in srgb, var(--scarlet) 35%, transparent); }
+    .eb { margin:1.2rem 0 .4rem; }
+    .eb svg { display:block; width:100%; height:auto; }
+    .eb-lab { font:600 11px system-ui,sans-serif; text-anchor:middle; }
+    .eb-ax  { font:400 11px system-ui,sans-serif; fill:var(--ink-faint); text-anchor:middle; }
+    .eb-note{ font:italic 11px system-ui,sans-serif; fill:var(--ink-faint); }
+    .eb-tick{ stroke:var(--ink-faint); stroke-width:1; }
+    .eb-mark{ stroke:#c62828; stroke-width:2.5; }
+    .eb-markhead { fill:#c62828; }
+    .eb-cap { font-size:.9rem; color:var(--ink-soft); margin:.1rem 0 1.4rem; }
+    .eb-cap strong { color:var(--scarlet); }
     .calc { border:1px solid var(--rule); border-radius:10px; padding:1rem 1.1rem;
             margin:1.4rem 0 1.8rem; background:var(--paper);
             width:fit-content; max-width:100%; }
@@ -99,6 +109,50 @@
       a BAO-sized patch of sky stops spanning many pointings and starts fitting inside
       one.
     </p>
+
+
+    <div class="eb"><svg id="erabar" viewBox="0 0 1000 104" role="img" aria-labelledby="ebT ebD" preserveAspectRatio="xMidYMid meet">
+<title id="ebT">Cosmic timeline with the current redshift marked</title>
+<desc id="ebD">A horizontal bar of cosmic eras from the Planck era through inflation, the quark-gluon plasma, Big Bang nucleosynthesis, radiation domination, matter domination, the Dark Ages, first stars, galaxy assembly, mature galaxies and the dark-energy era, with a marker showing where the chosen redshift falls.</desc>
+<rect x="48.5" y="34" width="59.8" height="40" fill="#ffe680" stroke="#333" stroke-width="0.5"/>
+<text x="78.5" y="58.0" class="eb-lab" fill="#1a1a1a">Planck</text>
+<rect x="108.4" y="34" width="34.2" height="40" fill="#fff2cc" stroke="#333" stroke-width="0.5"/>
+<rect x="142.5" y="34" width="222.2" height="40" fill="#ffd9b3" stroke="#333" stroke-width="0.5"/>
+<text x="253.6" y="58.0" class="eb-lab" fill="#1a1a1a">Quark–gluon plasma</text>
+<rect x="364.7" y="34" width="70.5" height="40" fill="#ffb380" stroke="#333" stroke-width="0.5"/>
+<text x="400.0" y="58.0" class="eb-lab" fill="#1a1a1a">BBN</text>
+<rect x="435.3" y="34" width="85.0" height="40" fill="#ffaaaa" stroke="#333" stroke-width="0.5"/>
+<text x="477.8" y="58.0" class="eb-lab" fill="#1a1a1a">Radiation</text>
+<rect x="520.2" y="34" width="7.4" height="40" fill="#aaccff" stroke="#333" stroke-width="0.5"/>
+<rect x="527.7" y="34" width="22.3" height="40" fill="#3a3a5c" stroke="#333" stroke-width="0.5"/>
+<rect x="550.0" y="34" width="7.0" height="40" fill="#7a5a9f" stroke="#333" stroke-width="0.5"/>
+<rect x="557.0" y="34" width="99.2" height="40" fill="#5a8fbf" stroke="#333" stroke-width="0.5"/>
+<rect x="656.2" y="34" width="181.9" height="40" fill="#8fc88f" stroke="#333" stroke-width="0.5"/>
+<text x="747.2" y="58.0" class="eb-lab" fill="#1a1a1a">Mature galaxies</text>
+<rect x="838.1" y="34" width="141.9" height="40" fill="#ffcc88" stroke="#333" stroke-width="0.5"/>
+<text x="909.0" y="58.0" class="eb-lab" fill="#1a1a1a">Dark energy</text>
+<line x1="364.7" y1="74" x2="364.7" y2="79" class="eb-tick"/>
+<text x="364.7" y="92.0" class="eb-ax">1 µs</text>
+<line x1="435.3" y1="74" x2="435.3" y2="79" class="eb-tick"/>
+<text x="435.3" y="92.0" class="eb-ax">3 min</text>
+<line x1="480.1" y1="74" x2="480.1" y2="79" class="eb-tick"/>
+<text x="480.1" y="92.0" class="eb-ax">1 yr</text>
+<line x1="557.0" y1="74" x2="557.0" y2="79" class="eb-tick"/>
+<text x="557.0" y="92.0" class="eb-ax">1 Gyr</text>
+<line x1="689.3" y1="74" x2="689.3" y2="79" class="eb-tick"/>
+<text x="689.3" y="92.0" class="eb-ax">5 Gyr</text>
+<line x1="854.6" y1="74" x2="854.6" y2="79" class="eb-tick"/>
+<text x="854.6" y="92.0" class="eb-ax">10 Gyr</text>
+<line x1="980.0" y1="74" x2="980.0" y2="79" class="eb-tick"/>
+<text x="980.0" y="92.0" class="eb-ax">13.8</text>
+<text x="40" y="26" class="eb-note">log</text>
+<text x="557" y="26" class="eb-note" style="text-anchor:middle">&#8596;</text>
+<text x="571" y="26" class="eb-note">linear</text>
+<g id="eb-marker" transform="translate(980.0,0)"><line x1="0" y1="30" x2="0" y2="76" class="eb-mark"/><polygon points="0,30 -5,21 5,21" class="eb-markhead"/></g>
+</svg></div>
+    <p class="eb-cap">At <em>z</em> = <strong id="eb-z">0</strong> the universe is
+      <strong id="eb-t">13.791</strong> Gyr old, in the
+      <strong id="eb-era">dark-energy</strong> era.</p>
 
     <h2 class="section-title">What it computes</h2>
 
@@ -195,6 +249,33 @@
       };
     }
 
+
+    // ---- era bar marker ----------------------------------------------------
+    var YR = 3.1557e7, T0REF = 13.791e9, TBREAK = 1e9, TMIN = 1e-44 / YR;
+    var LMIN = Math.log10(TMIN), LMAX = Math.log10(TBREAK), X0 = 40, WBAR = 940;
+    function barX(t) {
+      var f = t <= TBREAK
+        ? (Math.log10(t) - LMIN) / (LMAX - LMIN) * 0.55
+        : 0.55 + (t - TBREAK) / (T0REF - TBREAK) * 0.45;
+      return X0 + Math.min(Math.max(f, 0), 1) * WBAR;
+    }
+    var ERAS = [[1e-36/YR,'Planck'],[1e-32/YR,'inflation'],[1e-6/YR,'quark–gluon plasma'],
+      [180/YR,'nucleosynthesis'],[50e3,'radiation-dominated'],[370e3,'matter-dominated'],
+      [150e6,'Dark Ages'],[1e9,'first stars'],[4e9,'galaxy assembly'],
+      [9.5e9,'mature galaxies'],[Infinity,'dark-energy']];
+    function eraOf(t) { for (var i = 0; i < ERAS.length; i++) if (t < ERAS[i][0]) return ERAS[i][1];
+                        return 'dark-energy'; }
+    function marker(z, tGyr) {
+      var m = document.getElementById('eb-marker');
+      if (!m) return;
+      var t = Math.max(tGyr * 1e9, TMIN);
+      m.setAttribute('transform', 'translate(' + barX(t).toFixed(1) + ',0)');
+      document.getElementById('eb-z').textContent = z;
+      document.getElementById('eb-t').textContent = tGyr < 1e-3
+        ? tGyr.toExponential(2) : tGyr.toFixed(3);
+      document.getElementById('eb-era').textContent = eraOf(t);
+    }
+
     function fmt(x, d) {
       if (!isFinite(x)) return '—';
       return x.toFixed(d);
@@ -231,6 +312,7 @@
       $('o-dmr').textContent = fmt(dm / rd, 2);
       $('o-dhr').textContent = fmt(dh / rd, 2);
       $('o-th').textContent = dm > 0 ? fmt(th, 3) : '\u2014';
+      marker(z, tz);
     }
 
     var FIELDS = ['c-h0', 'c-om', 'c-rd', 'c-z'];
