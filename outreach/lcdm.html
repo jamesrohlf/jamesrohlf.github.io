@@ -162,25 +162,40 @@
       all <em>derived</em>. These six are what the fits actually vary.
     </p>
 
+    <p class="prose">
+      Two of them carry an <em>h</em>, and it is worth saying what that is before going
+      further. <em>h</em> is the Hubble constant in units of
+      100&nbsp;km&nbsp;s<sup>&minus;1</sup>&nbsp;Mpc<sup>&minus;1</sup> — that is,
+      <em>H</em><sub>0</sub>&nbsp;=&nbsp;100<em>h</em>, so
+      <em>h</em>&nbsp;&asymp;&nbsp;0.674. It appears because the CMB does not measure
+      &Omega;<sub>b</sub>, the <em>fraction</em> of the critical density in baryons. It
+      measures the <em>physical</em> density
+      &omega;<sub>b</sub>&nbsp;=&nbsp;&Omega;<sub>b</sub><em>h</em><sup>2</sup>, because
+      that is what fixes the sound speed in the plasma and the relative heights of the
+      acoustic peaks. Turning &omega;<sub>b</sub> into the &Omega;<sub>b</sub> everyone
+      quotes requires <em>h</em> — which is derived, not measured. That is the whole
+      reason <em>h</em> follows cosmology around.
+    </p>
+
     <ul class="prose">
       <li><strong>&omega;<sub>b</sub> = &Omega;<sub>b</sub><em>h</em><sup>2</sup></strong>
         — the physical baryon density. Sets the baryon-to-photon ratio, which fixes the
         relative heights of odd and even acoustic peaks in the CMB and the freeze-out
-        conditions of Big Bang nucleosynthesis.</li>
+        conditions of Big Bang nucleosynthesis. <em>Planck 2018:</em> 0.02237&nbsp;&plusmn;&nbsp;0.00015.</li>
       <li><strong>&omega;<sub>c</sub> = &Omega;<sub>c</sub><em>h</em><sup>2</sup></strong>
         — the physical cold dark matter density. Controls how deep the gravitational
-        potential wells are, and when matter-radiation equality happens.</li>
+        potential wells are, and when matter-radiation equality happens. <em>Planck 2018:</em> 0.1200&nbsp;&plusmn;&nbsp;0.0012.</li>
       <li><strong>&theta;<sub>s</sub></strong> — the angular size of the sound horizon at
         recombination. The most precisely measured parameter in all of cosmology, and the
-        one that pins the acoustic scale.</li>
+        one that pins the acoustic scale. <em>Planck 2018:</em> 100&theta;<sub>s</sub>&nbsp;=&nbsp;1.04092&nbsp;&plusmn;&nbsp;0.00031.</li>
       <li><strong>&tau;</strong> — the optical depth to reionization. Suppresses small-scale
         CMB power by <em>e</em><sup>&minus;2&tau;</sup> and produces the large-scale
-        polarization bump.</li>
+        polarization bump. <em>Planck 2018:</em> 0.0544&nbsp;&plusmn;&nbsp;0.0073.</li>
       <li><strong><em>A</em><sub>s</sub></strong> — the amplitude of the primordial scalar
-        power spectrum. The overall normalization of every fluctuation that follows.</li>
+        power spectrum. The overall normalization of every fluctuation that follows. <em>Planck 2018:</em> ln(10<sup>10</sup><em>A</em><sub>s</sub>)&nbsp;=&nbsp;3.044&nbsp;&plusmn;&nbsp;0.014.</li>
       <li><strong><em>n</em><sub>s</sub></strong> — its spectral index. That
         <em>n</em><sub>s</sub>&nbsp;&lt;&nbsp;1 is firmly established, and slow-roll
-        inflation predicts exactly this sort of small departure from scale invariance.</li>
+        inflation predicts exactly this sort of small departure from scale invariance. <em>Planck 2018:</em> 0.9649&nbsp;&plusmn;&nbsp;0.0042.</li>
     </ul>
 
     <p class="prose">
@@ -191,7 +206,7 @@
     </p>
 
 
-    <h3>Try it</h3>
+    <h3>Cosmic calculator</h3>
 
     <p class="prose">
       Everything below is computed from the numbers in the four boxes. Change
@@ -203,8 +218,12 @@
       <div class="calc__in">
         <div class="calc__f"><label for="c-h0">H&#8320; [km/s/Mpc]</label>
           <input id="c-h0" type="number" value="67.36" step="0.1" min="10" max="200"></div>
-        <div class="calc__f"><label for="c-om">&Omega;<sub>m</sub></label>
-          <input id="c-om" type="number" value="0.3153" step="0.005" min="0.01" max="0.99"></div>
+        <div class="calc__f"><label for="c-wb">&omega;<sub>b</sub></label>
+          <input id="c-wb" type="number" value="0.02237" step="0.0002" min="0.001" max="0.2"></div>
+        <div class="calc__f"><label for="c-wc">&omega;<sub>c</sub></label>
+          <input id="c-wc" type="number" value="0.1200" step="0.002" min="0.01" max="0.9"></div>
+        <div class="calc__f"><label for="c-mnu">&Sigma;m<sub>&nu;</sub> [eV]</label>
+          <input id="c-mnu" type="number" value="0.06" step="0.01" min="0" max="2"></div>
         <div class="calc__f"><label for="c-rd">r<sub>d</sub> [Mpc]</label>
           <input id="c-rd" type="number" value="147.09" step="0.1" min="50" max="250"></div>
         <div class="calc__f"><label for="c-z">redshift z</label>
@@ -213,19 +232,28 @@
           <button type="button" id="c-reset" class="calc__reset">Reset to Planck 2018</button></div>
       </div>
       <div class="calc__out">
+        <div class="calc__row"><span>h = H&#8320;/100</span><output id="o-h">0.6736</output></div>
+        <div class="calc__row"><span>&Omega;<sub>b</sub> = &omega;<sub>b</sub>/h&sup2;</span><output id="o-ob">0.04930</output></div>
+        <div class="calc__row"><span>&Omega;<sub>c</sub> = &omega;<sub>c</sub>/h&sup2;</span><output id="o-oc">0.26447</output></div>
+        <div class="calc__row"><span>&Omega;<sub>&nu;</sub></span><output id="o-onu">0.00142</output></div>
+        <div class="calc__row"><span>&Omega;<sub>m</sub> total</span><output id="o-om">0.31519</output></div>
+        <div class="calc__row"><span>&Omega;<sub>&Lambda;</sub> = 1 &minus; &Omega;<sub>m</sub></span><output id="o-ol">0.68481</output></div>
+      </div>
+
+      <div class="calc__out">
         <div class="calc__row"><span>scale factor a</span><output id="o-a">0.5000</output></div>
-        <div class="calc__row"><span>H(z) [km/s/Mpc]</span><output id="o-hz">120.66</output></div>
-        <div class="calc__row"><span>age at z [Gyr]</span><output id="o-tz">5.842</output></div>
-        <div class="calc__row"><span>lookback time [Gyr]</span><output id="o-lb">7.953</output></div>
-        <div class="calc__row"><span>D<sub>M</sub> comoving [Mpc]</span><output id="o-dm">3402.3</output></div>
-        <div class="calc__row"><span>D<sub>A</sub> ang. diam. [Mpc]</span><output id="o-da">1701.1</output></div>
-        <div class="calc__row"><span>D<sub>L</sub> luminosity [Mpc]</span><output id="o-dl">6804.5</output></div>
+        <div class="calc__row"><span>H(z) [km/s/Mpc]</span><output id="o-hz">120.64</output></div>
+        <div class="calc__row"><span>age at z [Gyr]</span><output id="o-tz">5.843</output></div>
+        <div class="calc__row"><span>lookback time [Gyr]</span><output id="o-lb">7.954</output></div>
+        <div class="calc__row"><span>D<sub>M</sub> comoving [Mpc]</span><output id="o-dm">3402.5</output></div>
+        <div class="calc__row"><span>D<sub>A</sub> ang. diam. [Mpc]</span><output id="o-da">1701.2</output></div>
+        <div class="calc__row"><span>D<sub>L</sub> luminosity [Mpc]</span><output id="o-dl">6805.0</output></div>
         <div class="calc__row calc__hi"><span>&theta;<sub>BAO</sub> [deg]</span><output id="o-th">2.477</output></div>
       </div>
       <p class="calc__note">
-        Age of the universe today: <output id="o-t0">13.795</output>&nbsp;Gyr.
+        Age of the universe today: <output id="o-t0">13.797</output>&nbsp;Gyr.
         Flat &Lambda;CDM with &Omega;<sub>&Lambda;</sub>&nbsp;=&nbsp;1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub>
-        and radiation included in <em>E</em>(<em>z</em>), the same convention as the
+        &Omega;<sub>m</sub> derived from the physical densities, the neutrino mass sum converted with &Omega;<sub>&nu;</sub><em>h</em><sup>2</sup>&nbsp;=&nbsp;&Sigma;m<sub>&nu;</sub>/93.14&nbsp;eV, and radiation included in <em>E</em>(<em>z</em>) — the same convention as the
         timeline figure above. The values shown are for the Planck 2018 parameters at
         <em>z</em>&nbsp;=&nbsp;1.
       </p>
@@ -410,9 +438,24 @@
     }
 
     function update() {
-      var H0 = parseFloat($('c-h0').value), Om = parseFloat($('c-om').value),
+      var H0 = parseFloat($('c-h0').value), wb = parseFloat($('c-wb').value),
+          wc = parseFloat($('c-wc').value), mnu = parseFloat($('c-mnu').value),
           rd = parseFloat($('c-rd').value), z = parseFloat($('c-z').value);
-      if (!(H0 > 0) || !(Om > 0 && Om < 1) || !(z >= 0) || !(rd > 0)) return;
+      if (!(H0 > 0) || !(wb > 0) || !(wc > 0) || !(mnu >= 0) || !(z >= 0) || !(rd > 0)) return;
+
+      // The step the h paragraph above is about: physical densities are what the
+      // CMB measures; dividing by h squared turns them into the fractions Omega.
+      // 93.14 eV is the standard conversion for the neutrino mass sum.
+      var h = H0 / 100, h2 = h * h, wnu = mnu / 93.14, wm = wb + wc + wnu;
+      var Om = wm / h2;
+      if (!(Om > 0 && Om < 1)) return;
+
+      $('o-h').textContent   = fmt(h, 4);
+      $('o-ob').textContent  = fmt(wb / h2, 5);
+      $('o-oc').textContent  = fmt(wc / h2, 5);
+      $('o-onu').textContent = fmt(wnu / h2, 5);
+      $('o-om').textContent  = fmt(Om, 5);
+      $('o-ol').textContent  = fmt(1 - Om, 5);
 
       var m = model(H0, Om), a = 1 / (1 + z);
       var t0 = m.tOfA(1), tz = m.tOfA(a), dm = m.DC(z);
@@ -429,7 +472,7 @@
       $('o-t0').textContent = fmt(t0, 3);
     }
 
-    var FIELDS = ['c-h0', 'c-om', 'c-rd', 'c-z'];
+    var FIELDS = ['c-h0', 'c-wb', 'c-wc', 'c-mnu', 'c-rd', 'c-z'];
 
     // Read the defaults out of the markup rather than repeating them here, so
     // the button always restores exactly what the page shipped with.
