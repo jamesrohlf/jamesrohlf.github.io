@@ -269,28 +269,28 @@
 
     <div class="calc" id="calc">
       <div class="calc__in">
-        <div class="calc__f"><label for="c-h0">H&#8320; [km/s/Mpc]</label>
+        <div class="calc__f"><label for="c-h0"><em>H</em>&#8320; [km/s/Mpc]</label>
           <input id="c-h0" type="number" autocomplete="off" value="67.4" step="0.1" min="0" max="200"></div>
         <div class="calc__f"><label for="c-om">&Omega;<sub>m</sub></label>
           <input id="c-om" type="number" autocomplete="off" value="0.315" step="any" min="0.01" max="0.99"></div>
         <div class="calc__f"><label for="c-rd"><em>r</em><sub>d</sub> [Mpc]</label>
           <input id="c-rd" type="number" autocomplete="off" value="147.1" step="any" min="50" max="250"></div>
-        <div class="calc__f"><label for="c-z">redshift z</label>
+        <div class="calc__f"><label for="c-z">redshift <em>z</em></label>
           <input id="c-z" type="number" autocomplete="off" value="0" step="0.1" min="0" max="1500"></div>
         <div class="calc__f calc__f--act"><label aria-hidden="true">&nbsp;</label>
           <button type="button" id="c-reset" class="calc__reset">Reset to Planck 2018</button></div>
       </div>
       <div class="calc__out">
-        <div class="calc__row"><span>h = H&#8320;/100</span><output id="o-h">0.6740</output></div>
+        <div class="calc__row"><span><em>h</em> = <em>H</em>&#8320;/100</span><output id="o-h">0.6740</output></div>
         <div class="calc__row"><span>&Omega;<sub>&Lambda;</sub> = 1 &minus; &Omega;<sub>m</sub></span><output id="o-ol">0.6850</output></div>
-        <div class="calc__row"><span>scale factor a</span><output id="o-a">1.0000</output></div>
-        <div class="calc__row"><span>H(z) [km/s/Mpc]</span><output id="o-hz">67.40</output></div>
-        <div class="calc__row"><span>age at z [Gyr]</span><output id="o-tz">13.791</output></div>
+        <div class="calc__row"><span>scale factor <em>a</em></span><output id="o-a">1.0000</output></div>
+        <div class="calc__row"><span><em>H</em>(<em>z</em>) [km/s/Mpc]</span><output id="o-hz">67.40</output></div>
+        <div class="calc__row"><span>age at <em>z</em> [Gyr]</span><output id="o-tz">13.791</output></div>
         <div class="calc__row"><span>lookback time [Gyr]</span><output id="o-lb">0.000</output></div>
         <div class="calc__row calc__row--head"><span></span><span>Mpc</span><span>&divide;&thinsp;<em>r</em><sub>d</sub></span></div>
-        <div class="calc__row"><span>D<sub>M</sub> comoving</span><output id="o-dm">0.0</output><output id="o-dmr" class="calc__r2">0.00</output></div>
-        <div class="calc__row"><span>D<sub>H</sub> = c/H(z)</span><output id="o-dh">4448.0</output><output id="o-dhr" class="calc__r2">30.24</output></div>
-        <div class="calc__row calc__hi"><span>&theta;<sub>BAO</sub> [deg]</span><output id="o-th">—</output></div>
+        <div class="calc__row"><span><em>D</em><sub>M</sub> comoving</span><output id="o-dm">0.0</output><output id="o-dmr" class="calc__r2">0.00</output></div>
+        <div class="calc__row"><span><em>D</em><sub>H</sub> = <em>c</em>/<em>H</em>(<em>z</em>)</span><output id="o-dh">4448.0</output><output id="o-dhr" class="calc__r2">30.24</output></div>
+        <div class="calc__row calc__hi"><span><em>&theta;</em><sub>BAO</sub> [deg]</span><output id="o-th">—</output></div>
       </div>
       <p class="calc__note">
         Age of the universe today: <output id="o-t0">13.791</output>&nbsp;Gyr.
