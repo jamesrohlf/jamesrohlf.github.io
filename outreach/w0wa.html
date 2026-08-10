@@ -466,6 +466,11 @@
     // that they chose, and an unexplained dot on a confidence map reads as a
     // result. Once clicked it follows the inputs, so it never lies about them.
     var SHOWPICK = false;
+    // Pinned: a click freezes the calculator on one point, so the numbers can be
+    // read without the pointer stealing them back. While pinned the plane ignores
+    // the mouse entirely -- half-frozen would be worse than not frozen, because
+    // you could not tell which state you were in.
+    var PINNED = false;
     var xOf = function (w0) { return L + (w0 - W0LO) / (W0HI - W0LO) * (R - L); };
     var yOf = function (wa) { return B - (wa - WALO) / (WAHI - WALO) * (B - T); };
     var w0Of = function (x) { return W0LO + (x - L) / (R - L) * (W0HI - W0LO); };
@@ -538,9 +543,9 @@
         '<i style="background:var(--scarlet);opacity:.30;margin-left:.7rem"></i>95% ' +
         '<i style="background:var(--scarlet);opacity:.14;margin-left:.7rem"></i>99%' +
         ' &nbsp;&mdash;&nbsp; from the twelve DESI DR1 BAO distances, ' +
-        '<em>r</em><sub>d</sub> = 147.1 Mpc.<br>The filled dot is the ' +
-        '<em>w</em><sub>0</sub>, <em>w</em><sub>a</sub> now in the calculator, which ' +
-        'follows your pointer.';
+        '<em>r</em><sub>d</sub> = 147.1 Mpc.<br>The dot is the ' +
+        '<em>w</em><sub>0</sub>, <em>w</em><sub>a</sub> now in the calculator. It follows ' +
+        'your pointer; <strong>click to freeze it</strong>, click again or Esc to release.';
       drawMarks();
       report(null);
     }
@@ -564,6 +569,9 @@
             ca >= WALO && ca <= WAHI)
           marks.appendChild(el('circle', { cx: xOf(cw).toFixed(1), cy: yOf(ca).toFixed(1),
             r: 4.5, fill: 'var(--scarlet)', stroke: '#fff', 'stroke-width': 1.2 }));
+        if (PINNED && isFinite(cw) && isFinite(ca))
+          marks.appendChild(el('circle', { cx: xOf(cw).toFixed(1), cy: yOf(ca).toFixed(1),
+            r: 8.5, fill: 'none', stroke: 'var(--scarlet)', 'stroke-width': 1.4 }));
       }
     }
 
@@ -602,6 +610,7 @@
     // per mousemove event.
     var pend = null, raf = 0;
     svg.addEventListener('mousemove', function (e) {
+      if (PINNED) return;
       var p = fromEvent(e); if (!p) return;
       report(p);
       pend = p;
@@ -615,12 +624,26 @@
         clearPressed(); update(); drawMarks();
       });
     });
-    svg.addEventListener('mouseleave', function () { report(null); });
+    svg.addEventListener('mouseleave', function () { if (!PINNED) report(null); });
     svg.addEventListener('click', function (e) {
       var p = fromEvent(e); if (!p) return;
-      $('c-w0').value = p.w0.toFixed(3); $('c-wa').value = p.wa.toFixed(3);
-      SHOWPICK = true;
-      clearPressed(); update(); drawMarks(); report(p);
+      if (PINNED) {                        // a second click releases it
+        PINNED = false;
+        svg.style.cursor = 'crosshair';
+      } else {
+        PINNED = true;
+        svg.style.cursor = 'default';
+        $('c-w0').value = p.w0.toFixed(3); $('c-wa').value = p.wa.toFixed(3);
+        SHOWPICK = true;
+        clearPressed(); update();
+      }
+      drawMarks(); report(PINNED ? p : null);
+    });
+    // Escape releases too, for anyone who pinned by accident.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && PINNED) {
+        PINNED = false; svg.style.cursor = 'crosshair'; drawMarks(); report(null);
+      }
     });
     ['c-w0', 'c-wa'].forEach(function (id) {
       $(id).addEventListener('input', function () { drawMarks(); report(null); });
