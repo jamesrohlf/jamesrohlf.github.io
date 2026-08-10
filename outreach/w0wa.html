@@ -451,6 +451,11 @@
     var W0LO = -1.4, W0HI = -0.5, WALO = -2.4, WAHI = 1.2, N = 37;
     var L = 58, R = 546, T = 16, B = 372;          // plot box in viewBox units
     var GRID = [], chiMin = Infinity;
+    // The filled dot marks the w0, wa sitting in the calculator above. It is
+    // off until the reader clicks: on first load there is nothing to point at
+    // that they chose, and an unexplained dot on a confidence map reads as a
+    // result. Once clicked it follows the inputs, so it never lies about them.
+    var SHOWPICK = false;
     var xOf = function (w0) { return L + (w0 - W0LO) / (W0HI - W0LO) * (R - L); };
     var yOf = function (wa) { return B - (wa - WALO) / (WAHI - WALO) * (B - T); };
     var w0Of = function (x) { return W0LO + (x - L) / (R - L) * (W0HI - W0LO); };
@@ -523,7 +528,8 @@
         '<i style="background:var(--scarlet);opacity:.30;margin-left:.7rem"></i>95% ' +
         '<i style="background:var(--scarlet);opacity:.14;margin-left:.7rem"></i>99%' +
         ' &nbsp;&mdash;&nbsp; from the twelve DESI DR1 BAO distances, ' +
-        '<em>r</em><sub>d</sub> = 147.1 Mpc';
+        '<em>r</em><sub>d</sub> = 147.1 Mpc.<br>Click the plane to mark it: the filled ' +
+        'dot is the <em>w</em><sub>0</sub>, <em>w</em><sub>a</sub> in the calculator above.';
       drawMarks();
       report(null);
     }
@@ -540,6 +546,14 @@
       var t = el('text', { x: xOf(-1) + 8, y: yOf(0) - 6, class: 'pl-ax',
         style: 'text-anchor:start' });
       t.textContent = 'ΛCDM'; marks.appendChild(t);
+
+      if (SHOWPICK) {
+        var cw = parseFloat($('c-w0').value), ca = parseFloat($('c-wa').value);
+        if (isFinite(cw) && isFinite(ca) && cw >= W0LO && cw <= W0HI &&
+            ca >= WALO && ca <= WAHI)
+          marks.appendChild(el('circle', { cx: xOf(cw).toFixed(1), cy: yOf(ca).toFixed(1),
+            r: 4.5, fill: 'var(--scarlet)', stroke: '#fff', 'stroke-width': 1.2 }));
+      }
     }
 
     function nearest(w0, wa) {
@@ -577,6 +591,7 @@
     svg.addEventListener('click', function (e) {
       var p = fromEvent(e); if (!p) return;
       $('c-w0').value = p.w0.toFixed(3); $('c-wa').value = p.wa.toFixed(3);
+      SHOWPICK = true;
       clearPressed(); update(); drawMarks(); report(p);
     });
     ['c-w0', 'c-wa'].forEach(function (id) {
