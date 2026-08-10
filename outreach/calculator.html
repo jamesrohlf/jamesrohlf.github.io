@@ -11,7 +11,8 @@
   <script src="assets/js/chrome.js" defer></script>
   <style>
                   border-bottom:2px solid color-mix(in srgb, var(--scarlet) 35%, transparent); }
-    .eb { margin:1.2rem 0 .4rem; }
+    .eb-lead { font-size:.85rem; color:var(--ink-faint); margin:1.2rem 0 .3rem; }
+    .eb { margin:0 0 .4rem; }
     .eb svg { display:block; width:100%; height:auto; }
     .eb-lab { font:600 11px system-ui,sans-serif; text-anchor:middle; }
     .eb-ax  { font:400 11px system-ui,sans-serif; fill:var(--ink-faint); text-anchor:middle; }
@@ -21,7 +22,6 @@
     .eb-markhead { fill:#c62828; }
     .eb-cap { font-size:.9rem; color:var(--ink-soft); margin:.1rem 0 .7rem; }
     .eb-cap strong { color:var(--scarlet); }
-    .eb-warn { font-size:.85rem; color:var(--ink-faint); }
     .calc { border:1px solid var(--rule); border-radius:10px; padding:1rem 1.1rem;
             margin:1.4rem 0 1.8rem; background:var(--paper);
             width:fit-content; max-width:100%; }
@@ -89,6 +89,8 @@
 
 
 
+    <p class="eb-lead">Era boundaries are drawn for &Lambda;CDM.</p>
+
     <div class="eb"><svg id="erabar" viewBox="0 0 1000 104" role="img" aria-labelledby="ebT ebD" preserveAspectRatio="xMidYMid meet">
 <title id="ebT">Cosmic timeline with the current redshift marked</title>
 <desc id="ebD">A horizontal bar of cosmic eras from the Planck era through inflation, the quark-gluon plasma, Big Bang nucleosynthesis, radiation domination, matter domination, the Dark Ages, first stars, galaxy assembly, mature galaxies and the dark-energy era, with a marker showing where the chosen redshift falls.</desc>
@@ -133,8 +135,7 @@
     <p class="eb-cap">At <em>z</em> = <strong id="eb-z">0</strong> the universe is
       <strong id="eb-t">13.791 Gyr</strong> old, in the
       <strong id="eb-era">dark-energy</strong> era.
-      <span class="eb-cap__note" id="eb-landmark"></span>
-      <span class="eb-warn">Era boundaries are drawn for &Lambda;CDM.</span></p>
+      <span class="eb-cap__note" id="eb-landmark"></span></p>
 
     <div class="eb-jump">
       <span class="eb-jump__lab">jump to</span>
