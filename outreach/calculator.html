@@ -19,7 +19,7 @@
     .eb-tick{ stroke:var(--ink-faint); stroke-width:1; }
     .eb-mark{ stroke:#c62828; stroke-width:2.5; }
     .eb-markhead { fill:#c62828; }
-    .eb-cap { font-size:.9rem; color:var(--ink-soft); margin:.1rem 0 1.4rem; }
+    .eb-cap { font-size:.9rem; color:var(--ink-soft); margin:.1rem 0 .7rem; }
     .eb-cap strong { color:var(--scarlet); }
     .eb-warn { font-size:.85rem; color:var(--ink-faint); }
     .calc { border:1px solid var(--rule); border-radius:10px; padding:1rem 1.1rem;
@@ -66,6 +66,16 @@
                    transition:background var(--ease), border-color var(--ease); }
     .calc__reset:hover { background:var(--scarlet); border-color:var(--scarlet); color:#fff; }
     .calc__note { font-size:.85rem; color:var(--ink-faint); margin:.9rem 0 0; }
+    .eb-jump { display:flex; flex-wrap:wrap; align-items:baseline; gap:.35rem .4rem;
+               margin:0 0 1.4rem; }
+    .eb-jump__lab { font-size:.85rem; color:var(--ink-faint); margin-right:.1rem; }
+    .eb-jump button { font:600 .8rem var(--font-body); cursor:pointer;
+                      padding:.2rem .6rem; border:1px solid var(--rule);
+                      border-radius:999px; background:var(--cream); color:var(--ink-soft);
+                      transition:background var(--ease), border-color var(--ease); }
+    .eb-jump button:hover,
+    .eb-jump button[aria-pressed="true"] { background:var(--scarlet);
+                      border-color:var(--scarlet); color:#fff; }
     </style>
 </head>
 <body>
@@ -122,6 +132,18 @@
       <strong id="eb-t">13.791</strong> Gyr old, in the
       <strong id="eb-era">dark-energy</strong> era.
       <span class="eb-warn">Era boundaries are drawn for &Lambda;CDM.</span></p>
+
+    <div class="eb-jump">
+      <span class="eb-jump__lab">jump to</span>
+      <button type="button" data-z="3400" aria-pressed="false" title="radiation–matter equality, z ≈ 3400">R/M eq.</button>
+      <button type="button" data-z="1090" aria-pressed="false" title="recombination — the cosmic microwave background is released, z ≈ 1090">CMB</button>
+      <button type="button" data-z="100" aria-pressed="false" title="the Dark Ages, before the first stars">Dark ages</button>
+      <button type="button" data-z="22" aria-pressed="false" title="the first stars end the Dark Ages, z ≈ 22">First stars</button>
+      <button type="button" data-z="2" aria-pressed="false" title="cosmic noon — the peak of galaxy assembly, z ≈ 2">Cosmic noon</button>
+      <button type="button" data-z="0.7" aria-pressed="false" title="where θ_BAO falls through DESI's 3.2° tile, z ≈ 0.7">BAO</button>
+      <button type="button" data-z="0.3" aria-pressed="false" title="the dark-energy era, which begins at z ≈ 0.38">DE</button>
+      <button type="button" data-z="0" aria-pressed="false" title="today, z = 0">Today</button>
+    </div>
 
     <div class="calc" id="calc">
       <div class="calc__in">
@@ -384,8 +406,31 @@
 
     FIELDS.forEach(function (id) { $(id).addEventListener('input', update); });
 
+    // ---- preset redshifts --------------------------------------------------
+    // Landmarks on the era bar. Each sets z and reruns the same update() the
+    // inputs use, so the marker and all nine outputs move together.
+    var JUMPS = document.querySelectorAll('.eb-jump button');
+    function clearPressed() {
+      Array.prototype.forEach.call(JUMPS, function (b) { b.setAttribute('aria-pressed', 'false'); });
+    }
+    Array.prototype.forEach.call(JUMPS, function (b) {
+      b.addEventListener('click', function () {
+        zBox.value = b.getAttribute('data-z');
+        // zPrev drives the doubling heuristic above. Without this a jump looks
+        // to the next input event like a 0.1 spinner step from the old value.
+        zPrev = parseFloat(zBox.value);
+        clearPressed();
+        b.setAttribute('aria-pressed', 'true');
+        update();
+      });
+    });
+    // Any typed or stepped z has left the preset behind.
+    zBox.addEventListener('input', clearPressed);
+
     $('c-reset').addEventListener('click', function () {
       FIELDS.forEach(function (id) { $(id).value = DEFAULTS[id]; });
+      zPrev = parseFloat(zBox.value);
+      clearPressed();
       update();
     });
   })();
