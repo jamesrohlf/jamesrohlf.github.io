@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evolving Dark Energy Calculator — w₀wₐCDM against ΛCDM — Jim Rohlf</title>
+  <meta name="description" content="An evolving dark energy calculator: set w0 and wa and see what changes against flat ΛCDM at the same redshift — the expansion rate, age and lookback time, comoving and Hubble distances, their ratios to r_d in DESI's convention, and theta_BAO.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/w0wa.html">
+    <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+  <style>
+    .calc { border:1px solid var(--rule); border-radius:10px; padding:1rem 1.1rem;
+            margin:1.4rem 0 1.8rem; background:var(--paper);
+            width:fit-content; max-width:100%; }
+    .calc__in { display:flex; flex-wrap:wrap; gap:.9rem 1.4rem; margin-bottom:.9rem; }
+    .calc__f { display:flex; flex-direction:column; gap:.15rem; font-size:.9rem; }
+    .calc__f label { color:var(--ink-soft); font-weight:600; }
+    .calc__f input:out-of-range { border-color:var(--scarlet);
+                                  box-shadow:0 0 0 2px color-mix(in srgb, var(--scarlet) 20%, transparent); }
+    .calc__f input { font:inherit; font-family:var(--font-mono); width:7.5rem;
+                     padding:.3rem .45rem; border:1px solid var(--rule);
+                     border-radius:5px; background:var(--cream); color:var(--ink); }
+    .calc__title { margin:.8rem 0 .1rem; font:700 .82rem var(--font-body);
+                   text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); }
+    .calc__reset { font:600 .85rem var(--font-body); cursor:pointer;
+                   padding:.36rem .7rem; border:1px solid var(--rule);
+                   border-radius:5px; background:var(--cream); color:var(--ink);
+                   transition:background var(--ease), border-color var(--ease); }
+    .calc__reset:hover { background:var(--scarlet); border-color:var(--scarlet); color:#fff; }
+
+    /* Three columns: the standard model, the evolving one, and the gap. The
+       gap is the column that does not exist anywhere else on the site. */
+    .cmp { width:100%; max-width:34rem; border-collapse:collapse; font-size:.92rem; }
+    .cmp th, .cmp td { padding:.28rem .5rem; border-bottom:1px dotted var(--rule); }
+    .cmp thead th { border-bottom:1px solid var(--rule); font:700 .78rem var(--font-body);
+                    text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); }
+    .cmp th { text-align:left; color:var(--ink-soft); font-weight:600; }
+    .cmp td { text-align:right; font-family:var(--font-mono);
+              font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .cmp thead th:not(:first-child) { text-align:right; }
+    .cmp .d { color:var(--scarlet); font-weight:700; }
+    .cmp tr.hi td, .cmp tr.hi th { background:color-mix(in srgb, var(--scarlet) 8%, transparent); }
+
+    .pre { display:flex; flex-wrap:wrap; align-items:baseline; gap:.35rem .4rem;
+           margin:0 0 1rem; }
+    .pre__lab { font-size:.85rem; color:var(--ink-faint); margin-right:.1rem; }
+    .pre button { font:600 .8rem var(--font-body); cursor:pointer;
+                  padding:.2rem .6rem; border:1px solid var(--rule);
+                  border-radius:999px; background:var(--cream); color:var(--ink-soft);
+                  transition:background var(--ease), border-color var(--ease); }
+    .pre button:hover,
+    .pre button[aria-pressed="true"] { background:var(--scarlet);
+                  border-color:var(--scarlet); color:#fff; }
+    .wnote { font-size:.85rem; color:var(--ink-faint); margin:1rem 0 0; }
+    .wstate { font-size:.9rem; color:var(--ink-soft); margin:.2rem 0 1rem; }
+    .wstate strong { color:var(--scarlet); }
+  </style>
+</head>
+<body>
+  <main id="main">
+    <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
+
+    <h1>Evolving Dark Energy Calculator</h1>
+    <p class="subtitle">Set <em>w</em><sub>0</sub> and <em>w</em><sub>a</sub> and see what moves against flat
+      <a href="lcdm.html">&Lambda;CDM</a> at the same redshift</p>
+
+    <p class="prose">
+      &Lambda;CDM assumes the dark energy density never changes &mdash; that is what the
+      &Lambda; means. The usual way to relax it lets the equation of state run linearly
+      with scale factor, <em>w</em>(<em>a</em>)&nbsp;=&nbsp;<em>w</em><sub>0</sub>&nbsp;+&nbsp;<em>w</em><sub>a</sub>(1&nbsp;&minus;&nbsp;<em>a</em>),
+      so that <em>w</em><sub>0</sub> is the value today and <em>w</em><sub>0</sub>&nbsp;+&nbsp;<em>w</em><sub>a</sub>
+      the value in the distant past. Set <em>w</em><sub>0</sub>&nbsp;=&nbsp;&minus;1 and
+      <em>w</em><sub>a</sub>&nbsp;=&nbsp;0 and the two columns below agree to the last digit,
+      because the model has become &Lambda;CDM again. Move either one and the gap opens.
+    </p>
+
+    <div class="pre">
+      <span class="pre__lab">presets</span>
+      <button type="button" data-w0="-1" data-wa="0" aria-pressed="false"
+        data-note="&Lambda;CDM: the dark energy density is constant.">&Lambda;CDM</button>
+      <button type="button" data-w0="-0.958" data-wa="-0.269" aria-pressed="false"
+        data-note="A fit to the DESI BAO distances alone, without the CMB or supernovae.">DESI BAO fit</button>
+      <button type="button" data-w0="-1.1" data-wa="0" aria-pressed="false"
+        data-note="Phantom, illustrative: w below &minus;1 and not evolving.">Phantom</button>
+    </div>
+    <p class="wstate" id="w-state"></p>
+
+    <div class="calc" id="calc">
+      <div class="calc__in">
+        <div class="calc__f"><label for="c-h0"><em>H</em>&#8320; [km/s/Mpc]</label>
+          <input id="c-h0" type="number" autocomplete="off" value="67.4" step="0.1" min="60" max="80"></div>
+        <div class="calc__f"><label for="c-om">&Omega;<sub>m</sub></label>
+          <input id="c-om" type="number" autocomplete="off" value="0.315" step="any" min="0.25" max="0.35"></div>
+        <div class="calc__f"><label for="c-rd"><em>r</em><sub>d</sub> [Mpc]</label>
+          <input id="c-rd" type="number" autocomplete="off" value="147.1" step="any" min="100" max="200"></div>
+        <div class="calc__f"><label for="c-z">redshift <em>z</em></label>
+          <input id="c-z" type="number" autocomplete="off" value="0.7" step="0.1" min="0" max="1100"></div>
+        <div class="calc__f"><label for="c-w0"><em>w</em><sub>0</sub></label>
+          <input id="c-w0" type="number" autocomplete="off" value="-0.958" step="0.01" min="-2" max="-0.3"></div>
+        <div class="calc__f"><label for="c-wa"><em>w</em><sub>a</sub></label>
+          <input id="c-wa" type="number" autocomplete="off" value="-0.269" step="0.05" min="-3" max="1"></div>
+        <div class="calc__f calc__f--act"><label aria-hidden="true">&nbsp;</label>
+          <button type="button" id="c-reset" class="calc__reset">Reset</button></div>
+      </div>
+
+      <p class="calc__title">At this redshift</p>
+      <table class="cmp">
+        <thead>
+          <tr><th>&nbsp;</th><th>&Lambda;CDM</th><th><em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM</th><th>diff</th></tr>
+        </thead>
+        <tbody>
+          <tr><th><em>H</em>(<em>z</em>) [km/s/Mpc]</th><td id="o-hz-l">—</td><td id="o-hz-w">—</td><td class="d" id="o-hz-d">—</td></tr>
+          <tr><th>age</th><td id="o-t-l">—</td><td id="o-t-w">—</td><td class="d" id="o-t-d">—</td></tr>
+          <tr><th>lookback</th><td id="o-lb-l">—</td><td id="o-lb-w">—</td><td class="d" id="o-lb-d">—</td></tr>
+          <tr><th><em>D</em><sub>M</sub> [Mpc]</th><td id="o-dm-l">—</td><td id="o-dm-w">—</td><td class="d" id="o-dm-d">—</td></tr>
+          <tr><th><em>D</em><sub>M</sub>/<em>r</em><sub>d</sub></th><td id="o-dmr-l">—</td><td id="o-dmr-w">—</td><td class="d" id="o-dmr-d">—</td></tr>
+          <tr><th><em>D</em><sub>H</sub>/<em>r</em><sub>d</sub></th><td id="o-dhr-l">—</td><td id="o-dhr-w">—</td><td class="d" id="o-dhr-d">—</td></tr>
+          <tr class="hi"><th><em>&theta;</em><sub>BAO</sub> [deg]</th><td id="o-th-l">—</td><td id="o-th-w">—</td><td class="d" id="o-th-d">—</td></tr>
+          <tr><th><em>w</em>(<em>z</em>)</th><td id="o-w-l">—</td><td id="o-w-w">—</td><td class="d" id="o-w-d">—</td></tr>
+        </tbody>
+      </table>
+      <p class="calc__note">The diff column is the fractional change, (<em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM
+        &minus; &Lambda;CDM) / &Lambda;CDM, in percent. Both columns use the same
+        <em>H</em>&#8320;, &Omega;<sub>m</sub> and <em>r</em><sub>d</sub>, so the gap is
+        the dark energy alone.</p>
+    </div>
+
+    <h2 class="section-title">What the two columns share, and what they don't</h2>
+
+    <p class="prose">
+      Both columns solve the same Friedmann equation with the same radiation and matter
+      terms. Only the dark energy term differs. Holding &Lambda;CDM at
+      &Omega;<sub>&Lambda;</sub>, the evolving model carries
+      &Omega;<sub>&Lambda;</sub>&nbsp;&times;&nbsp;<em>a</em><sup>&minus;3(1+<em>w</em><sub>0</sub>+<em>w</em><sub>a</sub>)</sup>
+      <em>e</em><sup>&minus;3<em>w</em><sub>a</sub>(1&minus;<em>a</em>)</sup>, which is
+      exactly 1 when <em>w</em><sub>0</sub>&nbsp;=&nbsp;&minus;1 and
+      <em>w</em><sub>a</sub>&nbsp;=&nbsp;0. That is why the diff column reads zero there
+      rather than nearly zero: it is the same arithmetic, not a close approximation.
+    </p>
+
+    <p class="prose">
+      For parameters this close to &Lambda;CDM the gaps are well under one percent, and
+      they do not all move the same way. With the DESI BAO fit loaded,
+      <em>H</em>(<em>z</em>) sits <em>below</em> &Lambda;CDM at
+      <em>z</em>&nbsp;=&nbsp;1 and <em>above</em> it by <em>z</em>&nbsp;=&nbsp;0.3: the
+      evolving density crosses the constant one on the way, and the diff column changes
+      sign as it does. Sweep <em>z</em> downward and watch it happen near
+      <em>z</em>&nbsp;&asymp;&nbsp;0.5. That crossing is the whole content of an evolving
+      equation of state, and it is why one measurement at one redshift cannot separate the
+      two models. You need the shape, across a range &mdash; which is what a survey of
+      millions of galaxies at many redshifts is for.
+    </p>
+
+    <p class="prose">
+      The preset labelled <em>DESI BAO fit</em> is a fit to the DESI BAO distance
+      measurements on their own &mdash; not DESI's published constraint, which combines
+      BAO with the CMB and with supernovae and lands further from &Lambda;CDM. Use it as a
+      starting point to move from, not as a result to quote. The
+      <a href="lcdm.html#evolving-dark-energy">&Lambda;CDM page</a> describes where the
+      published preference for evolution stands.
+    </p>
+
+    <p class="prose muted">
+      The age integral, the comoving distance and &theta;<sub>BAO</sub> are computed as on
+      the <a href="calculator.html">cosmology calculator</a>, by Simpson's rule under the
+      substitution <em>a</em>&nbsp;=&nbsp;1/(1+<em>z</em>). The linear
+      <em>w</em>(<em>a</em>) form is an extrapolation far outside the range it was built
+      to describe, so the redshift here is capped at 1100 rather than the
+      10<sup>7</sup> the &Lambda;CDM calculator allows.
+    </p>
+
+    <h2 class="section-title">Elsewhere on this site</h2>
+
+    <ul class="link-list">
+      <li><a href="calculator.html">Cosmology calculator
+        <span class="sub">the same quantities in flat &Lambda;CDM, with the cosmic timeline</span></a></li>
+      <li><a href="lcdm.html">&Lambda;CDM
+        <span class="sub">the standard model of cosmology — the six parameters, and the cosmic timeline</span></a></li>
+      <li><a href="bao.html">Baryon acoustic oscillations
+        <span class="sub">where the 147&nbsp;Mpc ruler comes from</span></a></li>
+    </ul>
+  </main>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    if (!$('calc')) return;
+
+    var C = 299792.458, MPC_KM = 3.0857e19, YR_S = 3.1557e7;
+
+    function simpson(f, a, b, n) {
+      if (b <= a) return 0;
+      n = n + (n % 2);
+      var h = (b - a) / n, s = f(a) + f(b), i;
+      for (i = 1; i < n; i++) s += f(a + i * h) * (i % 2 ? 4 : 2);
+      return s * h / 3;
+    }
+
+    // w0 = -1, wa = 0 gives fDE = 1 identically, so passing those returns the
+    // LCDM model exactly rather than approximately. Both columns come from this
+    // one function, which is what makes the diff column trustworthy.
+    function model(H0, Om, w0, wa) {
+      var h = H0 / 100, Og = 2.473e-5, Neff = 3.046;
+      var Or = (Og + Neff * (7 / 8) * Math.pow(4 / 11, 4 / 3) * Og) / (h * h);
+      var OL = 1 - Om - Or;
+
+      // rho_DE(a)/rho_DE(1) for w(a) = w0 + wa(1-a).
+      function fDE(a) {
+        return Math.pow(a, -3 * (1 + w0 + wa)) * Math.exp(-3 * wa * (1 - a));
+      }
+
+      return {
+        Or: Or, OL: OL, w0: w0, wa: wa,
+        wOf: function (z) { return w0 + wa * (1 - 1 / (1 + z)); },
+        E: function (z) {
+          var zp = 1 + z, a = 1 / zp;
+          return Math.sqrt(Or * Math.pow(zp, 4) + Om * Math.pow(zp, 3) + OL * fDE(a));
+        },
+        // Same substitution as the LCDM calculator: the integrand is
+        // 1/sqrt(Or/a^2 + Om/a + OL fDE(a) a^2), finite all the way to a = 0.
+        tOfA: function (a) {
+          var tH = MPC_KM / H0 / YR_S;
+          return tH * simpson(function (x) {
+            return x <= 0 ? 0 : 1 / Math.sqrt(Or / (x * x) + Om / x + OL * fDE(x) * x * x);
+          }, 0, a, 4000) / 1e9;
+        },
+        DC: function (z) {
+          var self = this;
+          return z <= 0 ? 0 : (C / H0) * simpson(function (zz) { return 1 / self.E(zz); }, 0, z, 2000);
+        }
+      };
+    }
+
+    function fmt(x, d) { return isFinite(x) ? x.toFixed(d) : '—'; }
+
+    // Ages here run from 13.8 Gyr down to a few hundred kyr, so one unit will
+    // not do. Same ladder as the LCDM calculator.
+    function sig(v) {
+      var s = v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
+      return s.indexOf('.') < 0 ? s : s.replace(/\.?0+$/, '');
+    }
+    function ageText(tGyr) {
+      var yr = tGyr * 1e9;
+      if (yr >= 1e9) return tGyr.toFixed(3) + ' Gyr';
+      if (yr >= 1e6) return sig(yr / 1e6) + ' Myr';
+      if (yr >= 1e3) return sig(yr / 1e3) + ' kyr';
+      return sig(yr) + ' yr';
+    }
+
+    // Percent difference. Guarded at zero because D_M and lookback are exactly
+    // zero at z = 0, where a ratio says nothing.
+    function pct(w, l) {
+      if (!isFinite(w) || !isFinite(l) || l === 0) return '—';
+      var p = (w - l) / l * 100;
+      if (Math.abs(p) < 5e-4) return '0.00%';
+      return (p > 0 ? '+' : '') + p.toFixed(2) + '%';
+    }
+
+    function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
+
+    function update() {
+      var H0 = parseFloat($('c-h0').value), Om = parseFloat($('c-om').value),
+          rd = parseFloat($('c-rd').value), z = parseFloat($('c-z').value),
+          w0 = parseFloat($('c-w0').value), wa = parseFloat($('c-wa').value);
+      if (![H0, Om, rd, z, w0, wa].every(isFinite)) return;
+
+      H0 = clamp(H0, 60, 80); Om = clamp(Om, 0.25, 0.35); rd = clamp(rd, 100, 200);
+      z = clamp(z, 0, 1100); w0 = clamp(w0, -2, -0.3); wa = clamp(wa, -3, 1);
+
+      var L = model(H0, Om, -1, 0), W = model(H0, Om, w0, wa), a = 1 / (1 + z);
+
+      var hzL = H0 * L.E(z),  hzW = H0 * W.E(z);
+      var tL  = L.tOfA(a),    tW  = W.tOfA(a);
+      var t0L = L.tOfA(1),    t0W = W.tOfA(1);
+      var dmL = L.DC(z),      dmW = W.DC(z);
+      var dhL = C / hzL,      dhW = C / hzW;
+      var thL = dmL > 0 ? (rd / dmL) * 180 / Math.PI : NaN;
+      var thW = dmW > 0 ? (rd / dmW) * 180 / Math.PI : NaN;
+
+      function row(id, vl, vw, txt) {
+        $('o-' + id + '-l').textContent = txt ? txt(vl) : vl;
+        $('o-' + id + '-w').textContent = txt ? txt(vw) : vw;
+        $('o-' + id + '-d').textContent = pct(
+          typeof vw === 'number' ? vw : NaN, typeof vl === 'number' ? vl : NaN);
+      }
+
+      row('hz',  hzL, hzW, function (v) { return fmt(v, 2); });
+      row('t',   tL,  tW,  ageText);
+      row('lb',  t0L - tL, t0W - tW, ageText);
+      row('dm',  dmL, dmW, function (v) { return fmt(v, 1); });
+      row('dmr', dmL / rd, dmW / rd, function (v) { return fmt(v, 2); });
+      row('dhr', dhL / rd, dhW / rd, function (v) { return fmt(v, 2); });
+      row('th',  thL, thW, function (v) { return isFinite(v) ? fmt(v, 3) : '—'; });
+      row('w',   -1, W.wOf(z), function (v) { return fmt(v, 3); });
+    }
+
+    var FIELDS = ['c-h0', 'c-om', 'c-rd', 'c-z', 'c-w0', 'c-wa'];
+    var DEFAULTS = {};
+    FIELDS.forEach(function (id) { DEFAULTS[id] = $(id).value; });
+    FIELDS.forEach(function (id) { $(id).addEventListener('input', update); });
+
+    var PRESETS = document.querySelectorAll('.pre button'), STATE = $('w-state');
+    function clearPressed() {
+      Array.prototype.forEach.call(PRESETS, function (b) { b.setAttribute('aria-pressed', 'false'); });
+      if (STATE) STATE.innerHTML = '';
+    }
+    Array.prototype.forEach.call(PRESETS, function (b) {
+      b.addEventListener('click', function () {
+        $('c-w0').value = b.getAttribute('data-w0');
+        $('c-wa').value = b.getAttribute('data-wa');
+        clearPressed();
+        b.setAttribute('aria-pressed', 'true');
+        update();
+        if (STATE) STATE.innerHTML = b.getAttribute('data-note');
+      });
+    });
+    // Typing your own w0 or wa means you are no longer on a preset.
+    $('c-w0').addEventListener('input', clearPressed);
+    $('c-wa').addEventListener('input', clearPressed);
+
+    $('c-reset').addEventListener('click', function () {
+      FIELDS.forEach(function (id) { $(id).value = DEFAULTS[id]; });
+      clearPressed();
+      update();
+    });
+
+    update();
+  })();
+  </script>
+</body>
+</html>
