@@ -151,7 +151,6 @@
             <tr><th><em>H</em>(<em>z</em>) [km/s/Mpc]</th><td id="o-hz-l">—</td><td id="o-hz-w">—</td><td class="d" id="o-hz-d">—</td></tr>
             <tr><th>age</th><td id="o-t-l">—</td><td id="o-t-w">—</td><td class="d" id="o-t-d">—</td></tr>
             <tr><th>lookback</th><td id="o-lb-l">—</td><td id="o-lb-w">—</td><td class="d" id="o-lb-d">—</td></tr>
-            <tr><th><em>D</em><sub>M</sub> [Mpc]</th><td id="o-dm-l">—</td><td id="o-dm-w">—</td><td class="d" id="o-dm-d">—</td></tr>
             <tr><th><em>D</em><sub>M</sub>/<em>r</em><sub>d</sub></th><td id="o-dmr-l">—</td><td id="o-dmr-w">—</td><td class="d" id="o-dmr-d">—</td></tr>
             <tr><th><em>D</em><sub>H</sub>/<em>r</em><sub>d</sub></th><td id="o-dhr-l">—</td><td id="o-dhr-w">—</td><td class="d" id="o-dhr-d">—</td></tr>
             <tr class="hi"><th><em>&theta;</em><sub>BAO</sub> [deg]</th><td id="o-th-l">—</td><td id="o-th-w">—</td><td class="d" id="o-th-d">—</td></tr>
@@ -357,7 +356,6 @@
       row('hz',  hzL, hzW, function (v) { return fmt(v, 2); });
       row('t',   tL,  tW,  ageText);
       row('lb',  t0L - tL, t0W - tW, ageText);
-      row('dm',  dmL, dmW, function (v) { return fmt(v, 1); });
       row('dmr', dmL / rd, dmW / rd, function (v) { return fmt(v, 2); });
       row('dhr', dhL / rd, dhW / rd, function (v) { return fmt(v, 2); });
       row('th',  thL, thW, function (v) { return isFinite(v) ? fmt(v, 3) : '—'; });
