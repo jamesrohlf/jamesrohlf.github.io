@@ -53,6 +53,17 @@
     .pre button[aria-pressed="true"] { background:var(--scarlet);
                   border-color:var(--scarlet); color:#fff; }
     .wnote { font-size:.85rem; color:var(--ink-faint); margin:1rem 0 0; }
+    .plane { margin:1.2rem 0 .3rem; }
+    .plane svg { display:block; width:100%; height:auto; cursor:crosshair;
+                 max-width:36rem; }
+    .pl-ax { font:400 11px system-ui,sans-serif; fill:var(--ink-faint); text-anchor:middle; }
+    .pl-ttl { font:600 12px system-ui,sans-serif; fill:var(--ink-soft); text-anchor:middle; }
+    .pl-out { font-size:.92rem; color:var(--ink-soft); margin:.2rem 0 0; min-height:3.1em; }
+    .pl-out strong { color:var(--scarlet); font-family:var(--font-mono); }
+    .pl-out .dim { color:var(--ink-faint); }
+    .pl-key { font-size:.82rem; color:var(--ink-faint); margin:.5rem 0 0; }
+    .pl-key i { display:inline-block; width:.8rem; height:.8rem; border:1px solid var(--rule);
+                vertical-align:-1px; margin-right:.2rem; }
     .wstate { font-size:.9rem; color:var(--ink-soft); margin:.2rem 0 1rem; }
     .wstate strong { color:var(--scarlet); }
   </style>
@@ -125,6 +136,39 @@
         <em>H</em>&#8320;, &Omega;<sub>m</sub> and <em>r</em><sub>d</sub>, so the gap is
         the dark energy alone.</p>
     </div>
+
+    <h2 class="section-title">The <em>w</em><sub>0</sub>&ndash;<em>w</em><sub>a</sub> plane</h2>
+
+    <p class="prose">
+      Every point in the plane below is a different dark energy history. Fitting the
+      <a href="dr1.html">DESI DR1</a> BAO distances at that point &mdash; with
+      <em>r</em><sub>d</sub> held at the Planck value of 147.1&nbsp;Mpc &mdash; gives the
+      &Omega;<sub>m</sub> and <em>H</em>&#8320; that go with it. Move the pointer to read
+      them off; click to load that point into the calculator above.
+    </p>
+
+    <p class="prose">
+      At &Lambda;CDM the fit returns &Omega;<sub>m</sub>&nbsp;=&nbsp;0.295, which is the
+      value DESI publishes from these data, so the machinery is doing what it should.
+      The <em>H</em>&#8320; beside it is worth reading carefully: BAO measures the product
+      <em>H</em>&#8320;<em>r</em><sub>d</sub>, never <em>H</em>&#8320; alone, so every
+      number here is conditional on the 147.1&nbsp;Mpc. DESI quotes a lower
+      <em>H</em>&#8320; from the same distances because it derives a slightly larger
+      <em>r</em><sub>d</sub> from big bang nucleosynthesis rather than fixing Planck's.
+      The measured combination agrees; only the ruler differs.
+    </p>
+
+    <div class="plane">
+      <svg id="pl" viewBox="0 0 560 424" role="img" aria-labelledby="plT plD">
+        <title id="plT">The w0–wa plane, shaded by how well each point fits the DESI BAO data</title>
+        <desc id="plD">A map of dark energy parameters w0 horizontally and wa vertically. Shading shows the 68, 95 and 99 percent confidence regions from a fit to the DESI DR1 baryon acoustic oscillation distances. Markers show ΛCDM at w0 = −1, wa = 0, the best-fitting point, and the values currently in the calculator.</desc>
+        <g id="pl-cells"></g>
+        <g id="pl-frame"></g>
+        <g id="pl-marks"></g>
+      </svg>
+    </div>
+    <p class="pl-out" id="pl-out">Computing the grid&hellip;</p>
+    <p class="pl-key" id="pl-key"></p>
 
     <h2 class="section-title">What the two columns share, and what they don't</h2>
 
@@ -325,6 +369,211 @@
     });
 
     update();
+
+    // ---- the w0-wa plane ---------------------------------------------------
+    // DESI DR1 BAO, the same twelve numbers and covariance used in
+    // w0wa Ellipse Calculation.ipynb. Indices 0-4 are D_M/r_d and 5-9 the
+    // matching D_H/r_d at the same five redshifts, correlated pairwise; the
+    // last two are D_V/r_d from the BGS and quasar samples.
+    var RD_P = 147.1;                                   // Mpc, Planck 2018
+    // Effective redshifts are DESI's, not the notebook's rounded ones. At low z
+    // D_V goes as z, so calling the BGS point 0.30 instead of 0.295 pushes the
+    // fitted H0 up by nearly two percent on its own.
+    var ZP  = [0.510, 0.706, 0.930, 1.317, 2.330];
+    var DMo = [13.62, 16.85, 21.71, 27.79, 39.71], SMo = [0.25, 0.32, 0.28, 0.69, 0.94];
+    var DHo = [20.98, 20.08, 17.88, 13.82, 8.52],  SHo = [0.61, 0.60, 0.35, 0.42, 0.17];
+    var RHO = [-0.445, -0.420, -0.389, -0.444, -0.477];
+    var ZV  = [0.295, 1.491], DVo = [7.93, 26.07], SVo = [0.15, 0.67];
+
+    // Flat, matter plus dark energy. Radiation is left out, as in the notebook:
+    // below z = 2.4 it is five parts in ten thousand of the matter term.
+    function Ef(z, Om, w0, wa) {
+      var a = 1 / (1 + z);
+      return Math.sqrt(Om * Math.pow(1 + z, 3) +
+        (1 - Om) * Math.pow(a, -3 * (1 + w0 + wa)) * Math.exp(-3 * wa * (1 - a)));
+    }
+    function Iof(z, Om, w0, wa) {
+      return simpson(function (x) { return 1 / Ef(x, Om, w0, wa); }, 0, z, 20);
+    }
+
+    // Every BAO observable here is exactly proportional to A = c/(H0 r_d):
+    // D_M/r_d = A I, D_H/r_d = A/E, and D_V/r_d = A (z I^2/E)^(1/3). So A comes
+    // out of a linear least squares in closed form rather than a search, and
+    // chi-squared does not depend on r_d at all -- which is the H0 r_d
+    // degeneracy, arriving as an algebraic fact rather than an assertion.
+    function fitAtOm(Om, w0, wa) {
+      var gWd = 0, gWg = 0, dWd = 0, k, I, E, n1, n2, m1, m2, r, q, gv, nv, mv;
+      for (k = 0; k < 5; k++) {
+        I = Iof(ZP[k], Om, w0, wa); E = Ef(ZP[k], Om, w0, wa);
+        n1 = I / SMo[k]; n2 = (1 / E) / SHo[k];
+        m1 = DMo[k] / SMo[k]; m2 = DHo[k] / SHo[k];
+        r = RHO[k]; q = 1 - r * r;
+        gWd += (n1 * m1 - r * (n1 * m2 + n2 * m1) + n2 * m2) / q;
+        gWg += (n1 * n1 - 2 * r * n1 * n2 + n2 * n2) / q;
+        dWd += (m1 * m1 - 2 * r * m1 * m2 + m2 * m2) / q;
+      }
+      for (k = 0; k < 2; k++) {
+        I = Iof(ZV[k], Om, w0, wa); E = Ef(ZV[k], Om, w0, wa);
+        gv = Math.pow(ZV[k] * I * I / E, 1 / 3);
+        nv = gv / SVo[k]; mv = DVo[k] / SVo[k];
+        gWd += nv * mv; gWg += nv * nv; dWd += mv * mv;
+      }
+      return { A: gWd / gWg, chi2: dWd - gWd * gWd / gWg };
+    }
+
+    // Golden section on Omega_m. The profile is smooth and single-minimum here.
+    function bestFit(w0, wa) {
+      var lo = 0.15, hi = 0.55, g = 0.6180339887, i,
+          c = hi - g * (hi - lo), d = lo + g * (hi - lo),
+          fc = fitAtOm(c, w0, wa).chi2, fd = fitAtOm(d, w0, wa).chi2;
+      for (i = 0; i < 18; i++) {
+        if (fc < fd) { hi = d; d = c; fd = fc; c = hi - g * (hi - lo); fc = fitAtOm(c, w0, wa).chi2; }
+        else         { lo = c; c = d; fc = fd; d = lo + g * (hi - lo); fd = fitAtOm(d, w0, wa).chi2; }
+      }
+      var Om = (lo + hi) / 2, f = fitAtOm(Om, w0, wa);
+      return { Om: Om, chi2: f.chi2, H0: C / (f.A * RD_P) };
+    }
+
+    var W0LO = -1.4, W0HI = -0.5, WALO = -2.4, WAHI = 1.2, N = 37;
+    var L = 58, R = 546, T = 16, B = 372;          // plot box in viewBox units
+    var GRID = [], chiMin = Infinity, bestPt = null;
+    var xOf = function (w0) { return L + (w0 - W0LO) / (W0HI - W0LO) * (R - L); };
+    var yOf = function (wa) { return B - (wa - WALO) / (WAHI - WALO) * (B - T); };
+    var w0Of = function (x) { return W0LO + (x - L) / (R - L) * (W0HI - W0LO); };
+    var waOf = function (y) { return WALO + (B - y) / (B - T) * (WAHI - WALO); };
+
+    var svg = $('pl'), cells = $('pl-cells'), frame = $('pl-frame'),
+        marks = $('pl-marks'), outEl = $('pl-out'), keyEl = $('pl-key');
+    var NS = 'http://www.w3.org/2000/svg';
+    function el(n, at) { var e = document.createElementNS(NS, n), k;
+      for (k in at) if (at.hasOwnProperty(k)) e.setAttribute(k, at[k]); return e; }
+
+    // Build the grid a row at a time so the page stays responsive while it runs.
+    var row = 0;
+    function buildRow() {
+      var j, w0, wa, f;
+      wa = WALO + (WAHI - WALO) * row / (N - 1);
+      GRID[row] = [];
+      for (j = 0; j < N; j++) {
+        w0 = W0LO + (W0HI - W0LO) * j / (N - 1);
+        f = bestFit(w0, wa);
+        GRID[row][j] = f;
+        if (f.chi2 < chiMin) { chiMin = f.chi2; bestPt = { w0: w0, wa: wa, f: f }; }
+      }
+      row++;
+      if (row < N) { setTimeout(buildRow, 0); } else { draw(); }
+    }
+
+    var BANDS = [[2.30, 'var(--scarlet)', .55], [6.17, 'var(--scarlet)', .30],
+                 [11.8, 'var(--scarlet)', .14]];
+    function band(dchi) {
+      for (var i = 0; i < BANDS.length; i++) if (dchi <= BANDS[i][0]) return BANDS[i];
+      return null;
+    }
+
+    function draw() {
+      var i, j, w0, wa, dw = (R - L) / (N - 1), dh = (B - T) / (N - 1), b;
+      for (i = 0; i < N; i++) for (j = 0; j < N; j++) {
+        b = band(GRID[i][j].chi2 - chiMin);
+        if (!b) continue;
+        w0 = W0LO + (W0HI - W0LO) * j / (N - 1);
+        wa = WALO + (WAHI - WALO) * i / (N - 1);
+        cells.appendChild(el('rect', { x: (xOf(w0) - dw / 2).toFixed(1),
+          y: (yOf(wa) - dh / 2).toFixed(1), width: dw.toFixed(1), height: dh.toFixed(1),
+          fill: b[1], 'fill-opacity': b[2] }));
+      }
+      frame.appendChild(el('rect', { x: L, y: T, width: R - L, height: B - T,
+        fill: 'none', stroke: 'var(--rule)' }));
+      // axes
+      var tw = [-1.4, -1.2, -1.0, -0.8, -0.6], ta = [-2, -1, 0, 1], t;
+      for (i = 0; i < tw.length; i++) {
+        t = el('text', { x: xOf(tw[i]).toFixed(1), y: B + 16, class: 'pl-ax' });
+        t.textContent = tw[i].toFixed(1); frame.appendChild(t);
+        frame.appendChild(el('line', { x1: xOf(tw[i]), y1: B, x2: xOf(tw[i]), y2: B + 4,
+          stroke: 'var(--rule)' }));
+      }
+      for (i = 0; i < ta.length; i++) {
+        t = el('text', { x: L - 10, y: (yOf(ta[i]) + 4).toFixed(1), class: 'pl-ax',
+          style: 'text-anchor:end' });
+        t.textContent = ta[i]; frame.appendChild(t);
+        frame.appendChild(el('line', { x1: L - 4, y1: yOf(ta[i]), x2: L, y2: yOf(ta[i]),
+          stroke: 'var(--rule)' }));
+      }
+      t = el('text', { x: (L + R) / 2, y: B + 36, class: 'pl-ttl' }); t.textContent = 'w₀';
+      frame.appendChild(t);
+      t = el('text', { x: 16, y: (T + B) / 2, class: 'pl-ttl',
+        transform: 'rotate(-90 16 ' + ((T + B) / 2) + ')' }); t.textContent = 'wₐ';
+      frame.appendChild(t);
+
+      keyEl.innerHTML = '<i style="background:var(--scarlet);opacity:.55"></i>68% ' +
+        '<i style="background:var(--scarlet);opacity:.30;margin-left:.7rem"></i>95% ' +
+        '<i style="background:var(--scarlet);opacity:.14;margin-left:.7rem"></i>99%' +
+        ' &nbsp;&mdash;&nbsp; from the twelve DESI DR1 BAO distances, ' +
+        '<em>r</em><sub>d</sub> = 147.1 Mpc';
+      drawMarks();
+      report(null);
+    }
+
+    function drawMarks() {
+      while (marks.firstChild) marks.removeChild(marks.firstChild);
+      // LCDM
+      marks.appendChild(el('circle', { cx: xOf(-1), cy: yOf(0), r: 4, fill: 'none',
+        stroke: 'var(--ink)', 'stroke-width': 1.6 }));
+      var t = el('text', { x: xOf(-1) + 8, y: yOf(0) - 6, class: 'pl-ax',
+        style: 'text-anchor:start' });
+      t.textContent = 'ΛCDM'; marks.appendChild(t);
+      if (bestPt) marks.appendChild(el('path', {
+        d: 'M' + (xOf(bestPt.w0) - 5) + ',' + yOf(bestPt.wa) + 'h10M' + xOf(bestPt.w0) +
+           ',' + (yOf(bestPt.wa) - 5) + 'v10', stroke: 'var(--scarlet)', 'stroke-width': 1.8 }));
+      // where the calculator currently sits
+      var cw = parseFloat($('c-w0').value), ca = parseFloat($('c-wa').value);
+      if (isFinite(cw) && isFinite(ca) && cw >= W0LO && cw <= W0HI && ca >= WALO && ca <= WAHI)
+        marks.appendChild(el('circle', { cx: xOf(cw).toFixed(1), cy: yOf(ca).toFixed(1),
+          r: 4.5, fill: 'var(--scarlet)', stroke: '#fff', 'stroke-width': 1.2 }));
+    }
+
+    function nearest(w0, wa) {
+      var j = Math.round((w0 - W0LO) / (W0HI - W0LO) * (N - 1)),
+          i = Math.round((wa - WALO) / (WAHI - WALO) * (N - 1));
+      i = Math.min(Math.max(i, 0), N - 1); j = Math.min(Math.max(j, 0), N - 1);
+      return GRID[i] ? GRID[i][j] : null;
+    }
+
+    function report(p) {
+      if (!p) {
+        var cw = parseFloat($('c-w0').value), ca = parseFloat($('c-wa').value);
+        p = { w0: cw, wa: ca, from: 'the calculator above' };
+      }
+      var f = nearest(p.w0, p.wa);
+      if (!f) { outEl.textContent = ''; return; }
+      outEl.innerHTML =
+        'At <strong>w₀ = ' + p.w0.toFixed(2) + '</strong>, ' +
+        '<strong>wₐ = ' + p.wa.toFixed(2) + '</strong> the DESI BAO distances are best fitted by ' +
+        '<strong>Ω<sub>m</sub> = ' + f.Om.toFixed(3) + '</strong> and ' +
+        '<strong>H₀ = ' + f.H0.toFixed(1) + '</strong> km/s/Mpc' +
+        ' <span class="dim">(r<sub>d</sub> = 147.1 Mpc fixed; Δχ² = ' +
+        (f.chi2 - chiMin).toFixed(1) + ' from the best fit' +
+        (p.from ? ', showing ' + p.from : '') + ')</span>';
+    }
+
+    function fromEvent(e) {
+      var r = svg.getBoundingClientRect(), pt = e.touches ? e.touches[0] : e;
+      var vx = (pt.clientX - r.left) / r.width * 560, vy = (pt.clientY - r.top) / r.height * 424;
+      if (vx < L || vx > R || vy < T || vy > B) return null;
+      return { w0: w0Of(vx), wa: waOf(vy) };
+    }
+    svg.addEventListener('mousemove', function (e) { var p = fromEvent(e); if (p) report(p); });
+    svg.addEventListener('mouseleave', function () { report(null); });
+    svg.addEventListener('click', function (e) {
+      var p = fromEvent(e); if (!p) return;
+      $('c-w0').value = p.w0.toFixed(3); $('c-wa').value = p.wa.toFixed(3);
+      clearPressed(); update(); drawMarks(); report(p);
+    });
+    ['c-w0', 'c-wa'].forEach(function (id) {
+      $(id).addEventListener('input', function () { drawMarks(); report(null); });
+    });
+
+    setTimeout(buildRow, 0);
   })();
   </script>
 </body>
