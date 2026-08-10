@@ -131,7 +131,7 @@
 <g id="eb-marker" transform="translate(980.0,0)"><line x1="0" y1="30" x2="0" y2="76" class="eb-mark"/><polygon points="0,30 -5,21 5,21" class="eb-markhead"/></g>
 </svg></div>
     <p class="eb-cap">At <em>z</em> = <strong id="eb-z">0</strong> the universe is
-      <strong id="eb-t">13.791</strong> Gyr old, in the
+      <strong id="eb-t">13.791 Gyr</strong> old, in the
       <strong id="eb-era">dark-energy</strong> era.
       <span class="eb-cap__note" id="eb-landmark"></span>
       <span class="eb-warn">Era boundaries are drawn for &Lambda;CDM.</span></p>
@@ -316,14 +316,38 @@
       [9.5e9,'mature galaxies'],[Infinity,'dark-energy']];
     function eraOf(t) { for (var i = 0; i < ERAS.length; i++) if (t < ERAS[i][0]) return ERAS[i][1];
                         return 'dark-energy'; }
+
+    // Three significant figures, without the trailing zeros that make 51.0
+    // look like a measurement good to a tenth.
+    function sig(v) {
+      var s = v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
+      return s.indexOf('.') < 0 ? s : s.replace(/\.?0+$/, '');
+    }
+
+    // The caption spans forty-four decades of time, so one unit cannot serve.
+    // Gyr keeps three decimals — 13.791 is the number the page is known for —
+    // and everything earlier steps down to a unit that reads as a quantity
+    // rather than as an exponent.
+    function ageText(tGyr) {
+      var yr = tGyr * 1e9, s;
+      if (yr >= 1e9) return tGyr.toFixed(3) + ' Gyr';
+      if (yr >= 1e6) return sig(yr / 1e6) + ' Myr';
+      if (yr >= 1e3) return sig(yr / 1e3) + ' kyr';
+      if (yr >= 1)   return sig(yr) + ' yr';
+      s = yr * YR;
+      if (s >= 86400) return sig(s / 86400) + ' days';
+      if (s >= 3600)  return sig(s / 3600) + ' hours';
+      if (s >= 60)    return sig(s / 60) + ' min';
+      if (s >= 1e-2)  return sig(s) + ' s';
+      return s.toExponential(2) + ' s';
+    }
     function marker(z, tGyr) {
       var m = document.getElementById('eb-marker');
       if (!m) return;
       var t = Math.max(tGyr * 1e9, TMIN);
       m.setAttribute('transform', 'translate(' + barX(t).toFixed(1) + ',0)');
       document.getElementById('eb-z').textContent = z;
-      document.getElementById('eb-t').textContent = tGyr < 1e-3
-        ? tGyr.toExponential(2) : tGyr.toFixed(3);
+      document.getElementById('eb-t').textContent = ageText(tGyr);
       document.getElementById('eb-era').textContent = eraOf(t);
     }
 
