@@ -40,6 +40,7 @@
               font-variant-numeric:tabular-nums; white-space:nowrap; }
     .cmp thead th:not(:first-child) { text-align:right; }
     .cmp .d { color:var(--scarlet); font-weight:700; }
+    .cmp .der { font-weight:400; font-size:.8em; color:var(--ink-faint); }
     .cmp tr.hi td, .cmp tr.hi th { background:color-mix(in srgb, var(--scarlet) 8%, transparent); }
 
     .pre { display:flex; flex-wrap:wrap; align-items:baseline; gap:.35rem .4rem;
@@ -99,10 +100,6 @@
 
     <div class="calc" id="calc">
       <div class="calc__in">
-        <div class="calc__f"><label for="c-h0"><em>H</em>&#8320; [km/s/Mpc]</label>
-          <input id="c-h0" type="number" autocomplete="off" value="67.4" step="0.1" min="60" max="80"></div>
-        <div class="calc__f"><label for="c-om">&Omega;<sub>m</sub></label>
-          <input id="c-om" type="number" autocomplete="off" value="0.315" step="0.001" min="0.25" max="0.35"></div>
         <div class="calc__f"><label for="c-rd"><em>r</em><sub>d</sub> [Mpc]</label>
           <input id="c-rd" type="number" autocomplete="off" value="147.1" step="0.1" min="100" max="200"></div>
         <div class="calc__f"><label for="c-z">redshift <em>z</em></label>
@@ -121,6 +118,8 @@
           <tr><th>&nbsp;</th><th>&Lambda;CDM</th><th><em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM</th><th>diff</th></tr>
         </thead>
         <tbody>
+          <tr><th>&Omega;<sub>m</sub> <span class="der">fitted</span></th><td id="o-om-l">—</td><td id="o-om-w">—</td><td class="d" id="o-om-d">—</td></tr>
+          <tr><th><em>H</em>&#8320; [km/s/Mpc] <span class="der">fitted</span></th><td id="o-h0-l">—</td><td id="o-h0-w">—</td><td class="d" id="o-h0-d">—</td></tr>
           <tr><th><em>H</em>(<em>z</em>) [km/s/Mpc]</th><td id="o-hz-l">—</td><td id="o-hz-w">—</td><td class="d" id="o-hz-d">—</td></tr>
           <tr><th>age</th><td id="o-t-l">—</td><td id="o-t-w">—</td><td class="d" id="o-t-d">—</td></tr>
           <tr><th>lookback</th><td id="o-lb-l">—</td><td id="o-lb-w">—</td><td class="d" id="o-lb-d">—</td></tr>
@@ -132,9 +131,10 @@
         </tbody>
       </table>
       <p class="calc__note">The diff column is the fractional change, (<em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM
-        &minus; &Lambda;CDM) / &Lambda;CDM, in percent. Both columns use the same
-        <em>H</em>&#8320;, &Omega;<sub>m</sub> and <em>r</em><sub>d</sub>, so the gap is
-        the dark energy alone.</p>
+        &minus; &Lambda;CDM) / &Lambda;CDM, in percent. &Omega;<sub>m</sub> and
+        <em>H</em>&#8320; are not typed in: each column carries the values that fit the
+        DESI BAO distances for its own dark energy history, at the
+        <em>r</em><sub>d</sub> above.</p>
     </div>
 
     <h2 class="section-title">The <em>w</em><sub>0</sub>&ndash;<em>w</em><sub>a</sub> plane</h2>
@@ -173,14 +173,19 @@
     <h2 class="section-title">What the two columns share, and what they don't</h2>
 
     <p class="prose">
-      Both columns solve the same Friedmann equation with the same radiation and matter
-      terms. Only the dark energy term differs. Holding &Lambda;CDM at
-      &Omega;<sub>&Lambda;</sub>, the evolving model carries
+      Both columns solve the same Friedmann equation. The dark energy term differs by
+      construction, and &Omega;<sub>m</sub> and <em>H</em>&#8320; differ because the data
+      make them: choosing <em>w</em><sub>0</sub> and <em>w</em><sub>a</sub> already fixes
+      what matter density and expansion rate the BAO distances will tolerate, so offering
+      those as separate inputs would only let you build a universe the measurements
+      reject. Where &Lambda;CDM carries a constant &Omega;<sub>&Lambda;</sub>, the
+      evolving model carries
       &Omega;<sub>&Lambda;</sub>&nbsp;&times;&nbsp;<em>a</em><sup>&minus;3(1+<em>w</em><sub>0</sub>+<em>w</em><sub>a</sub>)</sup>
       <em>e</em><sup>&minus;3<em>w</em><sub>a</sub>(1&minus;<em>a</em>)</sup>, which is
       exactly 1 when <em>w</em><sub>0</sub>&nbsp;=&nbsp;&minus;1 and
-      <em>w</em><sub>a</sub>&nbsp;=&nbsp;0. That is why the diff column reads zero there
-      rather than nearly zero: it is the same arithmetic, not a close approximation.
+      <em>w</em><sub>a</sub>&nbsp;=&nbsp;0. At that setting the fit hands both columns
+      the same &Omega;<sub>m</sub> and <em>H</em>&#8320; as well, so the diff column reads
+      zero throughout &mdash; the same arithmetic, not a close approximation.
     </p>
 
     <p class="prose">
@@ -302,18 +307,27 @@
 
     function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
 
+    // Omega_m and H0 are not independent inputs: once w0 and wa are chosen,
+    // the DESI BAO distances fix them. So each column is its own model at its
+    // own best fit, and the LCDM column is the w0 = -1, wa = 0 fit rather than
+    // a set of numbers typed in beside it.
+    var FIT_L = null;
     function update() {
-      var H0 = parseFloat($('c-h0').value), Om = parseFloat($('c-om').value),
-          rd = parseFloat($('c-rd').value), z = parseFloat($('c-z').value),
+      var rd = parseFloat($('c-rd').value), z = parseFloat($('c-z').value),
           w0 = parseFloat($('c-w0').value), wa = parseFloat($('c-wa').value);
-      if (![H0, Om, rd, z, w0, wa].every(isFinite)) return;
+      if (![rd, z, w0, wa].every(isFinite)) return;
 
-      H0 = clamp(H0, 60, 80); Om = clamp(Om, 0.25, 0.35); rd = clamp(rd, 100, 200);
-      z = clamp(z, 0, 1100); w0 = clamp(w0, -2, -0.3); wa = clamp(wa, -3, 1);
+      rd = clamp(rd, 100, 200); z = clamp(z, 0, 1100);
+      w0 = clamp(w0, -2, -0.3); wa = clamp(wa, -3, 1);
 
-      var L = model(H0, Om, -1, 0), W = model(H0, Om, w0, wa), a = 1 / (1 + z);
+      if (!FIT_L) FIT_L = bestFit(-1, 0);
+      var fW = bestFit(w0, wa);
+      var OmL = FIT_L.Om, OmW = fW.Om;
+      var H0L = C / (FIT_L.A * rd), H0W = C / (fW.A * rd);
 
-      var hzL = H0 * L.E(z),  hzW = H0 * W.E(z);
+      var L = model(H0L, OmL, -1, 0), W = model(H0W, OmW, w0, wa), a = 1 / (1 + z);
+
+      var hzL = H0L * L.E(z), hzW = H0W * W.E(z);
       var tL  = L.tOfA(a),    tW  = W.tOfA(a);
       var t0L = L.tOfA(1),    t0W = W.tOfA(1);
       var dmL = L.DC(z),      dmW = W.DC(z);
@@ -328,6 +342,8 @@
           typeof vw === 'number' ? vw : NaN, typeof vl === 'number' ? vl : NaN);
       }
 
+      row('om',  OmL, OmW, function (v) { return fmt(v, 3); });
+      row('h0',  H0L, H0W, function (v) { return fmt(v, 2); });
       row('hz',  hzL, hzW, function (v) { return fmt(v, 2); });
       row('t',   tL,  tW,  ageText);
       row('lb',  t0L - tL, t0W - tW, ageText);
@@ -338,7 +354,7 @@
       row('w',   -1, W.wOf(z), function (v) { return fmt(v, 3); });
     }
 
-    var FIELDS = ['c-h0', 'c-om', 'c-rd', 'c-z', 'c-w0', 'c-wa'];
+    var FIELDS = ['c-rd', 'c-z', 'c-w0', 'c-wa'];
     var DEFAULTS = {};
     FIELDS.forEach(function (id) { DEFAULTS[id] = $(id).value; });
     FIELDS.forEach(function (id) { $(id).addEventListener('input', update); });
@@ -367,8 +383,6 @@
       clearPressed();
       update();
     });
-
-    update();
 
     // ---- the w0-wa plane ---------------------------------------------------
     // DESI DR1 BAO, the same twelve numbers and covariance used in
@@ -431,7 +445,7 @@
         else         { lo = c; c = d; fc = fd; d = lo + g * (hi - lo); fd = fitAtOm(d, w0, wa).chi2; }
       }
       var Om = (lo + hi) / 2, f = fitAtOm(Om, w0, wa);
-      return { Om: Om, chi2: f.chi2, H0: C / (f.A * RD_P) };
+      return { Om: Om, A: f.A, chi2: f.chi2, H0: C / (f.A * RD_P) };
     }
 
     var W0LO = -1.4, W0HI = -0.5, WALO = -2.4, WAHI = 1.2, N = 37;
@@ -574,6 +588,9 @@
       $(id).addEventListener('input', function () { drawMarks(); report(null); });
     });
 
+    // Called here rather than where update() is defined: it needs bestFit and
+    // the DESI arrays, which are declared further down.
+    update();
     setTimeout(buildRow, 0);
 
   })();

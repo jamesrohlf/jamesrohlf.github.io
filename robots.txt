@@ -1,4 +1,4 @@
 User-agent: *
-Disallow:
+Disallow: /outreach/_drafts/
 
 Sitemap: https://jamesrohlf.github.io/sitemap.xml
