@@ -38,10 +38,17 @@ Three conclusions:
 1. **The allowed region shrinks by about a quarter** (68% region −27%,
    95% −19%). This is the real, showable effect: a 2.6× tighter high-z
    anchor visibly tightens the constraint.
-2. **It does not move toward ΛCDM.** ΛCDM goes from Δχ² = 2.60 to 3.07 —
-   marginally *worse*. Small enough to mean little, but definitely not the
-   "pulls back toward ΛCDM" story. It agrees in direction with
-   `full-shape.html`, which has the w₀wₐCDM preference *rising* to 2.7σ.
+2. **In a BAO-only fit it does not move toward ΛCDM.** ΛCDM goes from
+   Δχ² = 2.60 to 3.07 — marginally *worse*.
+
+   This is not a contradiction of Figure 10 on `full-shape.html`, which says
+   the Lyman-α full shape shifts the result ~0.3σ **toward** ΛCDM. That
+   statement is for DESI **BAO+CMB**. The fit here has no CMB, so there is
+   nothing anchoring the high-redshift end and the χ² valley is open; a
+   tighter Lyman-α point sharpens the valley without pulling its floor
+   toward ΛCDM. Add the CMB and the direction reverses. Worth saying on the
+   page if this is ever shipped, because the two statements look
+   contradictory side by side and are not.
 3. **It does not cure the runaway.** With w₀ and wₐ free and only BAO-like
    distances to constrain them, the χ² valley still has no interior
    minimum; it runs to w₀ > 0. Only the CMB and supernovae close it.
