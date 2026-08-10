@@ -670,10 +670,11 @@
 
     var OMLO = 0.20, OMHI = 0.45, H0LO = 60, H0HI = 80, M = 33;
     var VGRID = [], vMin = Infinity;
-    var xOm = function (Om) { return L + (Om - OMLO) / (OMHI - OMLO) * (R - L); };
-    var yH0 = function (H) { return B - (H - H0LO) / (H0HI - H0LO) * (B - T); };
-    var OmOf = function (x) { return OMLO + (x - L) / (R - L) * (OMHI - OMLO); };
-    var H0Of = function (y) { return H0LO + (B - y) / (B - T) * (H0HI - H0LO); };
+    // H0 horizontal, Omega_m vertical.
+    var xH0 = function (H) { return L + (H - H0LO) / (H0HI - H0LO) * (R - L); };
+    var yOm = function (Om) { return B - (Om - OMLO) / (OMHI - OMLO) * (B - T); };
+    var H0Of = function (x) { return H0LO + (x - L) / (R - L) * (H0HI - H0LO); };
+    var OmOf = function (y) { return OMLO + (B - y) / (B - T) * (OMHI - OMLO); };
 
     var vsvg = $('pv'), vcells = $('pv-cells'), vframe = $('pv-frame'),
         vmarks = $('pv-marks'), vout = $('pv-out'), vkey = $('pv-key');
@@ -700,31 +701,31 @@
         if (!b) continue;
         Om = OMLO + (OMHI - OMLO) * j / (M - 1);
         H0 = H0LO + (H0HI - H0LO) * i / (M - 1);
-        vcells.appendChild(el('rect', { x: (xOm(Om) - dw / 2).toFixed(1),
-          y: (yH0(H0) - dh / 2).toFixed(1), width: dw.toFixed(1), height: dh.toFixed(1),
+        vcells.appendChild(el('rect', { x: (xH0(H0) - dw / 2).toFixed(1),
+          y: (yOm(Om) - dh / 2).toFixed(1), width: dw.toFixed(1), height: dh.toFixed(1),
           fill: b[1], 'fill-opacity': b[2] }));
       }
       vframe.appendChild(el('rect', { x: L, y: T, width: R - L, height: B - T,
         fill: 'none', stroke: 'var(--rule)' }));
-      var to = [0.20, 0.25, 0.30, 0.35, 0.40, 0.45], th = [60, 65, 70, 75, 80];
-      for (i = 0; i < to.length; i++) {
-        t = el('text', { x: xOm(to[i]).toFixed(1), y: B + 16, class: 'pl-ax' });
-        t.textContent = to[i].toFixed(2); vframe.appendChild(t);
-        vframe.appendChild(el('line', { x1: xOm(to[i]), y1: B, x2: xOm(to[i]), y2: B + 4,
+      var th = [60, 65, 70, 75, 80], to = [0.20, 0.25, 0.30, 0.35, 0.40, 0.45];
+      for (i = 0; i < th.length; i++) {
+        t = el('text', { x: xH0(th[i]).toFixed(1), y: B + 16, class: 'pl-ax' });
+        t.textContent = th[i]; vframe.appendChild(t);
+        vframe.appendChild(el('line', { x1: xH0(th[i]), y1: B, x2: xH0(th[i]), y2: B + 4,
           stroke: 'var(--rule)' }));
       }
-      for (i = 0; i < th.length; i++) {
-        t = el('text', { x: L - 10, y: (yH0(th[i]) + 4).toFixed(1), class: 'pl-ax',
+      for (i = 0; i < to.length; i++) {
+        t = el('text', { x: L - 10, y: (yOm(to[i]) + 4).toFixed(1), class: 'pl-ax',
           style: 'text-anchor:end' });
-        t.textContent = th[i]; vframe.appendChild(t);
-        vframe.appendChild(el('line', { x1: L - 4, y1: yH0(th[i]), x2: L, y2: yH0(th[i]),
+        t.textContent = to[i].toFixed(2); vframe.appendChild(t);
+        vframe.appendChild(el('line', { x1: L - 4, y1: yOm(to[i]), x2: L, y2: yOm(to[i]),
           stroke: 'var(--rule)' }));
       }
       t = el('text', { x: (L + R) / 2, y: B + 36, class: 'pl-ttl' });
-      t.textContent = 'Ωm'; vframe.appendChild(t);
+      t.textContent = 'H₀ [km/s/Mpc]'; vframe.appendChild(t);
       t = el('text', { x: 16, y: (T + B) / 2, class: 'pl-ttl',
         transform: 'rotate(-90 16 ' + ((T + B) / 2) + ')' });
-      t.textContent = 'H₀ [km/s/Mpc]'; vframe.appendChild(t);
+      t.textContent = 'Ωm'; vframe.appendChild(t);
       vkey.innerHTML = '<i style="background:var(--scarlet);opacity:.55"></i>68% ' +
         '<i style="background:var(--scarlet);opacity:.30;margin-left:.7rem"></i>95% ' +
         '<i style="background:var(--scarlet);opacity:.14;margin-left:.7rem"></i>99%' +
@@ -733,11 +734,24 @@
       drawVMarks(); reportV(null);
     }
 
+    // Where LCDM lands in this plane: the Omega_m and H0 that fit the same
+    // distances at w0 = -1, wa = 0. Computed, not written in, so it cannot
+    // drift away from the fit above it.
+    var LCPT = null;
     function drawVMarks() {
       while (vmarks.firstChild) vmarks.removeChild(vmarks.firstChild);
+      if (!LCPT) LCPT = bestFit(-1, 0);
+      if (LCPT.H0 >= H0LO && LCPT.H0 <= H0HI && LCPT.Om >= OMLO && LCPT.Om <= OMHI) {
+        vmarks.appendChild(el('circle', { cx: xH0(LCPT.H0).toFixed(1),
+          cy: yOm(LCPT.Om).toFixed(1), r: 4, fill: 'none', stroke: 'var(--ink)',
+          'stroke-width': 1.6 }));
+        var lt = el('text', { x: (xH0(LCPT.H0) + 8).toFixed(1),
+          y: (yOm(LCPT.Om) - 6).toFixed(1), class: 'pl-ax', style: 'text-anchor:start' });
+        lt.textContent = 'ΛCDM'; vmarks.appendChild(lt);
+      }
       var cm = parseFloat($('c-om').value), ch = parseFloat($('c-h0').value);
       if (isFinite(cm) && isFinite(ch) && cm >= OMLO && cm <= OMHI && ch >= H0LO && ch <= H0HI)
-        vmarks.appendChild(el('circle', { cx: xOm(cm).toFixed(1), cy: yH0(ch).toFixed(1),
+        vmarks.appendChild(el('circle', { cx: xH0(ch).toFixed(1), cy: yOm(cm).toFixed(1),
           r: 4.5, fill: 'var(--scarlet)', stroke: '#fff', 'stroke-width': 1.2 }));
     }
 
@@ -766,7 +780,7 @@
       var r = vsvg.getBoundingClientRect(), pt = e.touches ? e.touches[0] : e;
       var vx = (pt.clientX - r.left) / r.width * 560, vy = (pt.clientY - r.top) / r.height * 424;
       if (vx < L || vx > R || vy < T || vy > B) return null;
-      return { Om: OmOf(vx), H0: H0Of(vy) };
+      return { H0: H0Of(vx), Om: OmOf(vy) };
     }
     vsvg.addEventListener('mousemove', function (e) { var p = fromEventV(e); if (p) reportV(p); });
     vsvg.addEventListener('mouseleave', function () { reportV(null); });
