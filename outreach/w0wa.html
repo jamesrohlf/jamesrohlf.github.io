@@ -392,6 +392,7 @@
       FIELDS.forEach(function (id) { $(id).value = DEFAULTS[id]; });
       clearPressed();
       update();
+      unpin();
     });
 
     // ---- the w0-wa plane ---------------------------------------------------
@@ -466,6 +467,14 @@
     // that they chose, and an unexplained dot on a confidence map reads as a
     // result. Once clicked it follows the inputs, so it never lies about them.
     var SHOWPICK = false;
+    // Reset means reset: the plane goes back to how it loads -- no dot, not
+    // frozen. Declared as a function so the Reset handler above can call it
+    // even though it is defined further down.
+    function unpin() {
+      PINNED = false; SHOWPICK = false;
+      if (svg) svg.style.cursor = 'crosshair';
+      drawMarks(); report(null);
+    }
     // Pinned: a click freezes the calculator on one point, so the numbers can be
     // read without the pointer stealing them back. While pinned the plane ignores
     // the mouse entirely -- half-frozen would be worse than not frozen, because
