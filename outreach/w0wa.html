@@ -10,16 +10,18 @@
   <link rel="icon" href="assets/img/desi-emblem.jpg">
   <script src="assets/js/chrome.js" defer></script>
   <style>
-    .calc { border:1px solid var(--rule); border-radius:10px; padding:1rem 1.1rem;
+    .calc { border:1px solid var(--rule); border-radius:10px; padding:.8rem .9rem;
             margin:1.4rem 0 1.8rem; background:var(--paper);
             width:fit-content; max-width:100%; }
-    .calc__in { display:flex; flex-wrap:wrap; gap:.9rem 1.4rem; margin-bottom:.9rem; }
-    .calc__f { display:flex; flex-direction:column; gap:.15rem; font-size:.9rem; }
+    .calc__note { font-size:.78rem; color:var(--ink-faint); margin:.6rem 0 0;
+                  max-width:23rem; }
+    .calc__in { display:flex; flex-wrap:wrap; gap:.55rem .9rem; margin-bottom:.7rem; }
+    .calc__f { display:flex; flex-direction:column; gap:.1rem; font-size:.84rem; }
     .calc__f label { color:var(--ink-soft); font-weight:600; }
     .calc__f input:out-of-range { border-color:var(--scarlet);
                                   box-shadow:0 0 0 2px color-mix(in srgb, var(--scarlet) 20%, transparent); }
-    .calc__f input { font:inherit; font-family:var(--font-mono); width:7.5rem;
-                     padding:.3rem .45rem; border:1px solid var(--rule);
+    .calc__f input { font:inherit; font-family:var(--font-mono); width:5.4rem;
+                     padding:.22rem .35rem; border:1px solid var(--rule);
                      border-radius:5px; background:var(--cream); color:var(--ink); }
     .calc__title { margin:.8rem 0 .1rem; font:700 .82rem var(--font-body);
                    text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); }
@@ -31,10 +33,10 @@
 
     /* Three columns: the standard model, the evolving one, and the gap. The
        gap is the column that does not exist anywhere else on the site. */
-    .cmp { width:100%; max-width:34rem; border-collapse:collapse; font-size:.92rem; }
-    .cmp th, .cmp td { padding:.28rem .5rem; border-bottom:1px dotted var(--rule); }
-    .cmp thead th { border-bottom:1px solid var(--rule); font:700 .78rem var(--font-body);
-                    text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); }
+    .cmp { width:100%; max-width:23rem; border-collapse:collapse; font-size:.85rem; }
+    .cmp th, .cmp td { padding:.17rem .3rem; border-bottom:1px dotted var(--rule); }
+    .cmp thead th { border-bottom:1px solid var(--rule); font:700 .7rem var(--font-body);
+                    text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); }
     .cmp th { text-align:left; color:var(--ink-soft); font-weight:600; }
     .cmp td { text-align:right; font-family:var(--font-mono);
               font-variant-numeric:tabular-nums; white-space:nowrap; }
@@ -54,6 +56,13 @@
     .pre button[aria-pressed="true"] { background:var(--scarlet);
                   border-color:var(--scarlet); color:#fff; }
     .wnote { font-size:.85rem; color:var(--ink-faint); margin:1rem 0 0; }
+    .duo { display:flex; flex-wrap:wrap; gap:1.2rem 1.6rem; align-items:flex-start;
+           margin:1.4rem 0 1.2rem; }
+    .duo .calc { margin:0; flex:0 1 auto; }
+    .pl-col { flex:1 1 21rem; min-width:17rem; max-width:30rem; }
+    .pl-col .plane { margin:0; }
+    .pl-col .plane svg { max-width:100%; }
+    .pl-col .pl-out { min-height:4.6em; }
     .plane { margin:1.2rem 0 .3rem; }
     .plane svg { display:block; width:100%; height:auto; cursor:crosshair;
                  max-width:36rem; }
@@ -86,65 +95,12 @@
       <em>w</em><sub>a</sub>&nbsp;=&nbsp;0 and the two columns below agree to the last digit,
       because the model has become &Lambda;CDM again. Move either one and the gap opens.
     </p>
-
-    <div class="pre">
-      <span class="pre__lab">presets</span>
-      <button type="button" data-w0="-1" data-wa="0" aria-pressed="false"
-        data-note="&Lambda;CDM: the dark energy density is constant.">&Lambda;CDM</button>
-      <button type="button" data-w0="-0.958" data-wa="-0.269" aria-pressed="false"
-        data-note="A fit to the DESI BAO distances alone, without the CMB or supernovae.">DESI BAO fit</button>
-      <button type="button" data-w0="-1.1" data-wa="0" aria-pressed="false"
-        data-note="Phantom, illustrative: w below &minus;1 and not evolving.">Phantom</button>
-    </div>
-    <p class="wstate" id="w-state"></p>
-
-    <div class="calc" id="calc">
-      <div class="calc__in">
-        <div class="calc__f"><label for="c-rd"><em>r</em><sub>d</sub> [Mpc]</label>
-          <input id="c-rd" type="number" autocomplete="off" value="147.1" step="0.1" min="100" max="200"></div>
-        <div class="calc__f"><label for="c-z">redshift <em>z</em></label>
-          <input id="c-z" type="number" autocomplete="off" value="0" step="0.1" min="0" max="1100"></div>
-        <div class="calc__f"><label for="c-w0"><em>w</em><sub>0</sub></label>
-          <input id="c-w0" type="number" autocomplete="off" value="-1" step="0.01" min="-2" max="-0.3"></div>
-        <div class="calc__f"><label for="c-wa"><em>w</em><sub>a</sub></label>
-          <input id="c-wa" type="number" autocomplete="off" value="0" step="0.05" min="-3" max="1"></div>
-        <div class="calc__f calc__f--act"><label aria-hidden="true">&nbsp;</label>
-          <button type="button" id="c-reset" class="calc__reset">Reset</button></div>
-      </div>
-
-      <p class="calc__title">At this redshift</p>
-      <table class="cmp">
-        <thead>
-          <tr><th>&nbsp;</th><th>&Lambda;CDM</th><th><em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM</th><th>diff</th></tr>
-        </thead>
-        <tbody>
-          <tr><th>&Omega;<sub>m</sub> <span class="der">fitted</span></th><td id="o-om-l">—</td><td id="o-om-w">—</td><td class="d" id="o-om-d">—</td></tr>
-          <tr><th><em>H</em>&#8320; [km/s/Mpc] <span class="der">fitted</span></th><td id="o-h0-l">—</td><td id="o-h0-w">—</td><td class="d" id="o-h0-d">—</td></tr>
-          <tr><th><em>H</em>(<em>z</em>) [km/s/Mpc]</th><td id="o-hz-l">—</td><td id="o-hz-w">—</td><td class="d" id="o-hz-d">—</td></tr>
-          <tr><th>age</th><td id="o-t-l">—</td><td id="o-t-w">—</td><td class="d" id="o-t-d">—</td></tr>
-          <tr><th>lookback</th><td id="o-lb-l">—</td><td id="o-lb-w">—</td><td class="d" id="o-lb-d">—</td></tr>
-          <tr><th><em>D</em><sub>M</sub> [Mpc]</th><td id="o-dm-l">—</td><td id="o-dm-w">—</td><td class="d" id="o-dm-d">—</td></tr>
-          <tr><th><em>D</em><sub>M</sub>/<em>r</em><sub>d</sub></th><td id="o-dmr-l">—</td><td id="o-dmr-w">—</td><td class="d" id="o-dmr-d">—</td></tr>
-          <tr><th><em>D</em><sub>H</sub>/<em>r</em><sub>d</sub></th><td id="o-dhr-l">—</td><td id="o-dhr-w">—</td><td class="d" id="o-dhr-d">—</td></tr>
-          <tr class="hi"><th><em>&theta;</em><sub>BAO</sub> [deg]</th><td id="o-th-l">—</td><td id="o-th-w">—</td><td class="d" id="o-th-d">—</td></tr>
-          <tr><th><em>w</em>(<em>z</em>)</th><td id="o-w-l">—</td><td id="o-w-w">—</td><td class="d" id="o-w-d">—</td></tr>
-        </tbody>
-      </table>
-      <p class="calc__note">The diff column is the fractional change, (<em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM
-        &minus; &Lambda;CDM) / &Lambda;CDM, in percent. &Omega;<sub>m</sub> and
-        <em>H</em>&#8320; are not typed in: each column carries the values that fit the
-        DESI BAO distances for its own dark energy history, at the
-        <em>r</em><sub>d</sub> above.</p>
-    </div>
-
-    <h2 class="section-title">The <em>w</em><sub>0</sub>&ndash;<em>w</em><sub>a</sub> plane</h2>
-
     <p class="prose">
       Every point in the plane below is a different dark energy history. Fitting the
       <a href="dr1.html">DESI DR1</a> BAO distances at that point &mdash; with
       <em>r</em><sub>d</sub> held at the Planck value of 147.1&nbsp;Mpc &mdash; gives the
       &Omega;<sub>m</sub> and <em>H</em>&#8320; that go with it. Move the pointer to read
-      them off; click to load that point into the calculator above.
+      them off &mdash; the calculator beside it follows your pointer, and a click pins it.
     </p>
 
     <p class="prose">
@@ -158,17 +114,71 @@
       The measured combination agrees; only the ruler differs.
     </p>
 
-    <div class="plane">
-      <svg id="pl" viewBox="0 0 560 424" role="img" aria-labelledby="plT plD">
-        <title id="plT">The w0–wa plane, shaded by how well each point fits the DESI BAO data</title>
-        <desc id="plD">A map of dark energy parameters w0 horizontally and wa vertically. Shading shows the 68, 95 and 99 percent confidence regions from a fit to the DESI DR1 baryon acoustic oscillation distances. Markers show ΛCDM at w0 = −1, wa = 0, the best-fitting point, and the values currently in the calculator.</desc>
-        <g id="pl-cells"></g>
-        <g id="pl-frame"></g>
-        <g id="pl-marks"></g>
-      </svg>
+    <div class="pre">
+      <span class="pre__lab">presets</span>
+      <button type="button" data-w0="-1" data-wa="0" aria-pressed="false"
+        data-note="&Lambda;CDM: the dark energy density is constant.">&Lambda;CDM</button>
+      <button type="button" data-w0="-0.958" data-wa="-0.269" aria-pressed="false"
+        data-note="A fit to the DESI BAO distances alone, without the CMB or supernovae.">DESI BAO fit</button>
+      <button type="button" data-w0="-1.1" data-wa="0" aria-pressed="false"
+        data-note="Phantom, illustrative: w below &minus;1 and not evolving.">Phantom</button>
     </div>
-    <p class="pl-out" id="pl-out">Computing the grid&hellip;</p>
-    <p class="pl-key" id="pl-key"></p>
+    <p class="wstate" id="w-state"></p>
+
+    <div class="duo">
+      <div class="calc" id="calc">
+        <div class="calc__in">
+          <div class="calc__f"><label for="c-rd"><em>r</em><sub>d</sub> [Mpc]</label>
+            <input id="c-rd" type="number" autocomplete="off" value="147.1" step="0.1" min="100" max="200"></div>
+          <div class="calc__f"><label for="c-z">redshift <em>z</em></label>
+            <input id="c-z" type="number" autocomplete="off" value="0" step="0.1" min="0" max="1100"></div>
+          <div class="calc__f"><label for="c-w0"><em>w</em><sub>0</sub></label>
+            <input id="c-w0" type="number" autocomplete="off" value="-1" step="0.01" min="-2" max="-0.3"></div>
+          <div class="calc__f"><label for="c-wa"><em>w</em><sub>a</sub></label>
+            <input id="c-wa" type="number" autocomplete="off" value="0" step="0.05" min="-3" max="1"></div>
+          <div class="calc__f calc__f--act"><label aria-hidden="true">&nbsp;</label>
+            <button type="button" id="c-reset" class="calc__reset">Reset</button></div>
+        </div>
+
+        <p class="calc__title">At this redshift</p>
+        <table class="cmp">
+          <thead>
+            <tr><th>&nbsp;</th><th>&Lambda;CDM</th><th><em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM</th><th>diff</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>&Omega;<sub>m</sub> <span class="der">fitted</span></th><td id="o-om-l">—</td><td id="o-om-w">—</td><td class="d" id="o-om-d">—</td></tr>
+            <tr><th><em>H</em>&#8320; [km/s/Mpc] <span class="der">fitted</span></th><td id="o-h0-l">—</td><td id="o-h0-w">—</td><td class="d" id="o-h0-d">—</td></tr>
+            <tr><th><em>H</em>(<em>z</em>) [km/s/Mpc]</th><td id="o-hz-l">—</td><td id="o-hz-w">—</td><td class="d" id="o-hz-d">—</td></tr>
+            <tr><th>age</th><td id="o-t-l">—</td><td id="o-t-w">—</td><td class="d" id="o-t-d">—</td></tr>
+            <tr><th>lookback</th><td id="o-lb-l">—</td><td id="o-lb-w">—</td><td class="d" id="o-lb-d">—</td></tr>
+            <tr><th><em>D</em><sub>M</sub> [Mpc]</th><td id="o-dm-l">—</td><td id="o-dm-w">—</td><td class="d" id="o-dm-d">—</td></tr>
+            <tr><th><em>D</em><sub>M</sub>/<em>r</em><sub>d</sub></th><td id="o-dmr-l">—</td><td id="o-dmr-w">—</td><td class="d" id="o-dmr-d">—</td></tr>
+            <tr><th><em>D</em><sub>H</sub>/<em>r</em><sub>d</sub></th><td id="o-dhr-l">—</td><td id="o-dhr-w">—</td><td class="d" id="o-dhr-d">—</td></tr>
+            <tr class="hi"><th><em>&theta;</em><sub>BAO</sub> [deg]</th><td id="o-th-l">—</td><td id="o-th-w">—</td><td class="d" id="o-th-d">—</td></tr>
+            <tr><th><em>w</em>(<em>z</em>)</th><td id="o-w-l">—</td><td id="o-w-w">—</td><td class="d" id="o-w-d">—</td></tr>
+          </tbody>
+        </table>
+        <p class="calc__note">The diff column is the fractional change, (<em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM
+          &minus; &Lambda;CDM) / &Lambda;CDM, in percent. &Omega;<sub>m</sub> and
+          <em>H</em>&#8320; are not typed in: each column carries the values that fit the
+          DESI BAO distances for its own dark energy history, at the
+          <em>r</em><sub>d</sub> above.</p>
+      </div>
+
+      <div class="pl-col">
+        <div class="plane">
+          <svg id="pl" viewBox="0 0 560 424" role="img" aria-labelledby="plT plD">
+            <title id="plT">The w0–wa plane, shaded by how well each point fits the DESI BAO data</title>
+            <desc id="plD">A map of dark energy parameters w0 horizontally and wa vertically. Shading shows the 68, 95 and 99 percent confidence regions from a fit to the DESI DR1 baryon acoustic oscillation distances. Markers show ΛCDM at w0 = −1, wa = 0, the best-fitting point, and the values currently in the calculator.</desc>
+            <g id="pl-cells"></g>
+            <g id="pl-frame"></g>
+            <g id="pl-marks"></g>
+          </svg>
+        </div>
+        <p class="pl-out" id="pl-out">Computing the grid&hellip;</p>
+        <p class="pl-key" id="pl-key"></p>
+      </div>
+    </div>
 
     <h2 class="section-title">What the two columns share, and what they don't</h2>
 
@@ -528,8 +538,9 @@
         '<i style="background:var(--scarlet);opacity:.30;margin-left:.7rem"></i>95% ' +
         '<i style="background:var(--scarlet);opacity:.14;margin-left:.7rem"></i>99%' +
         ' &nbsp;&mdash;&nbsp; from the twelve DESI DR1 BAO distances, ' +
-        '<em>r</em><sub>d</sub> = 147.1 Mpc.<br>Click the plane to mark it: the filled ' +
-        'dot is the <em>w</em><sub>0</sub>, <em>w</em><sub>a</sub> in the calculator above.';
+        '<em>r</em><sub>d</sub> = 147.1 Mpc.<br>The filled dot is the ' +
+        '<em>w</em><sub>0</sub>, <em>w</em><sub>a</sub> now in the calculator, which ' +
+        'follows your pointer.';
       drawMarks();
       report(null);
     }
@@ -586,7 +597,24 @@
       if (vx < L || vx > R || vy < T || vy > B) return null;
       return { w0: w0Of(vx), wa: waOf(vy) };
     }
-    svg.addEventListener('mousemove', function (e) { var p = fromEvent(e); if (p) report(p); });
+    // The pointer drives the calculator. update() runs two fits and four
+    // integrals, so it is held to one call per animation frame rather than one
+    // per mousemove event.
+    var pend = null, raf = 0;
+    svg.addEventListener('mousemove', function (e) {
+      var p = fromEvent(e); if (!p) return;
+      report(p);
+      pend = p;
+      if (raf) return;
+      raf = requestAnimationFrame(function () {
+        raf = 0;
+        if (!pend) return;
+        $('c-w0').value = pend.w0.toFixed(3);
+        $('c-wa').value = pend.wa.toFixed(3);
+        SHOWPICK = true;
+        clearPressed(); update(); drawMarks();
+      });
+    });
     svg.addEventListener('mouseleave', function () { report(null); });
     svg.addEventListener('click', function (e) {
       var p = fromEvent(e); if (!p) return;
