@@ -170,41 +170,6 @@
     <p class="pl-out" id="pl-out">Computing the grid&hellip;</p>
     <p class="pl-key" id="pl-key"></p>
 
-    <h2 class="section-title">The same fit, read backwards</h2>
-
-    <p class="prose">
-      The plane above asks what &Omega;<sub>m</sub> and <em>H</em>&#8320; a dark energy
-      history implies. This one asks the reverse: fix &Omega;<sub>m</sub> and
-      <em>H</em>&#8320;, again with <em>r</em><sub>d</sub> at 147.1&nbsp;Mpc, and find the
-      <em>w</em><sub>0</sub> and <em>w</em><sub>a</sub> that fit the same twelve distances
-      best. Shading is how well that best effort does: outside the pale band no dark
-      energy history in range rescues that combination.
-    </p>
-
-    <p class="prose">
-      The two planes are the same fit read from either end, and they agree &mdash;
-      &Lambda;CDM maps to &Omega;<sub>m</sub>&nbsp;=&nbsp;0.295 and
-      <em>H</em>&#8320;&nbsp;=&nbsp;69.3 going one way, and that point maps back to
-      <em>w</em><sub>0</sub>&nbsp;=&nbsp;&minus;0.98,
-      <em>w</em><sub>a</sub>&nbsp;=&nbsp;&minus;0.11 going the other. Sweep along the band
-      and the degeneracy is there to read: a lower <em>H</em>&#8320; is absorbed by a
-      higher &Omega;<sub>m</sub> and a <em>w</em><sub>0</sub> further from &minus;1, at
-      almost no cost in &chi;<sup>2</sup>. Which is the honest reason BAO alone pins none
-      of them, and why the published constraints add the CMB and supernovae.
-    </p>
-
-    <div class="plane">
-      <svg id="pv" viewBox="0 0 560 424" role="img" aria-labelledby="pvT pvD">
-        <title id="pvT">The Omega_m–H0 plane, shaded by how well the best-fitting dark energy history does there</title>
-        <desc id="pvD">A map of the matter density horizontally and the Hubble constant vertically. At each point the w0 and wa that best fit the DESI DR1 baryon acoustic oscillation distances are found, and the shading shows the resulting confidence regions.</desc>
-        <g id="pv-cells"></g>
-        <g id="pv-frame"></g>
-        <g id="pv-marks"></g>
-      </svg>
-    </div>
-    <p class="pl-out" id="pv-out">Computing the grid&hellip;</p>
-    <p class="pl-key" id="pv-key"></p>
-
     <h2 class="section-title">What the two columns share, and what they don't</h2>
 
     <p class="prose">
@@ -471,7 +436,7 @@
 
     var W0LO = -1.4, W0HI = -0.5, WALO = -2.4, WAHI = 1.2, N = 37;
     var L = 58, R = 546, T = 16, B = 372;          // plot box in viewBox units
-    var GRID = [], chiMin = Infinity, bestPt = null;
+    var GRID = [], chiMin = Infinity;
     var xOf = function (w0) { return L + (w0 - W0LO) / (W0HI - W0LO) * (R - L); };
     var yOf = function (wa) { return B - (wa - WALO) / (WAHI - WALO) * (B - T); };
     var w0Of = function (x) { return W0LO + (x - L) / (R - L) * (W0HI - W0LO); };
@@ -493,7 +458,7 @@
         w0 = W0LO + (W0HI - W0LO) * j / (N - 1);
         f = bestFit(w0, wa);
         GRID[row][j] = f;
-        if (f.chi2 < chiMin) { chiMin = f.chi2; bestPt = { w0: w0, wa: wa, f: f }; }
+        if (f.chi2 < chiMin) chiMin = f.chi2;
       }
       row++;
       if (row < N) { setTimeout(buildRow, 0); } else { draw(); }
@@ -551,15 +516,16 @@
 
     function drawMarks() {
       while (marks.firstChild) marks.removeChild(marks.firstChild);
-      // LCDM
+      // LCDM, with dropped guides so its coordinates can be read off the axes
+      marks.appendChild(el('line', { x1: L, y1: yOf(0), x2: xOf(-1), y2: yOf(0),
+        stroke: 'var(--ink-faint)', 'stroke-width': 1, 'stroke-dasharray': '3 3' }));
+      marks.appendChild(el('line', { x1: xOf(-1), y1: yOf(0), x2: xOf(-1), y2: B,
+        stroke: 'var(--ink-faint)', 'stroke-width': 1, 'stroke-dasharray': '3 3' }));
       marks.appendChild(el('circle', { cx: xOf(-1), cy: yOf(0), r: 4, fill: 'none',
         stroke: 'var(--ink)', 'stroke-width': 1.6 }));
       var t = el('text', { x: xOf(-1) + 8, y: yOf(0) - 6, class: 'pl-ax',
         style: 'text-anchor:start' });
       t.textContent = 'ΛCDM'; marks.appendChild(t);
-      if (bestPt) marks.appendChild(el('path', {
-        d: 'M' + (xOf(bestPt.w0) - 5) + ',' + yOf(bestPt.wa) + 'h10M' + xOf(bestPt.w0) +
-           ',' + (yOf(bestPt.wa) - 5) + 'v10', stroke: 'var(--scarlet)', 'stroke-width': 1.8 }));
       // where the calculator currently sits
       var cw = parseFloat($('c-w0').value), ca = parseFloat($('c-wa').value);
       if (isFinite(cw) && isFinite(ca) && cw >= W0LO && cw <= W0HI && ca >= WALO && ca <= WAHI)
@@ -610,192 +576,6 @@
 
     setTimeout(buildRow, 0);
 
-    // ---- the inverse: Omega_m - H0 plane -----------------------------------
-    // Here A is fixed by the point itself, so nothing profiles out and w0, wa
-    // must be searched in two dimensions. Nelder-Mead, warm started from the
-    // cell to the left, which keeps it to a few dozen evaluations per point.
-    function chi2Fixed(Om, A, w0, wa) {
-      var chi = 0, k, I, E, r1, r2, r, q, gv, rv;
-      for (k = 0; k < 5; k++) {
-        I = Iof(ZP[k], Om, w0, wa); E = Ef(ZP[k], Om, w0, wa);
-        r1 = (DMo[k] - A * I) / SMo[k]; r2 = (DHo[k] - A / E) / SHo[k];
-        r = RHO[k]; q = 1 - r * r;
-        chi += (r1 * r1 - 2 * r * r1 * r2 + r2 * r2) / q;
-      }
-      for (k = 0; k < 2; k++) {
-        I = Iof(ZV[k], Om, w0, wa); E = Ef(ZV[k], Om, w0, wa);
-        gv = A * Math.pow(ZV[k] * I * I / E, 1 / 3);
-        rv = (DVo[k] - gv) / SVo[k];
-        chi += rv * rv;
-      }
-      return chi;
-    }
-
-    // Same box the plane above plots. If the inverse were allowed to search
-    // outside it, it would find a slightly better minimum and the two planes
-    // would quote different chi-squared for the same physical point.
-    var WB = { w0: [W0LO, W0HI], wa: [WALO, WAHI] };
-    function nelder(f, x0) {
-      function g(p) {
-        // Out of range is not an answer: push the simplex back rather than let
-        // it wander into w(a) shapes the parameterisation cannot mean.
-        var c0 = Math.min(Math.max(p[0], WB.w0[0]), WB.w0[1]),
-            c1 = Math.min(Math.max(p[1], WB.wa[0]), WB.wa[1]);
-        return f(c0, c1) + 1e3 * ((p[0] - c0) * (p[0] - c0) + (p[1] - c1) * (p[1] - c1));
-      }
-      var s = [x0.slice(), [x0[0] + 0.15, x0[1]], [x0[0], x0[1] + 0.35]],
-          v = [g(s[0]), g(s[1]), g(s[2])], it, i;
-      for (it = 0; it < 70; it++) {
-        var o = [0, 1, 2].sort(function (a, b) { return v[a] - v[b]; });
-        var b = s[o[0]], gd = s[o[1]], w = s[o[2]],
-            fb = v[o[0]], fg = v[o[1]], fw = v[o[2]];
-        if (fw - fb < 1e-5) break;
-        var m = [(b[0] + gd[0]) / 2, (b[1] + gd[1]) / 2];
-        var rp = [2 * m[0] - w[0], 2 * m[1] - w[1]], fr = g(rp), nw, fn;
-        if (fr < fb) {
-          var e = [3 * m[0] - 2 * w[0], 3 * m[1] - 2 * w[1]], fe = g(e);
-          if (fe < fr) { nw = e; fn = fe; } else { nw = rp; fn = fr; }
-        } else if (fr < fg) { nw = rp; fn = fr; }
-        else {
-          var cp = [(m[0] + w[0]) / 2, (m[1] + w[1]) / 2], fc = g(cp);
-          if (fc < fw) { nw = cp; fn = fc; }
-          else { nw = [(b[0] + w[0]) / 2, (b[1] + w[1]) / 2]; fn = g(nw); }
-        }
-        s = [b, gd, nw]; v = [fb, fg, fn];
-      }
-      var bi = 0; for (i = 1; i < 3; i++) if (v[i] < v[bi]) bi = i;
-      return { w0: Math.min(Math.max(s[bi][0], WB.w0[0]), WB.w0[1]),
-               wa: Math.min(Math.max(s[bi][1], WB.wa[0]), WB.wa[1]), chi2: v[bi] };
-    }
-
-    var OMLO = 0.20, OMHI = 0.45, H0LO = 60, H0HI = 80, M = 33;
-    var VGRID = [], vMin = Infinity;
-    // H0 horizontal, Omega_m vertical.
-    var xH0 = function (H) { return L + (H - H0LO) / (H0HI - H0LO) * (R - L); };
-    var yOm = function (Om) { return B - (Om - OMLO) / (OMHI - OMLO) * (B - T); };
-    var H0Of = function (x) { return H0LO + (x - L) / (R - L) * (H0HI - H0LO); };
-    var OmOf = function (y) { return OMLO + (B - y) / (B - T) * (OMHI - OMLO); };
-
-    var vsvg = $('pv'), vcells = $('pv-cells'), vframe = $('pv-frame'),
-        vmarks = $('pv-marks'), vout = $('pv-out'), vkey = $('pv-key');
-    var vrow = 0, seed = [-1, 0];
-
-    function buildVRow() {
-      var j, Om, H0 = H0LO + (H0HI - H0LO) * vrow / (M - 1), A = C / (H0 * RD_P), r;
-      VGRID[vrow] = []; seed = [-1, 0];
-      for (j = 0; j < M; j++) {
-        Om = OMLO + (OMHI - OMLO) * j / (M - 1);
-        r = nelder(function (w0, wa) { return chi2Fixed(Om, A, w0, wa); }, seed);
-        seed = [r.w0, r.wa];
-        VGRID[vrow][j] = r;
-        if (r.chi2 < vMin) vMin = r.chi2;
-      }
-      vrow++;
-      if (vrow < M) setTimeout(buildVRow, 0); else drawV();
-    }
-
-    function drawV() {
-      var i, j, Om, H0, dw = (R - L) / (M - 1), dh = (B - T) / (M - 1), b, t;
-      for (i = 0; i < M; i++) for (j = 0; j < M; j++) {
-        b = band(VGRID[i][j].chi2 - vMin);
-        if (!b) continue;
-        Om = OMLO + (OMHI - OMLO) * j / (M - 1);
-        H0 = H0LO + (H0HI - H0LO) * i / (M - 1);
-        vcells.appendChild(el('rect', { x: (xH0(H0) - dw / 2).toFixed(1),
-          y: (yOm(Om) - dh / 2).toFixed(1), width: dw.toFixed(1), height: dh.toFixed(1),
-          fill: b[1], 'fill-opacity': b[2] }));
-      }
-      vframe.appendChild(el('rect', { x: L, y: T, width: R - L, height: B - T,
-        fill: 'none', stroke: 'var(--rule)' }));
-      var th = [60, 65, 70, 75, 80], to = [0.20, 0.25, 0.30, 0.35, 0.40, 0.45];
-      for (i = 0; i < th.length; i++) {
-        t = el('text', { x: xH0(th[i]).toFixed(1), y: B + 16, class: 'pl-ax' });
-        t.textContent = th[i]; vframe.appendChild(t);
-        vframe.appendChild(el('line', { x1: xH0(th[i]), y1: B, x2: xH0(th[i]), y2: B + 4,
-          stroke: 'var(--rule)' }));
-      }
-      for (i = 0; i < to.length; i++) {
-        t = el('text', { x: L - 10, y: (yOm(to[i]) + 4).toFixed(1), class: 'pl-ax',
-          style: 'text-anchor:end' });
-        t.textContent = to[i].toFixed(2); vframe.appendChild(t);
-        vframe.appendChild(el('line', { x1: L - 4, y1: yOm(to[i]), x2: L, y2: yOm(to[i]),
-          stroke: 'var(--rule)' }));
-      }
-      t = el('text', { x: (L + R) / 2, y: B + 36, class: 'pl-ttl' });
-      t.textContent = 'H₀ [km/s/Mpc]'; vframe.appendChild(t);
-      t = el('text', { x: 16, y: (T + B) / 2, class: 'pl-ttl',
-        transform: 'rotate(-90 16 ' + ((T + B) / 2) + ')' });
-      t.textContent = 'Ωm'; vframe.appendChild(t);
-      vkey.innerHTML = '<i style="background:var(--scarlet);opacity:.55"></i>68% ' +
-        '<i style="background:var(--scarlet);opacity:.30;margin-left:.7rem"></i>95% ' +
-        '<i style="background:var(--scarlet);opacity:.14;margin-left:.7rem"></i>99%' +
-        ' &nbsp;&mdash;&nbsp; best <em>w</em><sub>0</sub>, <em>w</em><sub>a</sub> at each point, ' +
-        '<em>r</em><sub>d</sub> = 147.1 Mpc';
-      drawVMarks(); reportV(null);
-    }
-
-    // Where LCDM lands in this plane: the Omega_m and H0 that fit the same
-    // distances at w0 = -1, wa = 0. Computed, not written in, so it cannot
-    // drift away from the fit above it.
-    var LCPT = null;
-    function drawVMarks() {
-      while (vmarks.firstChild) vmarks.removeChild(vmarks.firstChild);
-      if (!LCPT) LCPT = bestFit(-1, 0);
-      if (LCPT.H0 >= H0LO && LCPT.H0 <= H0HI && LCPT.Om >= OMLO && LCPT.Om <= OMHI) {
-        vmarks.appendChild(el('circle', { cx: xH0(LCPT.H0).toFixed(1),
-          cy: yOm(LCPT.Om).toFixed(1), r: 4, fill: 'none', stroke: 'var(--ink)',
-          'stroke-width': 1.6 }));
-        var lt = el('text', { x: (xH0(LCPT.H0) + 8).toFixed(1),
-          y: (yOm(LCPT.Om) - 6).toFixed(1), class: 'pl-ax', style: 'text-anchor:start' });
-        lt.textContent = 'ΛCDM'; vmarks.appendChild(lt);
-      }
-      var cm = parseFloat($('c-om').value), ch = parseFloat($('c-h0').value);
-      if (isFinite(cm) && isFinite(ch) && cm >= OMLO && cm <= OMHI && ch >= H0LO && ch <= H0HI)
-        vmarks.appendChild(el('circle', { cx: xH0(ch).toFixed(1), cy: yOm(cm).toFixed(1),
-          r: 4.5, fill: 'var(--scarlet)', stroke: '#fff', 'stroke-width': 1.2 }));
-    }
-
-    function vAt(Om, H0) {
-      var j = Math.round((Om - OMLO) / (OMHI - OMLO) * (M - 1)),
-          i = Math.round((H0 - H0LO) / (H0HI - H0LO) * (M - 1));
-      i = Math.min(Math.max(i, 0), M - 1); j = Math.min(Math.max(j, 0), M - 1);
-      return VGRID[i] ? VGRID[i][j] : null;
-    }
-
-    function reportV(p) {
-      if (!p) p = { Om: parseFloat($('c-om').value), H0: parseFloat($('c-h0').value),
-                    from: 'the calculator above' };
-      var f = vAt(p.Om, p.H0);
-      if (!f) { vout.textContent = ''; return; }
-      vout.innerHTML =
-        'At <strong>Ω<sub>m</sub> = ' + p.Om.toFixed(3) + '</strong>, ' +
-        '<strong>H₀ = ' + p.H0.toFixed(1) + '</strong> km/s/Mpc the best fit to the DESI ' +
-        'BAO distances is <strong>w₀ = ' + f.w0.toFixed(2) + '</strong>, ' +
-        '<strong>wₐ = ' + f.wa.toFixed(2) + '</strong>' +
-        ' <span class="dim">(Δχ² = ' + (f.chi2 - vMin).toFixed(1) + ' from the best fit' +
-        (p.from ? ', showing ' + p.from : '') + ')</span>';
-    }
-
-    function fromEventV(e) {
-      var r = vsvg.getBoundingClientRect(), pt = e.touches ? e.touches[0] : e;
-      var vx = (pt.clientX - r.left) / r.width * 560, vy = (pt.clientY - r.top) / r.height * 424;
-      if (vx < L || vx > R || vy < T || vy > B) return null;
-      return { H0: H0Of(vx), Om: OmOf(vy) };
-    }
-    vsvg.addEventListener('mousemove', function (e) { var p = fromEventV(e); if (p) reportV(p); });
-    vsvg.addEventListener('mouseleave', function () { reportV(null); });
-    vsvg.addEventListener('click', function (e) {
-      var p = fromEventV(e); if (!p) return;
-      var f = vAt(p.Om, p.H0);
-      $('c-om').value = p.Om.toFixed(3); $('c-h0').value = p.H0.toFixed(1);
-      if (f) { $('c-w0').value = f.w0.toFixed(3); $('c-wa').value = f.wa.toFixed(3); }
-      clearPressed(); update(); drawMarks(); drawVMarks(); reportV(p);
-    });
-    ['c-om', 'c-h0'].forEach(function (id) {
-      $(id).addEventListener('input', function () { drawVMarks(); reportV(null); });
-    });
-
-    setTimeout(buildVRow, 0);
   })();
   </script>
 </body>
