@@ -540,11 +540,6 @@
       var t = el('text', { x: xOf(-1) + 8, y: yOf(0) - 6, class: 'pl-ax',
         style: 'text-anchor:start' });
       t.textContent = 'ΛCDM'; marks.appendChild(t);
-      // where the calculator currently sits
-      var cw = parseFloat($('c-w0').value), ca = parseFloat($('c-wa').value);
-      if (isFinite(cw) && isFinite(ca) && cw >= W0LO && cw <= W0HI && ca >= WALO && ca <= WAHI)
-        marks.appendChild(el('circle', { cx: xOf(cw).toFixed(1), cy: yOf(ca).toFixed(1),
-          r: 4.5, fill: 'var(--scarlet)', stroke: '#fff', 'stroke-width': 1.2 }));
     }
 
     function nearest(w0, wa) {
