@@ -14,7 +14,7 @@
     { href: "tracers.html",        label: "Tracers" },
     { href: "results.html",        label: "Results" },
     { href: "dr1.html",            label: "Data Release 1" },
-    { href: "calculator.html",     label: "Calculator" }
+    { href: "calculator.html",     label: "Cosmo-calc" }
   ];
 
   var SITE_TITLE = "DESI Outreach";
