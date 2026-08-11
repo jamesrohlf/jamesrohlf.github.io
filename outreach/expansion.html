@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cosmic Expansion Has No Center — Pick Any Star and It Becomes One — Jim Rohlf</title>
   <meta property="og:site_name" content="Jim Rohlf — DESI">
-  <meta name="description" content="Why cosmic expansion has no center, shown on a real infrared star field. Click any star: it stays put while every other star moves away from it, faster the further off it is. Click a different star and that one becomes the center instead.">
+  <meta name="description" content="Why cosmic expansion has no center, shown on real sky maps: Rubin Observatory's deep COSMOS field of distant galaxies, and an infrared star field. Click any galaxy and it stays put while every other one moves away from it, faster the further off it is. Click a different one and that becomes the center.">
   <link rel="canonical" href="https://jamesrohlf.github.io/outreach/expansion.html">
     <link rel="stylesheet" href="assets/css/site.css">
   <link rel="icon" href="assets/img/desi-emblem.jpg">
   <script src="assets/js/chrome.js" defer></script>
   <style>
-    .sky { position:relative; width:100%; max-width:40rem; aspect-ratio:1/1;
+    .sky { position:relative; width:100%; max-width:44rem; aspect-ratio:1/1;
            margin:1.2rem 0 .4rem; overflow:hidden; border:1px solid var(--rule);
            border-radius:8px; background:#000; cursor:crosshair; touch-action:manipulation; }
     .sky img { position:absolute; inset:0; width:100%; height:100%; display:block;
@@ -51,21 +51,28 @@
     <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
 
     <h1>The expansion has no center</h1>
-    <p class="subtitle">Click any star. It stays where it is, and the whole sky moves away
-      from it &mdash; then click another one and that becomes the center instead</p>
+    <p class="subtitle">Click anything in the frame. It stays where it is and the whole sky
+      moves away from it &mdash; then click something else, and that becomes the center
+      instead</p>
 
     <p class="prose">
       Two copies of the same sky map are stacked here. One is the sky as it
       is; the other is the same sky <em>uniformly expanded</em>, every separation
       multiplied by the same factor. Nothing is added, moved by hand, or singled out.
-      Click any star and the expanded copy is scaled about that star, so the two copies
-      agree there and disagree everywhere else. That star sits still. Everything else
+      Click anything and the expanded copy is scaled about that point, so the two copies
+      agree there and disagree everywhere else. That object sits still. Everything else
       slides outward, and the further away it started, the further it goes.
     </p>
 
+    <div class="ctl" id="fieldpick">
+      <label>sky</label>
+      <button type="button" class="fld" data-f="cosmos" aria-pressed="true">Rubin &mdash; COSMOS field</button>
+      <button type="button" class="fld" data-f="wise" aria-pressed="false">unWISE &mdash; Milky Way stars</button>
+    </div>
+
     <div class="sky" id="sky">
-      <img class="sky__now"  id="now"  src="img/expansion/field.jpg" alt="An infrared image of a four-degree patch of sky, thick with stars.">
-      <img class="sky__then" id="then" src="img/expansion/field.jpg" alt="" aria-hidden="true">
+      <img class="sky__now"  id="now"  src="img/expansion/cosmos.jpg" alt="A deep image of the COSMOS field, crowded with galaxies of many sizes and colours.">
+      <img class="sky__then" id="then" src="img/expansion/cosmos.jpg" alt="" aria-hidden="true">
       <svg class="sky__cross" id="cross" viewBox="0 0 34 34" style="display:none">
         <circle cx="17" cy="17" r="9" fill="none" stroke="#fff" stroke-width="2"/>
         <circle cx="17" cy="17" r="9" fill="none" stroke="#c62828" stroke-width="1"/>
@@ -80,41 +87,28 @@
       <button type="button" class="amt-set" data-amt="15">strong</button>
       <button type="button" class="amt-set" data-amt="30">extreme</button>
       <span>&nbsp;</span>
-      <button type="button" data-x="29.5" data-y="31.9">star A</button>
-      <button type="button" data-x="69.0" data-y="12.2">star B</button>
-      <button type="button" data-x="14.3" data-y="63.5">star C</button>
-      <button type="button" data-x="68.6" data-y="57.8">star D</button>
+      <span id="marks"></span>
       <button type="button" id="reset">center of the frame</button>
     </div>
 
     <p class="sky-cap" id="cap"></p>
 
-    <p class="credit">
-      Infrared image: a 4&deg; field at RA&nbsp;269.730&deg;, Dec&nbsp;+66.020&deg;, from the
-      <a href="https://www.legacysurvey.org/viewer?ra=269.730&amp;dec=66.020&amp;layer=unwise-neo6&amp;zoom=8">DESI
-      Legacy Imaging Surveys viewer</a>, unWISE/NEOWISE layer, 19.3&Prime; per pixel.
-      The four marked stars are the brightest sources in each quadrant of the frame.
-      This follows a demonstration by Viktor T. Toth &mdash;
-      <a href="https://www.vttoth.com/CMS/physics-apps/why-cosmic-expansion-has-no-center">why
-      cosmic expansion has no center</a> &mdash; who is clear that the idea itself is an old
-      one. His uses a synthetic star field and asks you to drag one copy into alignment;
-      here the alignment is exact, about whichever star you click.
-    </p>
+    <p class="credit" id="credit"></p>
 
-    <h2 class="section-title">Why every star looks like the center</h2>
+    <h2 class="section-title">Why everything looks like the center</h2>
 
     <p class="prose">
-      Expansion multiplies every separation by the same factor. If two stars were
+      Expansion multiplies every separation by the same factor. If two galaxies were
       <em>d</em> apart and the universe grows by 7%, they are now 1.07<em>d</em> apart, so
-      they separated by 0.07<em>d</em>. A star twice as far away separated twice as much.
-      That is Hubble's law, and it is what you are watching: the orange counterparts near
-      your chosen star barely move, and the ones at the edge of the frame move a long way.
+      they separated by 0.07<em>d</em>. One twice as far away separated twice as much.
+      That is Hubble's law, and it is what you are watching: the counterparts near your
+      chosen object barely move, and the ones at the edge of the frame move a long way.
     </p>
 
     <p class="prose">
-      The point is what happens when you click a different star. Nothing about the
+      The point is what happens when you click a different object. Nothing about the
       map changed &mdash; the same uniform expansion, the same factor &mdash; yet
-      the new star now sits still while the old one races away. Both descriptions are
+      the new one now sits still while the old one races away. Both descriptions are
       correct simultaneously, which is only possible if neither star is special. An
       observer on any of them would measure everything receding, and would be entitled to
       think themselves at the center. That is why the question <em>where did the Big Bang
@@ -123,11 +117,15 @@
     </p>
 
     <p class="prose muted">
-      What the demonstration is not: these stars are in our own galaxy, and they are not
-      receding from each other. The Milky Way is held together, and so are galaxy clusters;
-      expansion shows up only on scales large enough that gravity has not won locally.
-      This is a picture of the geometry, using a real sky because a real sky is more
-      convincing than a scatter of dots &mdash; not a claim about these particular stars.
+      What the demonstration is and is not. In the COSMOS field these really are distant
+      galaxies, and galaxies at those separations do recede from one another &mdash; so the
+      picture is of the right objects. But it is still a picture of the geometry rather than
+      a movie of this field: galaxies bound into a cluster stay bound, a few foreground
+      Milky Way stars sit in the frame, and nothing here has been observed to move. On the
+      unWISE sky the objects are stars in our own galaxy, which do not recede from each
+      other at all. Either way, what the two copies show is that uniform expansion looks
+      the same from every point inside it &mdash; and a real sky is more convincing than a
+      scatter of dots.
       For the actual measurement of the expansion at many redshifts, see
       <a href="bao.html">baryon acoustic oscillations</a>.
     </p>
@@ -146,11 +144,43 @@
   <script>
   (function () {
     var $ = function (id) { return document.getElementById(id); };
-    var sky = $('sky'), then = $('then'), cross = $('cross'), cap = $('cap'),
-        amt = $('amt'), amtVal = $('amt-val');
+    var sky = $('sky'), now = $('now'), then = $('then'), cross = $('cross'),
+        cap = $('cap'), amt = $('amt'), amtVal = $('amt-val'),
+        marks = $('marks'), credit = $('credit');
     if (!sky) return;
 
-    // Percent coordinates of the fixed point, and the expansion factor.
+    // Two skies. Marker positions are the brightest source in each region of the
+    // frame, found by peak-finding the image rather than chosen by eye.
+    var FIELDS = {
+      cosmos: {
+        src: 'img/expansion/cosmos.jpg', ratio: '1600/873', noun: 'galaxy',
+        alt: 'A deep image of the COSMOS field, crowded with galaxies of many sizes and colours.',
+        marks: [['A', 25.2, 58.1], ['B', 41.2, 46.4], ['C', 68.6, 42.0], ['D', 87.6, 16.3]],
+        credit: 'Deep image of the COSMOS field in Sextans, from ' +
+          '<a href="https://noirlab.edu/public/images/noirlab2618a/">Rubin Looks Deep Into a ' +
+          'Famous Cosmic Field</a>, a coadd of LSST Camera observations released for Early ' +
+          'Data Preview 2. Credit: NSF&ndash;DOE Vera C. Rubin Observatory/NOIRLab/SLAC/AURA. ' +
+          'It is crowded with galaxies and galaxy clusters across an enormous range of ' +
+          'distances; only a handful of foreground stars belong to our own Milky Way.'
+      },
+      wise: {
+        src: 'img/expansion/field.jpg', ratio: '1/1', noun: 'star',
+        alt: 'An infrared image of a four-degree patch of sky, thick with stars.',
+        marks: [['A', 29.5, 31.9], ['B', 69.0, 12.2], ['C', 14.3, 63.5], ['D', 68.6, 57.8]],
+        deg: 4,
+        credit: 'Infrared image: a 4&deg; field at RA&nbsp;269.730&deg;, Dec&nbsp;+66.020&deg;, ' +
+          'from the <a href="https://www.legacysurvey.org/viewer?ra=269.730&amp;dec=66.020&amp;' +
+          'layer=unwise-neo6&amp;zoom=8">DESI Legacy Imaging Surveys viewer</a>, unWISE/NEOWISE ' +
+          'layer, 19.3&Prime; per pixel. These are stars in our own galaxy.'
+      }
+    };
+    var TOTH = ' This follows a demonstration by Viktor T. Toth &mdash; ' +
+      '<a href="https://www.vttoth.com/CMS/physics-apps/why-cosmic-expansion-has-no-center">why ' +
+      'cosmic expansion has no center</a> &mdash; who is clear that the idea itself is an old ' +
+      'one. His uses a synthetic star field and asks you to drag one copy into alignment; here ' +
+      'the alignment is exact, about whichever object you click.';
+
+    var key = 'cosmos', F = FIELDS[key];
     var fx = 50, fy = 50, label = 'the center of the frame';
 
     function apply() {
@@ -162,13 +192,15 @@
       cross.style.left = fx + '%';
       cross.style.top  = fy + '%';
 
-      // Furthest corner from the fixed point, to say how far the edge moves.
       var dx = Math.max(fx, 100 - fx), dy = Math.max(fy, 100 - fy);
-      var far = Math.sqrt(dx * dx + dy * dy) / 100 * 4;   // frame is 4 degrees across
+      var frac = Math.sqrt(dx * dx + dy * dy) / 100;
+      var far = F.deg ? (frac * F.deg).toFixed(1) + '&deg;'
+                      : (frac * 100).toFixed(0) + '% of the frame';
+      var moved = F.deg ? (pct / 100 * frac * F.deg).toFixed(2) + '&deg;'
+                        : (pct / 100 * frac * 100).toFixed(1) + '%';
       cap.innerHTML = 'Expanded by <strong>' + pct + '%</strong> about ' + label +
-        '. That star has not moved. A star at the far corner, about ' +
-        '<strong>' + far.toFixed(1) + '&deg;</strong> away in this frame, has moved ' +
-        (pct / 100 * far).toFixed(2) + '&deg; &mdash; ' + pct +
+        '. That ' + F.noun + ' has not moved. One at the far corner, about ' +
+        '<strong>' + far + '</strong> away, has moved ' + moved + ' &mdash; ' + pct +
         '% of its distance, like everything else.' +
         (pct >= 18 ? ' At this much expansion the far pairs are flung right out of the ' +
           'frame, which is the same effect as at 7% and easier to see.' : '');
@@ -177,39 +209,60 @@
     function setPoint(x, y, name) {
       fx = Math.min(Math.max(x, 0), 100);
       fy = Math.min(Math.max(y, 0), 100);
-      label = name || ('the point you clicked');
-      Array.prototype.forEach.call(document.querySelectorAll('.ctl button[data-x]'),
+      label = name || 'the point you clicked';
+      Array.prototype.forEach.call(marks.querySelectorAll('button'),
         function (b) { b.setAttribute('aria-pressed', 'false'); });
       apply();
+    }
+
+    function drawMarks() {
+      marks.innerHTML = '';
+      F.marks.forEach(function (m) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = F.noun + ' ' + m[0];
+        b.setAttribute('aria-pressed', 'false');
+        b.addEventListener('click', function () {
+          setPoint(m[1], m[2], b.textContent);
+          b.setAttribute('aria-pressed', 'true');
+        });
+        marks.appendChild(b);
+        marks.appendChild(document.createTextNode(' '));
+      });
+    }
+
+    function loadField(k) {
+      key = k; F = FIELDS[k];
+      now.src = F.src; then.src = F.src;
+      now.alt = F.alt;
+      sky.style.aspectRatio = F.ratio;
+      credit.innerHTML = F.credit + TOTH;
+      Array.prototype.forEach.call(document.querySelectorAll('.fld'), function (b) {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-f') === k));
+      });
+      drawMarks();
+      setPoint(50, 50, 'the center of the frame');
     }
 
     sky.addEventListener('click', function (e) {
       var r = sky.getBoundingClientRect();
       setPoint((e.clientX - r.left) / r.width * 100,
-               (e.clientY - r.top) / r.height * 100, 'the star you clicked');
+               (e.clientY - r.top) / r.height * 100, 'the ' + F.noun + ' you clicked');
     });
 
-    Array.prototype.forEach.call(document.querySelectorAll('.ctl button[data-x]'),
-      function (b) {
-        b.addEventListener('click', function () {
-          setPoint(parseFloat(b.getAttribute('data-x')),
-                   parseFloat(b.getAttribute('data-y')), b.textContent.trim());
-          b.setAttribute('aria-pressed', 'true');
-        });
-      });
+    Array.prototype.forEach.call(document.querySelectorAll('.fld'), function (b) {
+      b.addEventListener('click', function () { loadField(b.getAttribute('data-f')); });
+    });
 
     $('reset').addEventListener('click', function () {
       setPoint(50, 50, 'the center of the frame');
     });
     amt.addEventListener('input', apply);
     Array.prototype.forEach.call(document.querySelectorAll('.amt-set'), function (b) {
-      b.addEventListener('click', function () {
-        amt.value = b.getAttribute('data-amt');
-        apply();
-      });
+      b.addEventListener('click', function () { amt.value = b.getAttribute('data-amt'); apply(); });
     });
 
-    apply();
+    loadField('cosmos');
   })();
   </script>
 </body>
