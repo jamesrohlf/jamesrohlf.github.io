@@ -1,3 +1,7 @@
 .DS_Store
 IMG_*.jpeg
 IMG_*.JPG
+
+# Full-resolution source images: kept on disk, never published.
+Cosmos_LSST_*.jpeg
+*.tiff
