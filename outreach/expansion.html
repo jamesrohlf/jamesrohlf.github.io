@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cosmic Expansion Has No Center — Pick Any Star and It Becomes One — Jim Rohlf</title>
   <meta property="og:site_name" content="Jim Rohlf — DESI">
-  <meta name="description" content="Why cosmic expansion has no center, shown on real sky maps: Rubin Observatory's deep COSMOS field of distant galaxies, and an infrared star field. Click any galaxy and it stays put while every other one moves away from it, faster the further off it is. Click a different one and that becomes the center.">
+  <meta name="description" content="Why cosmic expansion has no center, shown on real sky maps: a DESI Legacy Surveys infrared field, and Rubin Observatory's deep COSMOS field of distant galaxies. Click anything and it stays put while everything else moves away from it, faster the further off it is. Click something else and that becomes the center.">
   <link rel="canonical" href="https://jamesrohlf.github.io/outreach/expansion.html">
     <link rel="stylesheet" href="assets/css/site.css">
   <link rel="icon" href="assets/img/desi-emblem.jpg">
@@ -66,13 +66,13 @@
 
     <div class="ctl" id="fieldpick">
       <label>sky</label>
-      <button type="button" class="fld" data-f="cosmos" aria-pressed="true">Rubin &mdash; COSMOS field</button>
-      <button type="button" class="fld" data-f="wise" aria-pressed="false">unWISE &mdash; Milky Way stars</button>
+      <button type="button" class="fld" data-f="wise" aria-pressed="true">unWISE &mdash; DESI Legacy Surveys</button>
+      <button type="button" class="fld" data-f="cosmos" aria-pressed="false">Rubin &mdash; COSMOS field</button>
     </div>
 
     <div class="sky" id="sky">
-      <img class="sky__now"  id="now"  src="img/expansion/cosmos.jpg" alt="A deep image of the COSMOS field, crowded with galaxies of many sizes and colours.">
-      <img class="sky__then" id="then" src="img/expansion/cosmos.jpg" alt="" aria-hidden="true">
+      <img class="sky__now"  id="now"  src="img/expansion/field.jpg" alt="A four-degree infrared field from the DESI Legacy Imaging Surveys, dense with sources.">
+      <img class="sky__then" id="then" src="img/expansion/field.jpg" alt="" aria-hidden="true">
       <svg class="sky__cross" id="cross" viewBox="0 0 34 34" style="display:none">
         <circle cx="17" cy="17" r="9" fill="none" stroke="#fff" stroke-width="2"/>
         <circle cx="17" cy="17" r="9" fill="none" stroke="#c62828" stroke-width="1"/>
@@ -93,7 +93,28 @@
 
     <p class="sky-cap" id="cap"></p>
 
-    <p class="credit" id="credit"></p>
+    <p class="credit">
+      <strong>unWISE field:</strong> a 4&deg; infrared field at RA&nbsp;269.730&deg;,
+      Dec&nbsp;+66.020&deg; &mdash; galactic latitude +30&deg;, well off the plane &mdash;
+      from the <a href="https://www.legacysurvey.org/viewer?ra=269.730&amp;dec=66.020&amp;layer=unwise-neo6&amp;zoom=8">DESI
+      Legacy Imaging Surveys viewer</a>, unWISE/NEOWISE W1+W2 at 19.3&Prime; per pixel.
+      This is the infrared photometry the Legacy Surveys provide for DESI target selection;
+      the frame holds galaxies together with foreground Milky Way stars.
+      <br>
+      <strong>COSMOS field:</strong> a deep coadd of LSST Camera observations in Sextans,
+      released for Early Data Preview 2 &mdash;
+      <a href="https://noirlab.edu/public/images/noirlab2618a/">Rubin Looks Deep Into a
+      Famous Cosmic Field</a>. Credit: NSF&ndash;DOE Vera C. Rubin
+      Observatory/NOIRLab/SLAC/AURA. It is crowded with galaxies and galaxy clusters across
+      an enormous range of distances; only a handful of foreground stars belong to our own
+      Milky Way.
+      <br>
+      This follows a demonstration by Viktor T. Toth &mdash;
+      <a href="https://www.vttoth.com/CMS/physics-apps/why-cosmic-expansion-has-no-center">why
+      cosmic expansion has no center</a> &mdash; who is clear that the idea itself is an old
+      one. His uses a synthetic star field and asks you to drag one copy into alignment;
+      here the alignment is exact, about whichever object you click.
+    </p>
 
     <h2 class="section-title">Why everything looks like the center</h2>
 
@@ -146,44 +167,28 @@
     var $ = function (id) { return document.getElementById(id); };
     var sky = $('sky'), now = $('now'), then = $('then'), cross = $('cross'),
         cap = $('cap'), amt = $('amt'), amtVal = $('amt-val'),
-        marks = $('marks'), credit = $('credit');
+        marks = $('marks');
     if (!sky) return;
 
     // Two skies. Marker positions are the brightest source in each region of the
     // frame, found by peak-finding the image rather than chosen by eye.
+    // Two skies. Marker positions are the brightest source in each region of the
+    // frame, found by peak-finding the image rather than chosen by eye. Credits
+    // for both live in the markup, so neither disappears when you switch.
     var FIELDS = {
+      wise: {
+        src: 'img/expansion/field.jpg', ratio: '1/1', noun: 'source', deg: 4,
+        alt: 'A four-degree infrared field from the DESI Legacy Imaging Surveys, dense with sources.',
+        marks: [['A', 29.5, 31.9], ['B', 69.0, 12.2], ['C', 14.3, 63.5], ['D', 68.6, 57.8]]
+      },
       cosmos: {
         src: 'img/expansion/cosmos.jpg', ratio: '1600/873', noun: 'galaxy',
         alt: 'A deep image of the COSMOS field, crowded with galaxies of many sizes and colours.',
-        marks: [['A', 25.2, 58.1], ['B', 41.2, 46.4], ['C', 68.6, 42.0], ['D', 87.6, 16.3]],
-        credit: 'Deep image of the COSMOS field in Sextans, from ' +
-          '<a href="https://noirlab.edu/public/images/noirlab2618a/">Rubin Looks Deep Into a ' +
-          'Famous Cosmic Field</a>, a coadd of LSST Camera observations released for Early ' +
-          'Data Preview 2. Credit: NSF&ndash;DOE Vera C. Rubin Observatory/NOIRLab/SLAC/AURA. ' +
-          'It is crowded with galaxies and galaxy clusters across an enormous range of ' +
-          'distances; only a handful of foreground stars belong to our own Milky Way.'
-      },
-      wise: {
-        src: 'img/expansion/field.jpg', ratio: '1/1', noun: 'source',
-        alt: 'A four-degree infrared field from the DESI Legacy Imaging Surveys, dense with sources.',
-        marks: [['A', 29.5, 31.9], ['B', 69.0, 12.2], ['C', 14.3, 63.5], ['D', 68.6, 57.8]],
-        deg: 4,
-        credit: 'A 4&deg; infrared field at RA&nbsp;269.730&deg;, Dec&nbsp;+66.020&deg; ' +
-          '&mdash; galactic latitude +30&deg;, well off the plane &mdash; from the ' +
-          '<a href="https://www.legacysurvey.org/viewer?ra=269.730&amp;dec=66.020&amp;' +
-          'layer=unwise-neo6&amp;zoom=8">DESI Legacy Imaging Surveys viewer</a>, ' +
-          'unWISE/NEOWISE W1+W2 at 19.3&Prime; per pixel. This is the infrared photometry ' +
-          'the Legacy Surveys provide for DESI target selection; the frame holds galaxies ' +
-          'together with foreground Milky Way stars.'
+        marks: [['A', 25.2, 58.1], ['B', 41.2, 46.4], ['C', 68.6, 42.0], ['D', 87.6, 16.3]]
       }
     };
-    var TOTH = ' This follows a demonstration by Viktor T. Toth &mdash; ' +
-      '<a href="https://www.vttoth.com/CMS/physics-apps/why-cosmic-expansion-has-no-center">why ' +
-      'cosmic expansion has no center</a> &mdash; who is clear that the idea itself is an old ' +
-      'one. His uses a synthetic star field and asks you to drag one copy into alignment; here ' +
-      'the alignment is exact, about whichever object you click.';
 
-    var key = 'cosmos', F = FIELDS[key];
+    var key = 'wise', F = FIELDS[key];
     var fx = 50, fy = 50, label = 'the center of the frame';
 
     function apply() {
@@ -239,7 +244,6 @@
       now.src = F.src; then.src = F.src;
       now.alt = F.alt;
       sky.style.aspectRatio = F.ratio;
-      credit.innerHTML = F.credit + TOTH;
       Array.prototype.forEach.call(document.querySelectorAll('.fld'), function (b) {
         b.setAttribute('aria-pressed', String(b.getAttribute('data-f') === k));
       });
@@ -265,7 +269,7 @@
       b.addEventListener('click', function () { amt.value = b.getAttribute('data-amt'); apply(); });
     });
 
-    loadField('cosmos');
+    loadField('wise');
   })();
   </script>
 </body>
