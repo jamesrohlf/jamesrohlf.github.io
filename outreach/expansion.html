@@ -74,11 +74,11 @@
 
     <div class="ctl">
       <label for="amt">expansion</label>
-      <input id="amt" type="range" min="1" max="60" step="1" value="7">
+      <input id="amt" type="range" min="1" max="30" step="1" value="7">
       <span id="amt-val">7%</span>
       <button type="button" class="amt-set" data-amt="7">subtle</button>
-      <button type="button" class="amt-set" data-amt="25">strong</button>
-      <button type="button" class="amt-set" data-amt="55">extreme</button>
+      <button type="button" class="amt-set" data-amt="15">strong</button>
+      <button type="button" class="amt-set" data-amt="30">extreme</button>
       <span>&nbsp;</span>
       <button type="button" data-x="29.5" data-y="31.9">star A</button>
       <button type="button" data-x="69.0" data-y="12.2">star B</button>
@@ -170,7 +170,7 @@
         '<strong>' + far.toFixed(1) + '&deg;</strong> away in this frame, has moved ' +
         (pct / 100 * far).toFixed(2) + '&deg; &mdash; ' + pct +
         '% of its distance, like everything else.' +
-        (pct >= 30 ? ' At this much expansion the far pairs are flung right out of the ' +
+        (pct >= 18 ? ' At this much expansion the far pairs are flung right out of the ' +
           'frame, which is the same effect as at 7% and easier to see.' : '');
     }
 
