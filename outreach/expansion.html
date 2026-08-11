@@ -68,6 +68,7 @@
       <label>sky</label>
       <button type="button" class="fld" data-f="wise" aria-pressed="true">unWISE &mdash; DESI Legacy Surveys</button>
       <button type="button" class="fld" data-f="cosmos" aria-pressed="false">Rubin &mdash; COSMOS field</button>
+      <button type="button" class="fld" data-f="detail" aria-pressed="false">Rubin &mdash; COSMOS close-up</button>
     </div>
 
     <div class="sky" id="sky">
@@ -107,7 +108,9 @@
       Famous Cosmic Field</a>. Credit: NSF&ndash;DOE Vera C. Rubin
       Observatory/NOIRLab/SLAC/AURA. It is crowded with galaxies and galaxy clusters across
       an enormous range of distances; only a handful of foreground stars belong to our own
-      Milky Way.
+      Milky Way. The <em>close-up</em> is a blow-up of one piece of the same image, where
+      individual galaxies are resolved well enough to watch each one split from its
+      counterpart.
       <br>
       This follows a demonstration by Viktor T. Toth &mdash;
       <a href="https://www.vttoth.com/CMS/physics-apps/why-cosmic-expansion-has-no-center">why
@@ -185,6 +188,11 @@
         src: 'img/expansion/cosmos.jpg', ratio: '1600/873', noun: 'galaxy',
         alt: 'A deep image of the COSMOS field, crowded with galaxies of many sizes and colours.',
         marks: [['A', 25.2, 58.1], ['B', 41.2, 46.4], ['C', 68.6, 42.0], ['D', 87.6, 16.3]]
+      },
+      detail: {
+        src: 'img/expansion/cosmos-detail.jpg', ratio: '1009/893', noun: 'galaxy',
+        alt: 'A close-up of part of the COSMOS field, with individual galaxies resolved.',
+        marks: [['A', 31.9, 43.7], ['B', 60.5, 22.5], ['C', 47.2, 86.3], ['D', 55.0, 58.0]]
       }
     };
 
