@@ -13,12 +13,15 @@
   <style>
     .usa { width:100%; max-width:56rem; margin:1rem 0 .3rem; border:1px solid var(--rule);
            border-radius:8px; background:var(--paper); cursor:crosshair; display:block; }
-    .st      { fill:none; stroke:var(--rule); stroke-width:.7; }
-    .st-then { fill:none; stroke:var(--scarlet); stroke-width:.7; opacity:.30; }
-    .dot     { fill:var(--ink); }
-    .dot-then{ fill:var(--scarlet); opacity:.85; }
+    .st      { fill:none; stroke:var(--rule); stroke-width:.7; vector-effect:non-scaling-stroke; }
+    .st-then { fill:none; stroke:var(--scarlet); stroke-width:.7; opacity:.30;
+               vector-effect:non-scaling-stroke; }
+    .dotp     { fill:none; stroke:var(--ink); stroke-linecap:round;
+                vector-effect:non-scaling-stroke; }
+    .dotp-then{ fill:none; stroke:var(--scarlet); stroke-linecap:round; opacity:.85;
+                vector-effect:non-scaling-stroke; }
     .lab     { font:400 7.5px system-ui,sans-serif; fill:var(--ink-soft); }
-    .pin     { fill:none; stroke:var(--scarlet); stroke-width:2; }
+    .pin     { fill:none; stroke:var(--scarlet); stroke-width:2; vector-effect:non-scaling-stroke; }
     .pin-lab { font:700 11px system-ui,sans-serif; fill:var(--scarlet); }
     .ctl { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem 1.1rem;
            margin:.2rem 0 .6rem; font-size:.88rem; color:var(--ink-soft); }
@@ -47,7 +50,9 @@
       being slipped past you, because you do not know where those objects ought to be. Here
       you do. Click Chicago and every other city moves away from Chicago, Denver twice as far
       as Indianapolis because it started twice as far off. Click Denver and Chicago is the one
-      that moves. Nothing about the map changed in between.
+      that moves. Nothing about the map changed in between. Zoom in and it holds at any
+      scale: the towns immediately around the one you picked drift off it just as surely
+      as the coasts do, only slower, because they started closer.
     </p>
 
     <svg class="usa" id="usa" viewBox="0 0 960 606" role="img" aria-labelledby="mT mD">
@@ -66,6 +71,12 @@
       <button type="button" class="city" data-n="Minneapolis">Minneapolis</button>
       <button type="button" class="city" data-n="Kansas City">Kansas City</button>
       <button type="button" class="city" data-n="Nashville">Nashville</button>
+      <span>&nbsp;</span>
+      <label>zoom</label>
+      <button type="button" class="zm" data-z="1" aria-pressed="true">1&times;</button>
+      <button type="button" class="zm" data-z="3" aria-pressed="false">3&times;</button>
+      <button type="button" class="zm" data-z="8" aria-pressed="false">8&times;</button>
+      <button type="button" class="zm" data-z="20" aria-pressed="false">20&times;</button>
     </div>
 
     <p class="map-cap" id="cap"></p>
@@ -131,21 +142,51 @@
         gThen = $('g-then'), pin = $('g-pin'), cap = $('cap'),
         amt = $('amt'), amtVal = $('amt-val');
 
+    // One path per size class instead of one circle per city. Each dot is a
+    // zero-length segment with a round cap, so its diameter is the stroke width;
+    // non-scaling-stroke then holds that width in screen units, which keeps the
+    // dots the same size at any zoom while the geometry magnifies. Twelve nodes
+    // instead of 58,920, and nothing to update when the zoom changes.
     (function () {
-      var f1 = document.createDocumentFragment(), f2 = document.createDocumentFragment(), i;
+      var CLASSES = [0.42, 0.7, 1.0, 1.4, 2.0, 2.8], buckets = [];
+      var i, k, r;
+      for (k = 0; k < CLASSES.length; k++) buckets.push([]);
       for (i = 0; i < N.length; i++) {
-        var r = R[i] || DEFR;
-        f1.appendChild(el('circle', { cx: X[i], cy: Y[i], r: r, class: 'dot' }));
-        f2.appendChild(el('circle', { cx: X[i], cy: Y[i], r: r, class: 'dot-then' }));
+        r = R[i] || DEFR;
+        for (k = CLASSES.length - 1; k > 0; k--) if (r >= CLASSES[k]) break;
+        buckets[k].push('M' + X[i] + ',' + Y[i] + 'h0');
       }
-      dots.appendChild(f1); dotsThen.appendChild(f2);
+      for (k = 0; k < CLASSES.length; k++) {
+        if (!buckets[k].length) continue;
+        var d = buckets[k].join('');
+        dots.appendChild(el('path', { d: d, class: 'dotp',
+          'stroke-width': (CLASSES[k] * 2).toFixed(2) }));
+        dotsThen.appendChild(el('path', { d: d, class: 'dotp-then',
+          'stroke-width': (CLASSES[k] * 2).toFixed(2) }));
+      }
       LABS.forEach(function (L) {
         var t = el('text', { x: L[1], y: L[2], class: 'lab' });
         t.textContent = N[L[0]]; labs.appendChild(t);
       });
     })();
 
-    var here = 0;
+    var here = 0, zoom = 1;
+    var VB = [0, 0, 960, 606];          // current viewBox, needed to invert a click
+
+    // Zooming is a viewBox change centred on the pinned city, clamped to the map.
+    // Dots grow with it, which is the point; outlines are non-scaling-stroke and
+    // the type is counter-scaled so both stay the size they were.
+    function view() {
+      var w = 960 / zoom, h = 606 / zoom;
+      var x = Math.min(Math.max(X[here] - w / 2, 0), 960 - w);
+      var y = Math.min(Math.max(Y[here] - h / 2, 0), 606 - h);
+      VB = [x, y, w, h];
+      svg.setAttribute('viewBox', x.toFixed(1) + ' ' + y.toFixed(1) + ' ' +
+                                  w.toFixed(1) + ' ' + h.toFixed(1));
+      labs.style.fontSize = (7.5 / zoom).toFixed(2) + 'px';
+      pin.style.fontSize  = (11 / zoom).toFixed(2) + 'px';
+    }
+
     // Nearest city, except that inside a metro several sit within a pixel or two
     // of each other: clicking New York should not pin Corona. Within 7px, take
     // the largest whose population we know.
@@ -187,18 +228,28 @@
       Array.prototype.forEach.call(document.querySelectorAll('.city'), function (b) {
         b.setAttribute('aria-pressed', String(b.getAttribute('data-n') === N[here]));
       });
+      view();
     }
 
     svg.addEventListener('click', function (e) {
       var r = svg.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width * 960;
-      var y = (e.clientY - r.top) / r.height * 606;
+      var x = VB[0] + (e.clientX - r.left) / r.width  * VB[2];
+      var y = VB[1] + (e.clientY - r.top)  / r.height * VB[3];
       here = nearest(x, y); apply();
     });
     Array.prototype.forEach.call(document.querySelectorAll('.city'), function (b) {
       b.addEventListener('click', function () {
         var nm = b.getAttribute('data-n');
         for (var i = 0; i < N.length; i++) if (N[i] === nm) { here = i; break; }
+        apply();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.zm'), function (b) {
+      b.addEventListener('click', function () {
+        zoom = parseFloat(b.getAttribute('data-z'));
+        Array.prototype.forEach.call(document.querySelectorAll('.zm'), function (o) {
+          o.setAttribute('aria-pressed', String(o === b));
+        });
         apply();
       });
     });
