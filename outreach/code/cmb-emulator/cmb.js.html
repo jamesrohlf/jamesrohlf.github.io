@@ -1,0 +1,259 @@
+  <script>
+  (function () {
+    'use strict';
+    var EMU = __PAYLOAD__;
+    var PLANCK = __PLANCK__;
+
+    function f32(b64) {
+      var s = atob(b64), n = s.length, u = new Uint8Array(n), i;
+      for (i = 0; i < n; i++) u[i] = s.charCodeAt(i);
+      return new Float32Array(u.buffer);
+    }
+    var NODES = f32(EMU.nodes), MEAN = f32(EMU.mean), BASIS = f32(EMU.basis),
+        W1 = f32(EMU.W1), B1 = f32(EMU.b1), W2 = f32(EMU.W2), B2 = f32(EMU.b2),
+        W3 = f32(EMU.W3), B3 = f32(EMU.b3);
+    var K = EMU.K, H = EMU.H, NL = EMU.nl, CS = EMU.cs;
+
+    var PAR = [
+      { key:'ombh2', label:'Ωbh²',        html:'&Omega;<sub>b</sub>h&sup2;',
+        hint:'baryon density — odd vs even peak heights', dp:5, step:0.0001 },
+      { key:'omch2', label:'Ωch²',        html:'&Omega;<sub>c</sub>h&sup2;',
+        hint:'cold dark matter — first peak height',      dp:4, step:0.0005 },
+      { key:'th100', label:'100θ*',                 html:'100&thinsp;&theta;<sub>&lowast;</sub>',
+        hint:'angular size of the sound horizon — slides the peaks in ℓ', dp:5, step:0.00005 },
+      { key:'tau',   label:'τ',                     html:'&tau;',
+        hint:'reionization — peaks vs the low-ℓ plateau', dp:4, step:0.0005 },
+      { key:'logAs', label:'ln(10¹⁰Aₛ)',  html:'ln(10<sup>10</sup>A<sub>s</sub>)',
+        hint:'primordial amplitude — overall scale',      dp:4, step:0.002 },
+      { key:'ns',    label:'nₛ',                    html:'n<sub>s</sub>',
+        hint:'tilt — pivots large against small scales',  dp:4, step:0.0005 }
+    ];
+    var LO = EMU.lo, HI = EMU.hi, FID = EMU.fid;
+    var cur = FID.slice();
+
+    // ---- emulator ---------------------------------------------------------
+    var h1 = new Float32Array(H), h2 = new Float32Array(H), co = new Float32Array(K),
+        out = new Float32Array(NL);
+    function spectrum(p) {
+      var i, j, s, z = new Float32Array(6);
+      for (i = 0; i < 6; i++) z[i] = 2 * (p[i] - LO[i]) / (HI[i] - LO[i]) - 1;
+      for (j = 0; j < H; j++) { s = B1[j]; for (i = 0; i < 6; i++) s += z[i] * W1[i * H + j];
+                                h1[j] = Math.tanh(s); }
+      for (j = 0; j < H; j++) { s = B2[j]; for (i = 0; i < H; i++) s += h1[i] * W2[i * H + j];
+                                h2[j] = Math.tanh(s); }
+      for (j = 0; j < K; j++) { s = B3[j]; for (i = 0; i < H; i++) s += h2[i] * W3[i * K + j];
+                                co[j] = s * CS; }
+      for (i = 0; i < NL; i++) {
+        s = MEAN[i];
+        for (j = 0; j < K; j++) s += co[j] * BASIS[j * NL + i];
+        out[i] = Math.exp(s);
+      }
+      return out;
+    }
+    function atL(sp, l) {                      // linear interp onto a real l
+      if (l <= NODES[0]) return sp[0];
+      if (l >= NODES[NL - 1]) return sp[NL - 1];
+      var a = 0, b = NL - 1, m;
+      while (b - a > 1) { m = (a + b) >> 1; if (NODES[m] <= l) a = m; else b = m; }
+      var t = (l - NODES[a]) / (NODES[b] - NODES[a]);
+      return sp[a] + t * (sp[b] - sp[a]);
+    }
+
+    // ---- geometry: Planck's own convention, log to l=30 then linear -------
+    var NS = 'http://www.w3.org/2000/svg', svg = document.getElementById('plot');
+    var X0 = 74, X1 = 884, Y0 = 20, Y1 = 408, SPLIT = 30, FRAC = 0.20;
+    var XB = X0 + (X1 - X0) * FRAC;
+    function xpos(l) {
+      if (l <= SPLIT) return X0 + (XB - X0) * Math.log(l / 2) / Math.log(SPLIT / 2);
+      return XB + (X1 - XB) * (l - SPLIT) / (2500 - SPLIT);
+    }
+    var ymax = 7000, LOGY = false;
+    function ypos(d) {
+      if (LOGY) {
+        var lo = 10, hi = Math.max(ymax, 100);
+        var v = Math.max(d, lo);
+        return Y1 - (Y1 - Y0) * (Math.log(v / lo) / Math.log(hi / lo));
+      }
+      return Y1 - (Y1 - Y0) * (d / ymax);
+    }
+    function el(n, at) { var e = document.createElementNS(NS, n), k;
+                         for (k in at) e.setAttribute(k, at[k]); return e; }
+    function niceMax(v) {
+      var steps = [2000, 4000, 6000, 7000, 8000, 10000, 13000, 16000, 20000, 26000];
+      for (var i = 0; i < steps.length; i++) if (v <= steps[i] * 0.97) return steps[i];
+      return Math.ceil(v / 5000) * 5000;
+    }
+
+    // H0 is derived, not chosen: it follows from the two densities and theta*.
+    // A quadratic in those three reproduces CAMB to the precision printed in
+    // the build log -- the background solve is far smoother than the spectra.
+    var H0C = EMU.h0coef, H0P = EMU.h0pow;
+    function h0of(p) {
+      var z = [2*(p[0]-LO[0])/(HI[0]-LO[0])-1,
+               2*(p[1]-LO[1])/(HI[1]-LO[1])-1,
+               2*(p[2]-LO[2])/(HI[2]-LO[2])-1];
+      var s = 0, i, k, term;
+      for (i = 0; i < H0P.length; i++) {
+        term = H0C[i];
+        for (k = 0; k < 3; k++) term *= Math.pow(z[k], H0P[i][k]);
+        s += term;
+      }
+      return s;
+    }
+
+    var refSpec = Float32Array.from(spectrum(FID));   // copy: buffer is reused
+
+    function draw() {
+      var sp = spectrum(cur), i, l, d;
+
+      var peak = 0;
+      for (i = 0; i < NL; i++) { if (NODES[i] >= 50 && NODES[i] <= 1200 && sp[i] > peak) peak = sp[i]; }
+      var top = 0;
+      for (i = 0; i < NL; i++) if (sp[i] > top) top = sp[i];
+      if (document.getElementById('showdata').checked)
+        for (i = 0; i < PLANCK.length; i++) top = Math.max(top, PLANCK[i][1] + PLANCK[i][3]);
+      ymax = niceMax(top);
+
+      // Replace one identified group rather than counting children: the inline
+      // SVG contains whitespace text nodes, so child counts cannot be trusted.
+      var old = document.getElementById('plotbody');
+      if (old) old.parentNode.removeChild(old);
+      var g = el('g', { id:'plotbody' });
+      // y grid
+      var nY = LOGY ? 0 : 5, yv;
+      if (LOGY) {
+        [10, 100, 1000, 10000].forEach(function (v) {
+          if (v > ymax) return;
+          g.appendChild(el('line', { x1:X0, x2:X1, y1:ypos(v), y2:ypos(v),
+                                     stroke:'var(--rule)', 'stroke-width':1 }));
+          var t = el('text', { x:X0 - 8, y:ypos(v) + 4, 'text-anchor':'end',
+                               'font-size':12, fill:'var(--ink-faint)' });
+          t.textContent = v; g.appendChild(t);
+        });
+      } else {
+        for (i = 0; i <= nY; i++) {
+          yv = ymax * i / nY;
+          g.appendChild(el('line', { x1:X0, x2:X1, y1:ypos(yv), y2:ypos(yv),
+                                     stroke:'var(--rule)', 'stroke-width':1 }));
+          var ty = el('text', { x:X0 - 8, y:ypos(yv) + 4, 'text-anchor':'end',
+                                'font-size':12, fill:'var(--ink-faint)' });
+          ty.textContent = yv; g.appendChild(ty);
+        }
+      }
+      // x ticks
+      [2, 5, 10, 30, 200, 500, 1000, 1500, 2000, 2500].forEach(function (lv) {
+        var x = xpos(lv);
+        g.appendChild(el('line', { x1:x, x2:x, y1:Y1, y2:Y1 + 5,
+                                   stroke:'var(--ink-faint)', 'stroke-width':1 }));
+        var t = el('text', { x:x, y:Y1 + 19, 'text-anchor':'middle',
+                             'font-size':12, fill:'var(--ink-faint)' });
+        t.textContent = lv; g.appendChild(t);
+      });
+      // the axis break between log and linear halves
+      g.appendChild(el('line', { x1:XB, x2:XB, y1:Y0, y2:Y1, stroke:'var(--rule)',
+                                 'stroke-width':1, 'stroke-dasharray':'2 3' }));
+      g.appendChild(el('rect', { x:X0, y:Y0, width:X1 - X0, height:Y1 - Y0,
+                                 fill:'none', stroke:'var(--ink-faint)', 'stroke-width':1 }));
+
+      var xl = el('text', { x:(X0 + X1) / 2, y:Y1 + 40, 'text-anchor':'middle',
+                            'font-size':13, fill:'var(--ink-soft)' });
+      xl.textContent = 'multipole ℓ';
+      g.appendChild(xl);
+      var yl = el('text', { x:16, y:(Y0 + Y1) / 2, 'text-anchor':'middle', 'font-size':13,
+                            fill:'var(--ink-soft)',
+                            transform:'rotate(-90 16 ' + ((Y0 + Y1) / 2) + ')' });
+      yl.textContent = 'ℓ(ℓ+1)Cℓ/2π   [μK²]';
+      g.appendChild(yl);
+
+      // data
+      if (document.getElementById('showdata').checked) {
+        var dg = el('g', { stroke:'var(--ink-soft)', 'stroke-width':1, fill:'none', opacity:.75 });
+        for (i = 0; i < PLANCK.length; i++) {
+          var p = PLANCK[i], x = xpos(p[0]);
+          dg.appendChild(el('line', { x1:x, x2:x, y1:ypos(p[1] - p[2]), y2:ypos(p[1] + p[3]) }));
+          dg.appendChild(el('circle', { cx:x, cy:ypos(p[1]), r:1.7,
+                                        fill:'var(--ink-soft)', stroke:'none' }));
+        }
+        g.appendChild(dg);
+      }
+      // reference + model
+      function path(arr) {
+        var s = '', j;
+        for (j = 0; j < NL; j++) s += (j ? 'L' : 'M') + xpos(NODES[j]).toFixed(1) + ' ' +
+                                       ypos(arr[j]).toFixed(1) + ' ';
+        return s;
+      }
+      if (document.getElementById('showref').checked)
+        g.appendChild(el('path', { d:path(refSpec), fill:'none', stroke:'var(--ink-faint)',
+                                   'stroke-width':1.4, 'stroke-dasharray':'5 4' }));
+      g.appendChild(el('path', { d:path(sp), fill:'none', stroke:'var(--scarlet)',
+                                 'stroke-width':2.1, 'stroke-linejoin':'round' }));
+      svg.appendChild(g);
+
+      // readouts
+      var H0 = h0of(cur), h = H0 / 100, omnu = 0.00064;
+      var om = (cur[0] + cur[1] + omnu) / (h * h);
+      var chi = 0, nb = 0;
+      for (i = 0; i < PLANCK.length; i++) {
+        if (PLANCK[i][0] < 47) continue;                 // binned Plik only
+        var sig = 0.5 * (PLANCK[i][2] + PLANCK[i][3]);
+        var r = (atL(sp, PLANCK[i][0]) - PLANCK[i][1]) / sig;
+        chi += r * r; nb++;
+      }
+      var red = chi / nb;
+      var cls = red < 1.5 ? 'chi--good' : (red < 6 ? 'chi--mid' : 'chi--bad');
+      var pl = 0, pd = 0;
+      for (i = 0; i < NL; i++) if (NODES[i] >= 50 && NODES[i] <= 1200 && sp[i] > pd) {
+        pd = sp[i]; pl = NODES[i]; }
+      document.getElementById('derived').innerHTML =
+        '<span>H<sub>0</sub> = <b>' + H0.toFixed(2) + '</b> km/s/Mpc</span>' +
+        '<span>Ω<sub>m</sub> = <b>' + om.toFixed(4) + '</b></span>' +
+        '<span>Ω<sub>Λ</sub> = <b>' + (1 - om).toFixed(4) + '</b></span>' +
+        '<span>h = <b>' + h.toFixed(4) + '</b></span>' +
+        '<span>A<sub>s</sub>e<sup>−2τ</sup> = <b>' +
+          (Math.exp(cur[4]) * Math.exp(-2 * cur[3])).toFixed(3) + '×10⁻¹⁰</b></span>' +
+        '<span>χ²/N = <b class="chi ' + cls + '">' + red.toFixed(1) +
+          '</b> <span style="opacity:.7">(N=' + nb + ')</span></span>';
+      document.getElementById('peakinfo').textContent =
+        'first peak near ℓ = ' + pl + ',  ' + Math.round(pd) + ' μK²';
+    }
+
+    // ---- controls ---------------------------------------------------------
+    var wrap = document.getElementById('knobs');
+    PAR.forEach(function (p, i) {
+      var d = document.createElement('div'); d.className = 'knob';
+      d.innerHTML =
+        '<label for="k' + i + '">' + p.html + (p.unit ? ' <span style="font-weight:400;opacity:.7">' +
+          p.unit.trim() + '</span>' : '') + '</label>' +
+        '<output id="o' + i + '"></output>' +
+        '<input type="range" id="k' + i + '" min="' + LO[i] + '" max="' + HI[i] +
+          '" step="' + p.step + '" value="' + FID[i] + '">' +
+        '<span class="hint">' + p.hint + '</span>';
+      wrap.appendChild(d);
+      d.querySelector('input').addEventListener('input', function () {
+        cur[i] = parseFloat(this.value); sync(); draw();
+      });
+    });
+    function sync() {
+      PAR.forEach(function (p, i) {
+        document.getElementById('o' + i).textContent = cur[i].toFixed(p.dp);
+        document.getElementById('k' + i).value = cur[i];
+      });
+    }
+    document.getElementById('reset').addEventListener('click', function () {
+      cur = FID.slice(); sync(); draw();
+    });
+    ['showref', 'showdata'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', draw);
+    });
+    document.getElementById('logy').addEventListener('change', function () {
+      LOGY = this.checked; draw();
+    });
+
+    document.getElementById('acc-med').textContent = EMU.err_med.toFixed(2) + '%';
+    document.getElementById('acc-max').textContent = EMU.err_max.toFixed(1) + '%';
+    sync(); draw();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMB Power Spectrum — the Six Parameters of &Lambda;CDM — Jim Rohlf</title>
+  <meta property="og:site_name" content="Jim Rohlf — DESI">
+  <meta name="description" content="Move the six parameters of LCDM and watch the CMB temperature power spectrum respond, against the Planck 2018 measurement. Baryon density, cold dark matter density, H0, optical depth, primordial amplitude and tilt, computed by a CAMB-trained emulator in the browser.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/cmb-spectrum.html">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+  <style>
+    .rig { border:1px solid var(--rule); border-radius:10px; padding:.9rem 1rem 1rem;
+           margin:1.4rem 0 1.6rem; background:var(--paper); }
+    .rig__plot svg { display:block; width:100%; height:auto; }
+
+    /* Six sliders in a grid that collapses to one column on a phone. */
+    .knobs { display:grid; grid-template-columns:repeat(auto-fit, minmax(15.5rem, 1fr));
+             gap:.5rem 1.4rem; margin:.9rem 0 0; }
+    .knob { display:grid; grid-template-columns:1fr auto; align-items:baseline; gap:.1rem .5rem; }
+    .knob label { font-size:.84rem; font-weight:600; color:var(--ink-soft); }
+    .knob output { font-family:var(--font-mono); font-size:.82rem; color:var(--ink);
+                   font-variant-numeric:tabular-nums; }
+    .knob input[type=range] { grid-column:1 / -1; width:100%; accent-color:var(--scarlet);
+                              margin:.1rem 0 .25rem; }
+    .knob .hint { grid-column:1 / -1; font-size:.72rem; color:var(--ink-faint);
+                  margin:-.15rem 0 .1rem; }
+
+    .bar { display:flex; flex-wrap:wrap; gap:.5rem .7rem; align-items:center; margin-top:.9rem; }
+    .bar button { font:700 .85rem var(--font-body); cursor:pointer; padding:.44rem 1rem;
+                  border:1px solid var(--scarlet); border-radius:5px;
+                  background:var(--scarlet); color:#fff;
+                  transition:background var(--ease), border-color var(--ease); }
+    .bar button:hover { background:var(--scarlet-bright); border-color:var(--scarlet-bright); }
+    .bar button:active { transform:translateY(1px); }
+    .bar label { font-size:.82rem; color:var(--ink-soft); display:flex; align-items:center; gap:.3rem; }
+
+    .derived { display:flex; flex-wrap:wrap; gap:.15rem 1.3rem; margin:.7rem 0 0;
+               font-size:.82rem; font-family:var(--font-mono); color:var(--ink-soft);
+               font-variant-numeric:tabular-nums; }
+    .derived b { font-weight:700; color:var(--ink); }
+    .chi { font-family:var(--font-mono); }
+    .chi--good { color:#1a7f37; } .chi--mid { color:var(--gold); } .chi--bad { color:var(--scarlet); }
+
+    .legend { display:flex; flex-wrap:wrap; gap:.2rem 1.1rem; font-size:.78rem;
+              color:var(--ink-faint); margin:.5rem 0 0; }
+    .legend i { display:inline-block; width:1.4rem; height:0; vertical-align:middle;
+                border-top:2px solid currentColor; margin-right:.3rem; }
+    .swatch-model { color:var(--scarlet); } .swatch-ref { color:var(--ink-faint); }
+    .swatch-data  { color:var(--ink-soft); }
+
+    .topnote { border-left:3px solid var(--scarlet); background:var(--cream);
+               padding:.6rem .85rem; margin:1.1rem 0 1.3rem; font-size:.86rem;
+               border-radius:0 6px 6px 0; max-width:var(--measure); }
+    .topnote p { margin:0; }
+    .topnote p + p { margin-top:.45rem; }
+    .topnote .src { font-size:.78rem; color:var(--ink-soft); }
+
+    .note { font-size:.78rem; color:var(--ink-faint); margin:.9rem 0 0; max-width:var(--measure); }
+    .pk { font-size:.8rem; color:var(--ink-soft); margin:.45rem 0 0; font-family:var(--font-mono); }
+  </style>
+</head>
+<body>
+  <main id="main">
+    <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
+
+    <h1>The CMB Power Spectrum</h1>
+
+    <p class="lede">Six numbers fix the standard cosmological model. Every one of them
+    leaves a distinct fingerprint on the microwave background &mdash; a peak that moves,
+    a peak that grows while its neighbour shrinks, a tail that fades. Move the sliders
+    and watch which is which, against what Planck actually measured.</p>
+
+    <div class="topnote">
+      <p><b>This is the TT spectrum</b> &mdash; the temperature autocorrelation, and only
+      that. Planck also measured the polarization spectra, TE and EE, which are not plotted
+      here. That matters in one place below: the near-degeneracy between &tau; and
+      A<sub>s</sub> looks worse on this plot than it really is, because polarization at low
+      &#8467; is what actually breaks it.</p>
+      <p class="src">Measurements: Planck Collaboration, <i>Planck 2018 results. V. CMB power
+      spectra and likelihoods</i>, A&amp;A <b>641</b>, A5 (2020),
+      <a href="https://arxiv.org/abs/1907.12875">arXiv:1907.12875</a>; parameter values from
+      <i>Planck 2018 results. VI. Cosmological parameters</i>, A&amp;A <b>641</b>, A6 (2020),
+      <a href="https://arxiv.org/abs/1807.06209">arXiv:1807.06209</a>. Spectra retrieved from
+      the <a href="https://pla.esac.esa.int/">ESA Planck Legacy Archive</a>.</p>
+    </div>
+
+    <div class="rig">
+      <div class="rig__plot">
+        <svg id="plot" viewBox="0 0 900 470" role="img" aria-labelledby="plotT plotD">
+          <title id="plotT">CMB temperature power spectrum</title>
+          <desc id="plotD">The temperature angular power spectrum, l(l+1)C_l/2pi in microkelvin
+          squared, against multipole l from 2 to 2500, with the Planck 2018 measurements
+          overlaid as points with error bars.</desc>
+        </svg>
+      </div>
+
+      <div class="legend">
+        <span class="swatch-model"><i></i>your model</span>
+        <span class="swatch-ref"><i></i>Planck 2018 best fit</span>
+        <span class="swatch-data"><i></i>Planck 2018 measurement</span>
+      </div>
+
+      <div class="knobs" id="knobs"></div>
+
+      <div class="bar">
+        <button type="button" id="reset">&#8634;&nbsp; Reset to Planck 2018</button>
+        <label><input type="checkbox" id="showref" checked> show best fit</label>
+        <label><input type="checkbox" id="showdata" checked> show data</label>
+        <label><input type="checkbox" id="logy"> log scale</label>
+      </div>
+
+      <p class="derived" id="derived"></p>
+      <p class="pk" id="peakinfo"></p>
+    </div>

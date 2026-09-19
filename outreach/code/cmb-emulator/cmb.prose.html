@@ -1,0 +1,100 @@
+
+    <h2>What each parameter does</h2>
+
+    <p>The peaks are standing sound waves. Before recombination the universe is a hot
+    plasma in which photons and baryons are locked together; gravity pulls the mixture
+    into dark-matter potential wells and photon pressure pushes it back out. When the
+    plasma recombines at about 380,000 years the oscillation stops and is frozen into
+    the temperature pattern we see. Each parameter changes the sound waves, or the
+    geometry we view them through, in its own way.</p>
+
+    <h3>&Omega;<sub>b</sub>h&sup2; &mdash; the baryon density</h3>
+    <p>Baryons add inertia to the photon&ndash;baryon fluid. They deepen the compressions
+    and weaken the rarefactions, so the <em>odd</em> peaks &mdash; first, third, fifth,
+    which are compressions &mdash; grow relative to the <em>even</em> ones. Watch the
+    second peak sink as you push this slider right. That alternating pattern is how the
+    baryon density is measured, and it agrees with the amount of deuterium left over from
+    big bang nucleosynthesis, which is an entirely independent argument.</p>
+
+    <h3>&Omega;<sub>c</sub>h&sup2; &mdash; the cold dark matter density</h3>
+    <p>This sets when the universe stopped being radiation-dominated. Decay of the
+    gravitational potentials near that transition gives the oscillations an extra kick,
+    so a <em>lower</em> dark matter density means a later equality, more driving, and a
+    taller first peak. The first peak is therefore not simply a measure of curvature: it
+    responds to the matter budget too.</p>
+
+    <h3>100&thinsp;&theta;<sub>&lowast;</sub> &mdash; the angular size of the sound horizon</h3>
+    <p>This is the angle subtended today by the distance sound could travel in the plasma
+    before recombination &mdash; the standard ruler, seen from here. It sets where the peaks
+    sit: raise it and the whole pattern slides to larger scales, lower &#8467;, without much
+    changing shape.</p>
+    <p>It is on the slider rather than H&#8320; because it is what the CMB actually measures,
+    and it is measured extraordinarily well &mdash; to about one part in three thousand, the
+    best-determined quantity in cosmology. H&#8320; is <em>derived</em> from it, and the
+    readout above shows how: the same &theta;<sub>&lowast;</sub> gives quite different values
+    of H&#8320; depending on the densities you have chosen, because those set both the size of
+    the ruler and the distance to it. That is the heart of why
+    <a href="hubble-tension.html">the Hubble tension</a> is a tension and not a simple
+    disagreement &mdash; the CMB does not measure H&#8320; directly, it infers it within a model.</p>
+
+    <h3>&tau; &mdash; the reionization optical depth</h3>
+    <p>When the first stars reionize the intergalactic medium, some CMB photons scatter
+    again. Anisotropies on scales inside the horizon at that time are washed out by a
+    factor e<sup>&minus;2&tau;</sup>, while the largest scales are untouched. So &tau;
+    suppresses all the peaks <em>relative to the plateau</em> at low &#8467;. On the
+    temperature spectrum alone it is nearly degenerate with the primordial amplitude;
+    polarization is what breaks it.</p>
+
+    <h3>ln(10<sup>10</sup>A<sub>s</sub>) &mdash; the primordial amplitude</h3>
+    <p>The overall loudness of the initial fluctuations. It scales the entire curve up and
+    down without changing its shape. Try moving it and &tau; in opposite directions: the
+    high-&#8467; spectrum barely notices, because temperature data constrains the
+    combination A<sub>s</sub>e<sup>&minus;2&tau;</sup> far better than either alone.</p>
+
+    <h3>n<sub>s</sub> &mdash; the tilt</h3>
+    <p>Inflation predicts a spectrum of primordial fluctuations that is nearly, but not
+    exactly, the same at all scales. n<sub>s</sub> = 1 would be exactly scale-invariant;
+    the measured value is about 0.965, tilted so that large scales have slightly more
+    power. The curve pivots. That the tilt is small but definitely not zero is one of the
+    real quantitative successes of inflationary models.</p>
+
+    <h2>How this is computed</h2>
+
+    <p>A Boltzmann code cannot run in a browser, so the spectra here come from an emulator
+    trained offline on <a href="https://camb.info/">CAMB</a>. Four thousand models were
+    drawn from the six-dimensional parameter box by Latin hypercube sampling and solved
+    exactly, with &theta;<sub>&lowast;</sub> given to CAMB directly and H&#8320; taken back out
+    as a derived quantity; the logarithm of the resulting spectra was compressed by principal component
+    analysis, and a small neural network was trained to map the six parameters onto the
+    PCA coefficients. What the page ships is that network and its basis, evaluated on every
+    slider move.</p>
+
+    <p>Against <b>600 held-out CAMB models never used in training</b>, the emulator as
+    shipped &mdash; including the multipole subsampling used for plotting &mdash; is
+    accurate to a median of <b id="acc-med">&mdash;</b> and a worst case of
+    <b id="acc-max">&mdash;</b> over &#8467;&nbsp;&ge;&nbsp;30. For comparison, Planck&rsquo;s
+    own fractional uncertainty is 0.8% at &#8467;&nbsp;&asymp;&nbsp;1000 and 2.3% at
+    &#8467;&nbsp;&asymp;&nbsp;2000, so the emulator error is well inside the measurement
+    error everywhere on this plot. Below &#8467;&nbsp;=&nbsp;30 the emulator is better still,
+    but the data there is limited by cosmic variance &mdash; at &#8467;&nbsp;=&nbsp;2 Planck&rsquo;s
+    error bar is about 150%, which is why those points are so tall.</p>
+
+    <p class="note">The measurements are the Planck 2018 public release: the Commander
+    likelihood for &#8467;&nbsp;=&nbsp;2&ndash;29 and the binned Plik spectrum above, taken
+    from the ESA Planck Legacy Archive. The &chi;&sup2; readout uses the 83 binned points
+    with their diagonal errors only; the published likelihood has a full covariance matrix
+    and calibration nuisance parameters, so treat the number as a guide to how well you are
+    doing rather than a real fit statistic. The emulator assumes a flat universe with one
+    massive neutrino of 0.06&nbsp;eV, and the helium fraction is set by big bang
+    nucleosynthesis, tracking the baryon density rather than being held fixed. The slider
+    ranges are bounded so that every reachable combination stays physical: pushed further,
+    &theta;<sub>&lowast;</sub> at high baryon and low dark matter density drives H&#8320;
+    above 100, and the opposite corner drives &Omega;<sub>&Lambda;</sub> negative, which is
+    no longer &Lambda;CDM.</p>
+
+    <p class="note">Further afield: <a href="lcdm.html">&Lambda;CDM and the six parameters</a>
+    for what the model is; <a href="calculator.html">the cosmology calculator</a> for distances
+    and ages; <a href="w0wa.html">evolving dark energy</a> for what happens when &Lambda;
+    is not constant.</p>
+
+  </main>
