@@ -81,6 +81,16 @@
     .topnote p + p { margin-top:.45rem; }
     .topnote .src { font-size:.78rem; color:var(--ink-soft); }
 
+    .degtab { border-collapse:collapse; font-size:.84rem; margin:1rem 0 1.3rem;
+              font-variant-numeric:tabular-nums; }
+    .degtab th, .degtab td { padding:.2rem .7rem; border-bottom:1px dotted var(--rule);
+                             text-align:right; }
+    .degtab th:first-child, .degtab td:first-child { text-align:left; }
+    .degtab thead th { border-bottom:1px solid var(--rule); font:700 .7rem var(--font-body);
+                       text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); }
+    .degtab td { font-family:var(--font-mono); }
+    .degtab .big { color:var(--scarlet); font-weight:700; }
+
     .note { font-size:.78rem; color:var(--ink-faint); margin:.9rem 0 0; max-width:var(--measure); }
     .pk { font-size:.8rem; color:var(--ink-soft); margin:.45rem 0 0; font-family:var(--font-mono); }
   </style>

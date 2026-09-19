@@ -163,12 +163,71 @@
     <a href="sky-to-spectrum.html">Where that limit comes from</a> is a short story about there
     being only 2&#8467;+1 modes on a sphere, and it is worth the detour.</p>
 
+    <p><b>You can lower &chi;&sup2; below its value at Planck&rsquo;s own parameters.</b> Nudge
+    &tau; up by a couple of sigma and A<sub>s</sub> by roughly twice that, and the TT
+    &chi;&sup2; drops by about ten. That is a genuinely better fit to these 83 points with these
+    error bars &mdash; the arithmetic is not lying. What it is not is evidence that the
+    parameters are better.</p>
+
+    <p>Start with the size of it. &chi;&sup2; is itself a random variable: with N points it
+    scatters with a standard deviation of &radic;(2N), which is 12.9 here. A change of ten is
+    <b>0.75 of one standard deviation</b> &mdash; smaller than the noise in the statistic being
+    used to judge it. Even the full nine-sigma &tau;&ndash;A<sub>s</sub> slide, which shifts TT
+    by 16, is only 1.2 standard deviations. Nothing in that range is a detection of anything.</p>
+
+    <p>Then the two reasons it leans that way at all.</p>
+
+    <p>About half of it is a missing nuisance parameter. Scaling the whole theory curve up by
+    0.28% lowers this &chi;&sup2; by five and a half all on its own; the binned points simply sit
+    a touch above the model on average. Planck&rsquo;s real likelihood has a calibration
+    parameter that absorbs exactly that, and marginalises over it. This page does not, so the
+    only way for it to take up the slack is to move A<sub>s</sub> &mdash; and dragging
+    A<sub>s</sub> alone would wreck the fit, unless &tau; moves with it. Hence the pair.</p>
+
+    <p>The other half is the degeneracy itself: along that direction temperature has almost no
+    opinion, so a couple of sigma costs nothing and any small preference in the data wins by
+    default.</p>
+
+    <p>Switch on TE and EE and watch what happens. At one such point the TT &chi;&sup2; improves
+    by 9.7, while TE worsens by 1.7 and EE by 5.9 &mdash; a combined change of &minus;2.1 across
+    243 points, against a &radic;(2N) of 22. Temperature calls it an improvement; polarization
+    does not; and together they call it nothing at all.</p>
+
+    <p><b>The clean version of the test is to push harder.</b> A two-sigma nudge leaves both
+    spectra inside their own noise, so nothing is settled either way. Keep raising &tau; with
+    A<sub>s</sub> tracking it, and the two spectra separate decisively:</p>
+
+    <table class="degtab">
+      <thead><tr><th>&tau; raised by</th><th>TT &Delta;&chi;&sup2;</th><th>in sd</th>
+                 <th>EE &Delta;&chi;&sup2;</th><th>in sd</th></tr></thead>
+      <tbody>
+        <tr><td>1&sigma;</td><td>&minus;2.3</td><td>0.2</td><td>&minus;0.1</td><td>0.0</td></tr>
+        <tr><td>3&sigma;</td><td>&minus;6.5</td><td>0.5</td><td>+13</td><td>0.9</td></tr>
+        <tr><td>5&sigma;</td><td>&minus;10.2</td><td>0.8</td><td>+65</td><td class="big">4.7</td></tr>
+        <tr><td>7&sigma;</td><td>&minus;13.3</td><td>1.0</td><td>+193</td><td class="big">14.1</td></tr>
+        <tr><td>9&sigma;</td><td>&minus;16.1</td><td>1.2</td><td>+459</td><td class="big">33.5</td></tr>
+      </tbody>
+    </table>
+
+    <p>Read the two &ldquo;in sd&rdquo; columns against each other. The temperature improvement
+    grows <em>linearly</em> with the step and never escapes its own noise &mdash; 1.2 standard
+    deviations at the far end, after a nine-sigma error in &tau;. The polarization penalty grows
+    roughly as the <em>square</em> of the step and reaches 33. Temperature cannot distinguish
+    these models however far you go; polarization separates them completely by about five sigma
+    of &tau;. That is the whole reason Planck does not quote &tau; from temperature alone, and
+    you can rediscover it here in about a minute.</p>
+
+    <p>None of this makes the &chi;&sup2; readout useless &mdash; a change of several hundred,
+    which most slider moves produce, is far outside the noise and means exactly what it looks
+    like. It is the changes of order ten that should not be read as improvements.</p>
+
     <p class="note">The measurements are the Planck 2018 public release: the Commander
     likelihood for &#8467;&nbsp;=&nbsp;2&ndash;29 and the binned Plik spectrum above, taken
     from the ESA Planck Legacy Archive. The &chi;&sup2; readout uses the 83 binned points
     with their diagonal errors only; the published likelihood has a full covariance matrix
     and calibration nuisance parameters, so treat the number as a guide to how well you are
-    doing rather than a real fit statistic. The emulator assumes a flat universe with one
+    doing rather than a real fit statistic &mdash; see the note above on why it can fall below
+    its value at Planck&rsquo;s own parameters. The emulator assumes a flat universe with one
     massive neutrino of 0.06&nbsp;eV, and the helium fraction is set by big bang
     nucleosynthesis, tracking the baryon density rather than being held fixed. The slider
     ranges are bounded so that every reachable combination stays physical: pushed further,
