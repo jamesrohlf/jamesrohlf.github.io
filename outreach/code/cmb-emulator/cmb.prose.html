@@ -26,11 +26,48 @@
     <h3>100&thinsp;&theta;<sub>&lowast;</sub> &mdash; the angular size of the sound horizon</h3>
     <p>This is the angle subtended today by the distance sound could travel in the plasma
     before recombination &mdash; the standard ruler, seen from here. It sets where the peaks
-    sit: raise it and the whole pattern slides to larger scales, lower &#8467;, without much
-    changing shape.</p>
+    sit: lower it and the ruler subtends a smaller angle, so the whole pattern slides to
+    smaller scales &mdash; to the right, higher &#8467;.</p>
+
+    <p>Watch the far left of the plot while you do it. The plateau sinks as well, and that is a
+    second effect entirely: lowering &theta;<sub>&lowast;</sub> at fixed densities lowers
+    H&#8320;, which lowers &Omega;<sub>&Lambda;</sub>, and with less dark energy there is less
+    late-time decay of the gravitational potentials to boost the very largest scales. That
+    boost is the late integrated Sachs&ndash;Wolfe effect, and it is one of the few places the
+    CMB responds to dark energy directly rather than through geometry.</p>
     <p>It is on the slider rather than H&#8320; because it is what the CMB actually measures,
     and it is measured extraordinarily well &mdash; to about one part in three thousand, the
-    best-determined quantity in cosmology. H&#8320; is <em>derived</em> from it, and the
+    best-determined quantity in cosmology. Every slider on this page runs
+    <b>&plusmn;10 standard deviations</b> of Planck&rsquo;s measurement, so they are directly
+    comparable, and the &sigma; readout under each one tells you where you are. For
+    &theta;<sub>&lowast;</sub> that entire sweep, end to end, moves the first acoustic peak by
+    1.3 multipoles out of 220 &mdash; half a percent. You will not see it in the curve. Watch
+    the residual panel instead: it goes from scattered about zero to a coherent wave well before
+    you reach the end of the track. (&tau; is the one exception to the &plusmn;10&sigma; rule:
+    &tau;&nbsp;&minus;&nbsp;10&sigma; is negative, so its slider stops at &minus;6.1&sigma;.)</p>
+
+    <p><b>Why this one is so well measured</b> comes down to the direction it moves things.
+    &theta;<sub>&lowast;</sub> is the only parameter here that shifts the pattern
+    <em>sideways</em>. Everything else works up and down &mdash; raising a peak, lowering a
+    plateau, tilting one end against the other. Run this slider end to end and the whole
+    harmonic series rescales together: the first peak moves from &#8467;&nbsp;220.9 to 219.6,
+    the second from 537.8 to 534.6, the third from 815.4 to 810.6. Those are the same factor,
+    0.994, to three decimal places, and it is exactly 1/(1.04428/1.03808) &mdash; the peaks go
+    as 1/&theta;<sub>&lowast;</sub>.</p>
+
+    <p>No other parameter does that. They can nudge where a maximum <em>appears</em> to sit by
+    changing the shape around it &mdash; the tilt drags the first peak by a few multipoles, the
+    baryon density skews the second &mdash; but the motion is incoherent, and
+    &Omega;<sub>c</sub>h&sup2; even moves the first peak right while moving the third left,
+    which no real sideways shift can do. &tau; and A<sub>s</sub> do not move them at all.</p>
+
+    <p>That is why the measurement is so sharp. Locating a long, sharp, repeating pattern in
+    &#8467; is a far more precise operation than measuring how tall it is: heights must contend
+    with calibration, foregrounds and the &tau;&ndash;A<sub>s</sub> degeneracy, while positions
+    are pinned by every peak at once. The CMB is a ruler read to four digits, and a set of
+    amplitudes known to two or three.</p>
+
+    <p>H&#8320; is <em>derived</em> from it, and the
     readout above shows how: the same &theta;<sub>&lowast;</sub> gives quite different values
     of H&#8320; depending on the densities you have chosen, because those set both the size of
     the ruler and the distance to it. That is the heart of why
@@ -47,9 +84,18 @@
 
     <h3>ln(10<sup>10</sup>A<sub>s</sub>) &mdash; the primordial amplitude</h3>
     <p>The overall loudness of the initial fluctuations. It scales the entire curve up and
-    down without changing its shape. Try moving it and &tau; in opposite directions: the
-    high-&#8467; spectrum barely notices, because temperature data constrains the
-    combination A<sub>s</sub>e<sup>&minus;2&tau;</sup> far better than either alone.</p>
+    down without changing its shape. Hold A<sub>s</sub>e<sup>&minus;2&tau;</sup> fixed and the
+    high-&#8467; spectrum barely notices, because that combination is what temperature data
+    really constrains. Since holding it fixed means &Delta;ln&nbsp;A<sub>s</sub> =
+    2&Delta;&tau;, the two must move <em>together</em>, not in opposition.</p>
+
+    <p>It is worth doing on the residual panel, because the size of the cancellation is
+    startling. Push &tau; up by 10&sigma; on its own and &chi;&sup2; rises by about 11,000.
+    Push ln(10<sup>10</sup>A<sub>s</sub>) up by the compensating amount on its own and it rises
+    by about 17,000. Do both at once and the increase is 95. That factor of a hundred and more
+    is why Planck&rsquo;s quoted uncertainty on &tau; is as large as it is: &tau; is not poorly
+    measured because the data is weak, but because A<sub>s</sub> can very nearly undo it.
+    Polarization at low &#8467;, which this plot does not show, is what breaks the tie.</p>
 
     <h3>n<sub>s</sub> &mdash; the tilt</h3>
     <p>Inflation predicts a spectrum of primordial fluctuations that is nearly, but not

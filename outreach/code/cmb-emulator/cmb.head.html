@@ -21,11 +21,19 @@
     .knob { display:grid; grid-template-columns:1fr auto; align-items:baseline; gap:.1rem .5rem; }
     .knob label { font-size:.84rem; font-weight:600; color:var(--ink-soft); }
     .knob output { font-family:var(--font-mono); font-size:.82rem; color:var(--ink);
-                   font-variant-numeric:tabular-nums; }
+                   font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .knob output .pm { color:var(--ink-faint); font-size:.75rem; }
     .knob input[type=range] { grid-column:1 / -1; width:100%; accent-color:var(--scarlet);
                               margin:.1rem 0 .25rem; }
     .knob .hint { grid-column:1 / -1; font-size:.72rem; color:var(--ink-faint);
                   margin:-.15rem 0 .1rem; }
+    .knob .sig  { grid-column:1 / -1; font-size:.72rem; color:var(--ink-faint);
+                  font-family:var(--font-mono); margin:0 0 .15rem;
+                  display:flex; justify-content:space-between; gap:.6rem; }
+    .knob .sig b { font-weight:700; }
+    .dev--on  { color:#1a7f37; }      /* within 1 sigma of Planck */
+    .dev--few { color:var(--gold); }
+    .dev--far { color:var(--scarlet); }
 
     .bar { display:flex; flex-wrap:wrap; gap:.5rem .7rem; align-items:center; margin-top:.9rem; }
     .bar button { font:700 .85rem var(--font-body); cursor:pointer; padding:.44rem 1rem;
@@ -88,11 +96,12 @@
 
     <div class="rig">
       <div class="rig__plot">
-        <svg id="plot" viewBox="0 0 900 470" role="img" aria-labelledby="plotT plotD">
+        <svg id="plot" viewBox="0 0 900 520" role="img" aria-labelledby="plotT plotD">
           <title id="plotT">CMB temperature power spectrum</title>
           <desc id="plotD">The temperature angular power spectrum, l(l+1)C_l/2pi in microkelvin
           squared, against multipole l from 2 to 2500, with the Planck 2018 measurements
-          overlaid as points with error bars.</desc>
+          overlaid as points with error bars, and a panel beneath showing the residual of the
+          model from each measurement in units of its uncertainty.</desc>
         </svg>
       </div>
 
@@ -109,6 +118,7 @@
         <label><input type="checkbox" id="showref" checked> show best fit</label>
         <label><input type="checkbox" id="showdata" checked> show data</label>
         <label><input type="checkbox" id="logy"> log scale</label>
+        <label><input type="checkbox" id="showresid" checked> residuals</label>
       </div>
 
       <p class="derived" id="derived"></p>

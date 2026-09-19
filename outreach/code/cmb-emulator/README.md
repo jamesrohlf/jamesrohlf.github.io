@@ -63,6 +63,20 @@ H0 past CAMB's ceiling of 100, and the opposite corner gives Omega_Lambda < 0.
 The shipped box -- ombh2 0.018-0.027, omch2 0.090-0.150, 100*theta* 1.020-1.065
 -- was checked corner by corner: H0 48-93, Omega_m 0.14-0.72, no failures.
 
+## Slider ranges are not the trained box
+
+The emulator is trained on the wide box above and normalises inputs with it.
+The sliders run only +-10 Planck sigma around the best fit, which is a strict
+subset. Do not "tidy" these into one set of numbers: `EMU.lo/hi` is the
+normalisation and must match training, while `smin()/smax()` in the page are
+the slider limits. Changing the former silently corrupts every spectrum.
+
+tau is the exception to +-10 sigma: tau - 10 sigma is negative, so its slider
+clamps to the trained range, -6.1 to +9.0 sigma.
+
+Steps are chosen so Planck's value falls exactly on a notch, so that Reset
+restores it exactly and the readout matches the slider position.
+
 ## Data
 
 Planck 2018, from the ESA Planck Legacy Archive: Commander for l = 2-29
