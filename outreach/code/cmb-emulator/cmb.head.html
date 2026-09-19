@@ -42,6 +42,18 @@
                   transition:background var(--ease), border-color var(--ease); }
     .bar button:hover { background:var(--scarlet-bright); border-color:var(--scarlet-bright); }
     .bar button:active { transform:translateY(1px); }
+    .bar button.demo { background:var(--cream); color:var(--ink); border-color:var(--rule); }
+    .bar button.demo:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
+
+    /* chi-squared, one entry per spectrum, with the change from Planck */
+    .chis { display:flex; flex-wrap:wrap; gap:.2rem 1.1rem; margin:.55rem 0 0;
+            font-size:.82rem; font-family:var(--font-mono); color:var(--ink-soft);
+            font-variant-numeric:tabular-nums; }
+    .chis .lab { font-weight:700; color:var(--ink); }
+    .chis .off { opacity:.55; }
+    .dpos { color:var(--scarlet); font-weight:700; }
+    .dneg { color:#1a7f37; font-weight:700; }
+    .dnil { color:var(--ink-faint); }
     .bar label { font-size:.82rem; color:var(--ink-soft); display:flex; align-items:center; gap:.3rem; }
 
     .derived { display:flex; flex-wrap:wrap; gap:.15rem 1.3rem; margin:.7rem 0 0;
@@ -50,6 +62,10 @@
     .derived b { font-weight:700; color:var(--ink); }
     .chi { font-family:var(--font-mono); }
     .chi--good { color:#1a7f37; } .chi--mid { color:var(--gold); } .chi--bad { color:var(--scarlet); }
+
+    .specpick { display:inline-flex; align-items:center; gap:.45rem; font-size:.82rem;
+                color:var(--ink-soft); padding-left:.6rem; border-left:1px solid var(--rule); }
+    .specpick label { gap:.25rem; }
 
     .legend { display:flex; flex-wrap:wrap; gap:.2rem 1.1rem; font-size:.78rem;
               color:var(--ink-faint); margin:.5rem 0 0; }
@@ -81,11 +97,12 @@
     and watch which is which, against what Planck actually measured.</p>
 
     <div class="topnote">
-      <p><b>This is the TT spectrum</b> &mdash; the temperature autocorrelation, and only
-      that. Planck also measured the polarization spectra, TE and EE, which are not plotted
-      here. That matters in one place below: the near-degeneracy between &tau; and
-      A<sub>s</sub> looks worse on this plot than it really is, because polarization at low
-      &#8467; is what actually breaks it.</p>
+      <p><b>Three spectra, selectable above the sliders.</b> TT is the temperature
+      autocorrelation and is shown by default. TE and EE involve the polarization of the
+      microwave background, and are worth switching on for one reason in particular: the
+      near-degeneracy between &tau; and A<sub>s</sub>, which makes them almost unconstrained in
+      TT alone, is broken by EE. All three are computed from the same six parameters by the same
+      emulator, so the sliders drive them together.</p>
       <p class="src">Measurements: Planck Collaboration, <i>Planck 2018 results. V. CMB power
       spectra and likelihoods</i>, A&amp;A <b>641</b>, A5 (2020),
       <a href="https://arxiv.org/abs/1907.12875">arXiv:1907.12875</a>; parameter values from
@@ -115,13 +132,20 @@
 
       <div class="bar">
         <button type="button" id="reset">&#8634;&nbsp; Reset to Planck 2018</button>
+        <button type="button" class="demo" id="degen">&tau;&ndash;A<sub>s</sub> slide</button>
         <label><input type="checkbox" id="showref" checked> show best fit</label>
         <label><input type="checkbox" id="showdata" checked> show data</label>
         <label><input type="checkbox" id="logy"> log scale</label>
         <label><input type="checkbox" id="showresid" checked> residuals</label>
         <label><input type="checkbox" id="widerange"> full range</label>
+        <span class="specpick">spectra:
+          <label><input type="checkbox" id="sp-TT" checked> TT</label>
+          <label><input type="checkbox" id="sp-TE"> TE</label>
+          <label><input type="checkbox" id="sp-EE"> EE</label>
+        </span>
       </div>
 
       <p class="derived" id="derived"></p>
+      <p class="chis" id="chis"></p>
       <p class="pk" id="peakinfo"></p>
     </div>

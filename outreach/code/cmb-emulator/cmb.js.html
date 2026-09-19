@@ -9,10 +9,12 @@
       for (i = 0; i < n; i++) u[i] = s.charCodeAt(i);
       return new Float32Array(u.buffer);
     }
-    var NODES = f32(EMU.nodes), MEAN = f32(EMU.mean), BASIS = f32(EMU.basis),
+    var NODES = f32(EMU.nodes), BASIS = f32(EMU.basis),
+        MEAN0 = f32(EMU.mean0), MEAN1 = f32(EMU.mean1), MEAN2 = f32(EMU.mean2),
         W1 = f32(EMU.W1), B1 = f32(EMU.b1), W2 = f32(EMU.W2), B2 = f32(EMU.b2),
         W3 = f32(EMU.W3), B3 = f32(EMU.b3);
     var K = EMU.K, H = EMU.H, NL = EMU.nl, CS = EMU.cs;
+    var S0 = EMU.s0, S1 = EMU.s1, S2 = EMU.s2;
 
     var PAR = [
       { key:'ombh2', label:'Ωbh²',        html:'&Omega;<sub>b</sub>h&sup2;',
@@ -57,27 +59,38 @@
     }
 
     // ---- emulator ---------------------------------------------------------
-    var h1 = new Float32Array(H), h2 = new Float32Array(H), co = new Float32Array(K),
-        out = new Float32Array(NL);
-    function spectrum(p) {
-      var i, j, s, z = new Float32Array(6);
+    // One network, one PCA basis, three spectra. TT and EE come back through a
+    // logarithm (both positive definite); TE is carried linearly because it
+    // changes sign about nineteen hundred times.
+    var h1 = new Float32Array(H), h2 = new Float32Array(H), co = new Float32Array(K);
+    var OTT = new Float32Array(NL), OEE = new Float32Array(NL), OTE = new Float32Array(NL);
+    function spectra(p) {
+      var i, jj, s, z = new Float32Array(6);
       for (i = 0; i < 6; i++) z[i] = 2 * (p[i] - LO[i]) / (HI[i] - LO[i]) - 1;
-      for (j = 0; j < H; j++) { s = B1[j]; for (i = 0; i < 6; i++) s += z[i] * W1[i * H + j];
-                                h1[j] = Math.tanh(s); }
-      for (j = 0; j < H; j++) { s = B2[j]; for (i = 0; i < H; i++) s += h1[i] * W2[i * H + j];
-                                h2[j] = Math.tanh(s); }
-      for (j = 0; j < K; j++) { s = B3[j]; for (i = 0; i < H; i++) s += h2[i] * W3[i * K + j];
-                                co[j] = s * CS; }
+      for (jj = 0; jj < H; jj++) { s = B1[jj]; for (i = 0; i < 6; i++) s += z[i]*W1[i*H+jj];
+                                   h1[jj] = Math.tanh(s); }
+      for (jj = 0; jj < H; jj++) { s = B2[jj]; for (i = 0; i < H; i++) s += h1[i]*W2[i*H+jj];
+                                   h2[jj] = Math.tanh(s); }
+      for (jj = 0; jj < K; jj++) { s = B3[jj]; for (i = 0; i < H; i++) s += h2[i]*W3[i*K+jj];
+                                   co[jj] = s * CS; }
+      var NB = 3 * NL;
       for (i = 0; i < NL; i++) {
-        s = MEAN[i];
-        for (j = 0; j < K; j++) s += co[j] * BASIS[j * NL + i];
-        out[i] = Math.exp(s);
+        var a = 0, b = 0, c = 0;
+        for (jj = 0; jj < K; jj++) {
+          var base = jj * NB, w = co[jj];
+          a += w * BASIS[base + i];
+          b += w * BASIS[base + NL + i];
+          c += w * BASIS[base + 2*NL + i];
+        }
+        OTT[i] = Math.exp(a * S0 + MEAN0[i]);
+        OEE[i] = Math.exp(b * S1 + MEAN1[i]);
+        OTE[i] =          c * S2 + MEAN2[i];
       }
-      return out;
+      return { TT:OTT, EE:OEE, TE:OTE };
     }
     function atL(sp, l) {                      // linear interp onto a real l
       if (l <= NODES[0]) return sp[0];
-      if (l >= NODES[NL - 1]) return sp[NL - 1];
+      if (l >= NODES[NL-1]) return sp[NL-1];
       var a = 0, b = NL - 1, m;
       while (b - a > 1) { m = (a + b) >> 1; if (NODES[m] <= l) a = m; else b = m; }
       var t = (l - NODES[a]) / (NODES[b] - NODES[a]);
@@ -90,24 +103,61 @@
     var XB = X0 + (X1 - X0) * FRAC;
     // Y1 moves: with the residual strip shown the main panel gives up its lower
     // third, and the shared multipole axis is drawn under the strip instead.
-    var Y1 = 336, R0 = 372, R1 = 462, SHOWR = true;
+    var SHOWR = true, PANELS = [], TOTH = 520;
+    // Which spectra are on, in the order Planck plots them.
+    function activeSpectra() {
+      return ['TT','TE','EE'].filter(function (k) {
+        return document.getElementById('sp-' + k).checked;
+      });
+    }
+    // Lay the panels out top to bottom. One panel gets the full height; more
+    // than one and they share, so three plus sliders still fit a screen.
     function layout() {
       SHOWR = document.getElementById('showresid').checked;
-      Y1 = SHOWR ? 336 : 408;
-      svg.setAttribute('viewBox', '0 0 900 ' + (SHOWR ? 520 : 470));
+      var ks = activeSpectra();
+      if (!ks.length) { document.getElementById('sp-TT').checked = true; ks = ['TT']; }
+      var n = ks.length;
+      var plotH = n === 1 ? (SHOWR ? 316 : 388) : (n === 2 ? (SHOWR ? 186 : 236) : (SHOWR ? 132 : 168));
+      var resH  = SHOWR ? (n === 1 ? 90 : (n === 2 ? 66 : 52)) : 0;
+      var gap   = 26, top = 20;
+      PANELS = ks.map(function (k) {
+        var p = { key:k, y0:top, y1:top + plotH,
+                  r0:top + plotH + 14, r1:top + plotH + 14 + resH };
+        top = (SHOWR ? p.r1 : p.y1) + gap;
+        return p;
+      });
+      TOTH = top + 34;
+      svg.setAttribute('viewBox', '0 0 900 ' + TOTH);
     }
     function xpos(l) {
       if (l <= SPLIT) return X0 + (XB - X0) * Math.log(l / 2) / Math.log(SPLIT / 2);
       return XB + (X1 - XB) * (l - SPLIT) / (2500 - SPLIT);
     }
-    var ymax = 7000, LOGY = false;
-    function ypos(d) {
-      if (LOGY) {
-        var lo = 10, hi = Math.max(ymax, 100);
-        var v = Math.max(d, lo);
-        return Y1 - (Y1 - Y0) * (Math.log(v / lo) / Math.log(hi / lo));
+    var LOGY = false;
+    // TT and EE are positive and hang from zero; TE swings through zero and
+    // needs a signed axis, so each panel carries its own mapping.
+    function makeY(p, lo_, hi_) {
+      var a = p.y0, b = p.y1;
+      if (LOGY && lo_ >= 0) {
+        var base = Math.max(hi_ * 1e-5, 1e-3);
+        return function (v) {
+          var x = Math.max(v, base);
+          return b - (b - a) * (Math.log(x / base) / Math.log(hi_ / base));
+        };
       }
-      return Y1 - (Y1 - Y0) * (d / ymax);
+      return function (v) {
+        var t = (v - lo_) / (hi_ - lo_);
+        return b - (b - a) * Math.max(-0.03, Math.min(1.03, t));
+      };
+    }
+    function niceSigned(v) {
+      var s = [1,2,5];
+      var e = Math.floor(Math.log10(Math.max(v, 1e-6)));
+      for (var k = 0; k < 40; k++) {
+        var m = s[k % 3] * Math.pow(10, e + Math.floor(k / 3));
+        if (m >= v * 0.999) return m;
+      }
+      return v;
     }
     function el(n, at) { var e = document.createElementNS(NS, n), k;
                          for (k in at) e.setAttribute(k, at[k]); return e; }
@@ -134,187 +184,232 @@
       return s;
     }
 
-    var refSpec = Float32Array.from(spectrum(FID));   // copy: buffer is reused
+    // Copies, because the forward pass reuses its output buffers.
+    var _r = spectra(FID);
+    var REF = { TT:Float32Array.from(_r.TT), EE:Float32Array.from(_r.EE),
+                TE:Float32Array.from(_r.TE) };
+
+    // Spectrum metadata: how each is labelled, scaled and coloured.
+    var SPEC = {
+      TT: { label:'TT', axis:'\u2113(\u2113+1)C\u2113/2\u03c0  [\u03bcK\u00b2]', signed:false },
+      TE: { label:'TE', axis:'TE  [\u03bcK\u00b2]',                                signed:true  },
+      EE: { label:'EE', axis:'EE  [\u03bcK\u00b2]',                                signed:false }
+    };
 
     function draw() {
       layout();
-      var sp = spectrum(cur), i, l, d;
+      var S = spectra(cur), i, k;
+      var showData = document.getElementById('showdata').checked;
+      var showRef  = document.getElementById('showref').checked;
 
-      var peak = 0;
-      for (i = 0; i < NL; i++) { if (NODES[i] >= 50 && NODES[i] <= 1200 && sp[i] > peak) peak = sp[i]; }
-      var top = 0;
-      for (i = 0; i < NL; i++) if (sp[i] > top) top = sp[i];
-      if (document.getElementById('showdata').checked)
-        for (i = 0; i < PLANCK.length; i++) top = Math.max(top, PLANCK[i][1] + PLANCK[i][3]);
-      ymax = niceMax(top);
-
-      // Replace one identified group rather than counting children: the inline
-      // SVG contains whitespace text nodes, so child counts cannot be trusted.
       var old = document.getElementById('plotbody');
       if (old) old.parentNode.removeChild(old);
       var g = el('g', { id:'plotbody' });
-      // y grid
-      var nY = LOGY ? 0 : 5, yv;
-      if (LOGY) {
-        [10, 100, 1000, 10000].forEach(function (v) {
-          if (v > ymax) return;
-          g.appendChild(el('line', { x1:X0, x2:X1, y1:ypos(v), y2:ypos(v),
-                                     stroke:'var(--rule)', 'stroke-width':1 }));
-          var t = el('text', { x:X0 - 8, y:ypos(v) + 4, 'text-anchor':'end',
-                               'font-size':12, fill:'var(--ink-faint)' });
-          t.textContent = v; g.appendChild(t);
-        });
-      } else {
-        for (i = 0; i <= nY; i++) {
-          yv = ymax * i / nY;
-          g.appendChild(el('line', { x1:X0, x2:X1, y1:ypos(yv), y2:ypos(yv),
-                                     stroke:'var(--rule)', 'stroke-width':1 }));
-          var ty = el('text', { x:X0 - 8, y:ypos(yv) + 4, 'text-anchor':'end',
-                                'font-size':12, fill:'var(--ink-faint)' });
-          ty.textContent = yv; g.appendChild(ty);
+      var AX = (SHOWR ? PANELS[PANELS.length-1].r1 : PANELS[PANELS.length-1].y1);
+
+      PANELS.forEach(function (p) {
+        var key = p.key, meta = SPEC[key];
+        var cur_ = S[key], ref_ = REF[key], pts = PLANCK[key] || [];
+
+        // vertical range: cover model, reference and (if shown) the data
+        var vmax = -1e30, vmin = 1e30;
+        for (i = 0; i < NL; i++) {
+          if (cur_[i] > vmax) vmax = cur_[i];
+          if (cur_[i] < vmin) vmin = cur_[i];
+          if (showRef) { if (ref_[i] > vmax) vmax = ref_[i]; if (ref_[i] < vmin) vmin = ref_[i]; }
         }
-      }
-      // x ticks, on the bottom edge of whichever panel comes last
-      var AX = SHOWR ? R1 : Y1;
-      [2, 5, 10, 30, 100, 300, 600, 1000, 1500, 2000, 2500].forEach(function (lv) {
+        if (showData) for (i = 0; i < pts.length; i++) {
+          if (pts[i][1] + pts[i][3] > vmax) vmax = pts[i][1] + pts[i][3];
+          if (pts[i][1] - pts[i][2] < vmin) vmin = pts[i][1] - pts[i][2];
+        }
+        var lo_, hi_;
+        if (meta.signed) { var m = niceSigned(Math.max(Math.abs(vmax), Math.abs(vmin)));
+                           lo_ = -m; hi_ = m; }
+        else             { hi_ = niceSigned(vmax); lo_ = 0; }
+        var fy = makeY(p, lo_, hi_);
+
+        // grid and labels
+        var ticks = meta.signed ? [hi_, hi_/2, 0, -hi_/2, -hi_] : [0, hi_/4, hi_/2, 3*hi_/4, hi_];
+        ticks.forEach(function (v) {
+          g.appendChild(el('line', { x1:X0, x2:X1, y1:fy(v), y2:fy(v),
+                                     stroke: v === 0 && meta.signed ? 'var(--ink-faint)' : 'var(--rule)',
+                                     'stroke-width':1 }));
+          var t = el('text', { x:X0-8, y:fy(v)+4, 'text-anchor':'end', 'font-size':11,
+                               fill:'var(--ink-faint)' });
+          t.textContent = Math.abs(hi_) < 10 ? v.toFixed(1) : Math.round(v);
+          g.appendChild(t);
+        });
+        g.appendChild(el('rect', { x:X0, y:p.y0, width:X1-X0, height:p.y1-p.y0,
+                                   fill:'none', stroke:'var(--ink-faint)', 'stroke-width':1 }));
+        g.appendChild(el('line', { x1:XB, x2:XB, y1:p.y0, y2:p.y1, stroke:'var(--rule)',
+                                   'stroke-width':1, 'stroke-dasharray':'2 3' }));
+        var nm = el('text', { x:X1-8, y:p.y0+16, 'text-anchor':'end', 'font-size':13,
+                              fill:'var(--ink-soft)', 'font-weight':'700' });
+        nm.textContent = meta.label; g.appendChild(nm);
+
+        // chi-squared for this spectrum, and how far it has moved from Planck,
+        // written on the panel itself so the eye does not have to leave the plot.
+        var cs_ = chi2of(S, key), dd = cs_.chi - BASECHI[key];
+        var dtxt = '\u0394 = ' + (dd >= 0 ? '+' : '\u2212') +
+                   (Math.abs(dd) >= 1000 ? Math.round(Math.abs(dd)).toLocaleString()
+                                         : Math.abs(dd).toFixed(0));
+        var dcol = Math.abs(dd) < 1 ? 'var(--ink-faint)'
+                                    : (dd > 0 ? 'var(--scarlet)' : '#1a7f37');
+        var ct = el('text', { x:X1-8, y:p.y0+32, 'text-anchor':'end', 'font-size':11.5,
+                              fill:'var(--ink-faint)',
+                              'font-family':'var(--font-mono)' });
+        ct.textContent = '\u03c7\u00b2 ' + Math.round(cs_.chi) + '/' + cs_.n;
+        g.appendChild(ct);
+        var dt_ = el('text', { x:X1-8, y:p.y0+47, 'text-anchor':'end', 'font-size':12.5,
+                               fill:dcol, 'font-weight':'700',
+                               'font-family':'var(--font-mono)' });
+        dt_.textContent = dtxt; g.appendChild(dt_);
+        var yl = el('text', { x:18, y:(p.y0+p.y1)/2, 'text-anchor':'middle', 'font-size':11,
+                              fill:'var(--ink-soft)',
+                              transform:'rotate(-90 18 ' + ((p.y0+p.y1)/2) + ')' });
+        yl.textContent = meta.axis; g.appendChild(yl);
+
+        if (showData) {
+          var dg = el('g', { stroke:'var(--ink-soft)', 'stroke-width':1, fill:'none', opacity:.75 });
+          for (i = 0; i < pts.length; i++) {
+            var q = pts[i], x = xpos(q[0]);
+            dg.appendChild(el('line', { x1:x, x2:x, y1:fy(q[1]-q[2]), y2:fy(q[1]+q[3]) }));
+            dg.appendChild(el('circle', { cx:x, cy:fy(q[1]), r:1.6, fill:'var(--ink-soft)',
+                                          stroke:'none' }));
+          }
+          g.appendChild(dg);
+        }
+        function path(arr) {
+          var s = '', jj;
+          for (jj = 0; jj < NL; jj++)
+            s += (jj ? 'L' : 'M') + xpos(NODES[jj]).toFixed(1) + ' ' + fy(arr[jj]).toFixed(1) + ' ';
+          return s;
+        }
+        if (showRef)
+          g.appendChild(el('path', { d:path(ref_), fill:'none', stroke:'var(--ink-faint)',
+                                     'stroke-width':1.3, 'stroke-dasharray':'5 4' }));
+        g.appendChild(el('path', { d:path(cur_), fill:'none', stroke:'var(--scarlet)',
+                                   'stroke-width':1.9, 'stroke-linejoin':'round' }));
+
+        // residual strip
+        if (SHOWR) {
+          var res = [], rmax = 0;
+          for (i = 0; i < pts.length; i++) {
+            var mv = atL(cur_, pts[i][0]);
+            var sg = mv > pts[i][1] ? pts[i][3] : pts[i][2];
+            if (!(sg > 0)) continue;
+            var rr = (mv - pts[i][1]) / sg;
+            res.push([pts[i][0], rr]);
+            if (Math.abs(rr) > rmax) rmax = Math.abs(rr);
+          }
+          var steps = [3,5,10,20,50,100,200,500], RS = 500;
+          for (i = 0; i < steps.length; i++) if (rmax <= steps[i]*0.95) { RS = steps[i]; break; }
+          var rmid = (p.r0+p.r1)/2, rhalf = (p.r1-p.r0)/2;
+          var ry = function (v) { return rmid - rhalf * Math.max(-1, Math.min(1, v/RS)); };
+          g.appendChild(el('rect', { x:X0, y:ry(1), width:X1-X0,
+                                     height:Math.max(1, ry(-1)-ry(1)),
+                                     fill:'var(--ink-faint)', opacity:.13 }));
+          g.appendChild(el('line', { x1:X0, x2:X1, y1:rmid, y2:rmid, stroke:'var(--ink-faint)' }));
+          g.appendChild(el('rect', { x:X0, y:p.r0, width:X1-X0, height:p.r1-p.r0,
+                                     fill:'none', stroke:'var(--ink-faint)' }));
+          g.appendChild(el('line', { x1:XB, x2:XB, y1:p.r0, y2:p.r1, stroke:'var(--rule)',
+                                     'stroke-dasharray':'2 3' }));
+          [RS, -RS].forEach(function (v) {
+            var t = el('text', { x:X0-8, y:ry(v)+4, 'text-anchor':'end', 'font-size':10,
+                                 fill:'var(--ink-faint)' });
+            t.textContent = (v>0?'+':'\u2212') + Math.abs(v); g.appendChild(t);
+          });
+          var rg = el('g', {});
+          for (i = 0; i < res.length; i++) {
+            var cl = Math.abs(res[i][1]) > RS;
+            rg.appendChild(el('circle', { cx:xpos(res[i][0]), cy:ry(res[i][1]), r:1.6,
+                                          fill: cl ? 'var(--scarlet)' : 'var(--ink-soft)',
+                                          opacity: cl ? 1 : .8 }));
+          }
+          g.appendChild(rg);
+          var rl = el('text', { x:18, y:rmid, 'text-anchor':'middle', 'font-size':10,
+                                fill:'var(--ink-soft)', transform:'rotate(-90 18 ' + rmid + ')' });
+          rl.textContent = '(model \u2212 data)/\u03c3'; g.appendChild(rl);
+        }
+      });
+
+      // one shared multipole axis under the lowest panel
+      [2,5,10,30,100,300,600,1000,1500,2000,2500].forEach(function (lv) {
         var x = xpos(lv);
-        g.appendChild(el('line', { x1:x, x2:x, y1:AX, y2:AX + 5,
-                                   stroke:'var(--ink-faint)', 'stroke-width':1 }));
-        var t = el('text', { x:x, y:AX + 19, 'text-anchor':'middle',
-                             'font-size':12, fill:'var(--ink-faint)' });
+        g.appendChild(el('line', { x1:x, x2:x, y1:AX, y2:AX+5, stroke:'var(--ink-faint)' }));
+        var t = el('text', { x:x, y:AX+19, 'text-anchor':'middle', 'font-size':12,
+                             fill:'var(--ink-faint)' });
         t.textContent = lv; g.appendChild(t);
       });
-      // Planck's convention: logarithmic to l = 30 so the plateau is visible at
-      // all, linear above so the acoustic peaks come out evenly spaced. Mark the
-      // join and name both halves -- unlabelled it just reads as a mistake.
-      g.appendChild(el('line', { x1:XB, x2:XB, y1:Y0, y2:Y1, stroke:'var(--rule)',
-                                 'stroke-width':1, 'stroke-dasharray':'2 3' }));
-      [-4, 1].forEach(function (dx) {
-        g.appendChild(el('line', { x1:XB + dx - 3, x2:XB + dx + 3, y1:AX + 6, y2:AX - 2,
+      [-4,1].forEach(function (dx) {
+        g.appendChild(el('line', { x1:XB+dx-3, x2:XB+dx+3, y1:AX+6, y2:AX-2,
                                    stroke:'var(--ink-faint)', 'stroke-width':1.2 }));
       });
-      var lgl = el('text', { x:(X0 + XB) / 2, y:AX + 33, 'text-anchor':'middle',
-                             'font-size':10.5, fill:'var(--ink-faint)', 'font-style':'italic' });
+      var lgl = el('text', { x:(X0+XB)/2, y:AX+33, 'text-anchor':'middle', 'font-size':10.5,
+                             fill:'var(--ink-faint)', 'font-style':'italic' });
       lgl.textContent = 'logarithmic'; g.appendChild(lgl);
-      var lnl = el('text', { x:XB + (X1 - XB) * 0.12, y:AX + 33, 'text-anchor':'middle',
-                             'font-size':10.5, fill:'var(--ink-faint)', 'font-style':'italic' });
+      var lnl = el('text', { x:XB+(X1-XB)*0.12, y:AX+33, 'text-anchor':'middle', 'font-size':10.5,
+                             fill:'var(--ink-faint)', 'font-style':'italic' });
       lnl.textContent = 'linear'; g.appendChild(lnl);
-      g.appendChild(el('rect', { x:X0, y:Y0, width:X1 - X0, height:Y1 - Y0,
-                                 fill:'none', stroke:'var(--ink-faint)', 'stroke-width':1 }));
-
-      var xl = el('text', { x:(X0 + X1) / 2, y:AX + 40, 'text-anchor':'middle',
-                            'font-size':13, fill:'var(--ink-soft)' });
-      xl.textContent = 'multipole ℓ';
+      var xl = el('text', { x:(X0+X1)/2, y:AX+33, 'text-anchor':'middle', 'font-size':13,
+                            fill:'var(--ink-soft)' });
+      xl.setAttribute('x', (X0+X1)/2 + 120); xl.textContent = 'multipole \u2113';
       g.appendChild(xl);
-      var yl = el('text', { x:16, y:(Y0 + Y1) / 2, 'text-anchor':'middle', 'font-size':13,
-                            fill:'var(--ink-soft)',
-                            transform:'rotate(-90 16 ' + ((Y0 + Y1) / 2) + ')' });
-      yl.textContent = 'ℓ(ℓ+1)Cℓ/2π   [μK²]';
-      g.appendChild(yl);
-
-      // data
-      if (document.getElementById('showdata').checked) {
-        var dg = el('g', { stroke:'var(--ink-soft)', 'stroke-width':1, fill:'none', opacity:.75 });
-        for (i = 0; i < PLANCK.length; i++) {
-          var p = PLANCK[i], x = xpos(p[0]);
-          dg.appendChild(el('line', { x1:x, x2:x, y1:ypos(p[1] - p[2]), y2:ypos(p[1] + p[3]) }));
-          dg.appendChild(el('circle', { cx:x, cy:ypos(p[1]), r:1.7,
-                                        fill:'var(--ink-soft)', stroke:'none' }));
-        }
-        g.appendChild(dg);
-      }
-      // reference + model
-      function path(arr) {
-        var s = '', j;
-        for (j = 0; j < NL; j++) s += (j ? 'L' : 'M') + xpos(NODES[j]).toFixed(1) + ' ' +
-                                       ypos(arr[j]).toFixed(1) + ' ';
-        return s;
-      }
-      if (document.getElementById('showref').checked)
-        g.appendChild(el('path', { d:path(refSpec), fill:'none', stroke:'var(--ink-faint)',
-                                   'stroke-width':1.4, 'stroke-dasharray':'5 4' }));
-      g.appendChild(el('path', { d:path(sp), fill:'none', stroke:'var(--scarlet)',
-                                 'stroke-width':2.1, 'stroke-linejoin':'round' }));
-
-      // ---- residual strip ---------------------------------------------------
-      // The reason theta* is pinned so hard: a sideways shift far too small to
-      // see on the curve above throws every point here off together. Errors are
-      // asymmetric at low l, so use whichever side the model falls on.
-      if (SHOWR) {
-        var res = [], rmax = 0;
-        for (i = 0; i < PLANCK.length; i++) {
-          var q = PLANCK[i], mv = atL(sp, q[0]);
-          var sg = mv > q[1] ? q[3] : q[2];
-          var rr = (mv - q[1]) / sg;
-          res.push([q[0], rr]);
-          if (Math.abs(rr) > rmax) rmax = Math.abs(rr);
-        }
-        var steps = [3, 5, 10, 20, 50, 100, 200, 500];
-        var RS = steps[steps.length - 1];
-        for (i = 0; i < steps.length; i++) if (rmax <= steps[i] * 0.95) { RS = steps[i]; break; }
-        var rmid = (R0 + R1) / 2, rhalf = (R1 - R0) / 2;
-        function rypos(v) {
-          var t = Math.max(-1, Math.min(1, v / RS));
-          return rmid - rhalf * t;
-        }
-        // +-1 sigma band, then zero line
-        g.appendChild(el('rect', { x:X0, y:rypos(1), width:X1 - X0,
-                                   height:Math.max(1, rypos(-1) - rypos(1)),
-                                   fill:'var(--ink-faint)', opacity:.13 }));
-        g.appendChild(el('line', { x1:X0, x2:X1, y1:rmid, y2:rmid,
-                                   stroke:'var(--ink-faint)', 'stroke-width':1 }));
-        g.appendChild(el('rect', { x:X0, y:R0, width:X1 - X0, height:R1 - R0,
-                                   fill:'none', stroke:'var(--ink-faint)', 'stroke-width':1 }));
-        g.appendChild(el('line', { x1:XB, x2:XB, y1:R0, y2:R1, stroke:'var(--rule)',
-                                   'stroke-width':1, 'stroke-dasharray':'2 3' }));
-        [RS, 0, -RS].forEach(function (v) {
-          var t = el('text', { x:X0 - 8, y:rypos(v) + 4, 'text-anchor':'end',
-                               'font-size':11, fill:'var(--ink-faint)' });
-          t.textContent = (v > 0 ? '+' : '') + v; g.appendChild(t);
-        });
-        var rg = el('g', {});
-        for (i = 0; i < res.length; i++) {
-          var clipped = Math.abs(res[i][1]) > RS;
-          rg.appendChild(el('circle', {
-            cx:xpos(res[i][0]), cy:rypos(res[i][1]), r:1.8,
-            fill:clipped ? 'var(--scarlet)' : 'var(--ink-soft)',
-            opacity:clipped ? 1 : .8 }));
-        }
-        g.appendChild(rg);
-        var rl = el('text', { x:16, y:rmid, 'text-anchor':'middle', 'font-size':11,
-                              fill:'var(--ink-soft)',
-                              transform:'rotate(-90 16 ' + rmid + ')' });
-        rl.textContent = '(model − data)/σ';
-        g.appendChild(rl);
-      }
       svg.appendChild(g);
 
-      // readouts
-      var H0 = h0of(cur), h = H0 / 100, omnu = 0.00064;
-      var om = (cur[0] + cur[1] + omnu) / (h * h);
-      var chi = 0, nb = 0;
-      for (i = 0; i < PLANCK.length; i++) {
-        if (PLANCK[i][0] < 47) continue;                 // binned Plik only
-        var sig = 0.5 * (PLANCK[i][2] + PLANCK[i][3]);
-        var r = (atL(sp, PLANCK[i][0]) - PLANCK[i][1]) / sig;
-        chi += r * r; nb++;
+      report(S);
+    }
+
+    function chi2of(S, k) {
+      var pts = PLANCK[k] || [], c = 0, n = 0, i;
+      for (i = 0; i < pts.length; i++) {
+        if (k === 'TT' && pts[i][0] < 47) continue;      // TT uses the binned Plik points
+        var sg = 0.5 * (pts[i][2] + pts[i][3]);
+        if (!(sg > 0)) continue;
+        var r = (atL(S[k], pts[i][0]) - pts[i][1]) / sg;
+        c += r * r; n++;
       }
-      var red = chi / nb;
-      var cls = red < 1.5 ? 'chi--good' : (red < 6 ? 'chi--mid' : 'chi--bad');
-      var pl = 0, pd = 0;
-      for (i = 0; i < NL; i++) if (NODES[i] >= 50 && NODES[i] <= 1200 && sp[i] > pd) {
-        pd = sp[i]; pl = NODES[i]; }
+      return { chi:c, n:n };
+    }
+    var BASECHI = { TT:chi2of(REF,'TT').chi, TE:chi2of(REF,'TE').chi, EE:chi2of(REF,'EE').chi };
+
+    // chi-squared and the derived readouts
+    function report(S) {
+      var H0 = h0of(cur), h = H0/100, omnu = 0.00064;
+      var om = (cur[0] + cur[1] + omnu)/(h*h), i;
+      // Also repeated beneath the sliders: while dragging, the eye is down here
+      // and the panels may well be scrolled out of view. Hidden spectra are
+      // greyed but still reported, which is how the tau/A_s contrast stays
+      // visible even with only TT plotted.
+      var on = activeSpectra(), out = [];
+      ['TT','TE','EE'].forEach(function (k) {
+        var c = chi2of(S, k), dd = c.chi - BASECHI[k];
+        var dcls = Math.abs(dd) < 1 ? 'dnil' : (dd > 0 ? 'dpos' : 'dneg');
+        var dtxt = (dd >= 0 ? '+' : '\u2212') +
+                   (Math.abs(dd) >= 1000 ? Math.round(Math.abs(dd)).toLocaleString()
+                                         : Math.abs(dd).toFixed(0));
+        out.push('<span class="' + (on.indexOf(k) < 0 ? 'off' : '') + '">' +
+                 '<span class="lab">' + k + '</span> \u03c7\u00b2 ' + Math.round(c.chi) +
+                 '/' + c.n + ' <span class="' + dcls + '">\u0394 = ' + dtxt + '</span></span>');
+      });
+      document.getElementById('chis').innerHTML = out.join('') +
+        '<span style="opacity:.55">\u0394 from Planck 2018 &middot; greyed = not plotted</span>';
+
+      // restored: the derived quantities, and the peak readout they sit beside
       document.getElementById('derived').innerHTML =
         '<span>H<sub>0</sub> = <b>' + H0.toFixed(2) + '</b> km/s/Mpc</span>' +
-        '<span>Ω<sub>m</sub> = <b>' + om.toFixed(4) + '</b></span>' +
-        '<span>Ω<sub>Λ</sub> = <b>' + (1 - om).toFixed(4) + '</b></span>' +
+        '<span>\u03a9<sub>m</sub> = <b>' + om.toFixed(4) + '</b></span>' +
+        '<span>\u03a9<sub>\u039b</sub> = <b>' + (1 - om).toFixed(4) + '</b></span>' +
         '<span>h = <b>' + h.toFixed(4) + '</b></span>' +
-        '<span>A<sub>s</sub>e<sup>−2τ</sup> = <b>' +
-          (Math.exp(cur[4]) * Math.exp(-2 * cur[3])).toFixed(3) + '×10⁻¹⁰</b></span>' +
-        '<span>χ²/N = <b class="chi ' + cls + '">' + red.toFixed(1) +
-          '</b> <span style="opacity:.7">(N=' + nb + ')</span></span>';
+        '<span>A<sub>s</sub>e<sup>\u22122\u03c4</sup> = <b>' +
+          (Math.exp(cur[4]) * Math.exp(-2 * cur[3])).toFixed(3) + '\u00d710\u207b\u00b9\u2070</b></span>';
+
+      var pl = 0, pd = 0;
+      for (i = 0; i < NL; i++) if (NODES[i] >= 50 && NODES[i] <= 1200 && S.TT[i] > pd) {
+        pd = S.TT[i]; pl = NODES[i];
+      }
       document.getElementById('peakinfo').textContent =
-        'first peak near ℓ = ' + pl + ',  ' + Math.round(pd) + ' μK²';
+        'first TT peak near \u2113 = ' + pl + ',  ' + Math.round(pd) + ' \u03bcK\u00b2';
     }
 
     // ---- controls ---------------------------------------------------------
@@ -354,6 +449,27 @@
     document.getElementById('reset').addEventListener('click', function () {
       cur = FID.slice(); sync(); draw();
     });
+    // Slide along A_s e^{-2 tau} = constant, which is the direction temperature
+    // is nearly blind to. Doing it by hand needs d(lnAs) = 2 d(tau) to three
+    // figures, which no one manages with two sliders.
+    document.getElementById('degen').addEventListener('click', function () {
+      // The largest exactly-compensating step both sliders can take. It has to
+      // be exact: clamping one of them breaks d(lnAs) = 2 d(tau) and TT stops
+      // being blind to the move, which is the entire point.
+      var dt = Math.min(smax(3) - FID[3], (smax(4) - FID[4]) / 2);
+      var atDemo = Math.abs(cur[3] - (FID[3] + dt)) < 1e-9 &&
+                   Math.abs(cur[4] - (FID[4] + 2*dt)) < 1e-9;
+      cur = FID.slice();
+      if (!atDemo) {                                   // toggle: A/B against Planck
+        cur[3] = FID[3] + dt;
+        cur[4] = FID[4] + 2*dt;
+        document.getElementById('sp-EE').checked = true;   // invisible without it
+      }
+      sync(); draw();
+    });
+    ['sp-TT', 'sp-TE', 'sp-EE'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', draw);
+    });
     ['showref', 'showdata', 'showresid'].forEach(function (id) {
       document.getElementById(id).addEventListener('change', draw);
     });
@@ -365,8 +481,12 @@
       applyRange(); sync(); draw();
     });
 
-    document.getElementById('acc-med').textContent = EMU.err_med.toFixed(2) + '%';
-    document.getElementById('acc-max').textContent = EMU.err_max.toFixed(1) + '%';
+    document.getElementById('acc-med').textContent   = EMU.err_med.toFixed(2) + '%';
+    document.getElementById('acc-max').textContent   = EMU.err_max.toFixed(2) + '%';
+    document.getElementById('acc-ee').textContent    = EMU.ee_med.toFixed(2) + '% median, '
+                                                     + EMU.ee_max.toFixed(1) + '% worst';
+    document.getElementById('acc-te').textContent    = EMU.te_max.toFixed(1) + ' \u03bcK\u00b2';
+    document.getElementById('acc-terms').textContent = EMU.te_rms.toFixed(0) + ' \u03bcK\u00b2';
     sync(); draw();
   })();
   </script>

@@ -99,13 +99,31 @@
     really constrains. Since holding it fixed means &Delta;ln&nbsp;A<sub>s</sub> =
     2&Delta;&tau;, the two must move <em>together</em>, not in opposition.</p>
 
-    <p>It is worth doing on the residual panel, because the size of the cancellation is
-    startling. Push &tau; up by 10&sigma; on its own and &chi;&sup2; rises by about 11,000.
-    Push ln(10<sup>10</sup>A<sub>s</sub>) up by the compensating amount on its own and it rises
-    by about 17,000. Do both at once and the increase is 95. That factor of a hundred and more
-    is why Planck&rsquo;s quoted uncertainty on &tau; is as large as it is: &tau; is not poorly
-    measured because the data is weak, but because A<sub>s</sub> can very nearly undo it.
-    Polarization at low &#8467;, which this plot does not show, is what breaks the tie.</p>
+    <p>The <b>&tau;&ndash;A<sub>s</sub> slide</b> button does the move for you, because hitting
+    it by hand needs &Delta;ln&nbsp;A<sub>s</sub> = 2&Delta;&tau; to three figures and no one
+    manages that with two sliders. It steps &tau; by 9&sigma; and A<sub>s</sub> by exactly the
+    amount that holds A<sub>s</sub>e<sup>&minus;2&tau;</sup> fixed; press it again to come back.
+    Watch the &Delta;&chi;&sup2; under the sliders while you do.</p>
+
+    <p>The size of the cancellation in temperature is startling. Take that same step in &tau;
+    alone and the TT &chi;&sup2; goes from 84 to <b>11,285</b>. Take it in A<sub>s</sub> alone
+    and TT goes to <b>13,562</b>. Take both together and TT reads <b>68</b> &mdash; very slightly
+    <em>better</em> than Planck&rsquo;s own parameters. A nine-sigma error in &tau; is not merely
+    hard to see in the temperature spectrum; it is invisible.</p>
+
+    <p><b>Now switch on EE.</b> The same move takes the EE &chi;&sup2; from 94 to <b>553</b>.
+    Polarization is not being polite about it. The reason is that
+    the bump in EE below &#8467;&nbsp;&asymp;&nbsp;10 comes from photons rescattering during
+    reionization, and its height goes as &tau;&sup2; rather than as the combination
+    A<sub>s</sub>e<sup>&minus;2&tau;</sup> that governs the peaks. It is a second, independent
+    handle on &tau;, and it is the reason Planck quotes &tau; to
+    &plusmn;0.007 rather than not at all. This is the one place on the page where adding a
+    spectrum does not merely add detail &mdash; it changes what can be measured. Each panel carries its own
+    &chi;&sup2; and its change from Planck in the corner of the plot, and the same three numbers
+    are repeated under the sliders, where your eye is while you drag. The line beneath the
+    sliders reports all three spectra whether or not they are plotted, greying the ones that are
+    not &mdash; so the contrast between what temperature notices and what polarization notices
+    is visible even with EE switched off.</p>
 
     <h3>n<sub>s</sub> &mdash; the tilt</h3>
     <p>Inflation predicts a spectrum of primordial fluctuations that is nearly, but not
@@ -125,10 +143,18 @@
     PCA coefficients. What the page ships is that network and its basis, evaluated on every
     slider move.</p>
 
+    <p>All three spectra come from one network and one basis: TT and EE through a logarithm,
+    since both are positive, and TE linearly, because it changes sign about nineteen hundred
+    times and no logarithm exists. That also means TE&rsquo;s accuracy cannot honestly be quoted
+    as a percentage &mdash; a fractional error is meaningless where a curve passes through zero
+    &mdash; so it is given in absolute units below.</p>
+
     <p>Against <b>600 held-out CAMB models never used in training</b>, the emulator as
     shipped &mdash; including the multipole subsampling used for plotting &mdash; is
     accurate to a median of <b id="acc-med">&mdash;</b> and a worst case of
-    <b id="acc-max">&mdash;</b> over &#8467;&nbsp;&ge;&nbsp;30. For comparison, Planck&rsquo;s
+    <b id="acc-max">&mdash;</b> over &#8467;&nbsp;&ge;&nbsp;30 in TT,
+    <b id="acc-ee">&mdash;</b> in EE, and at worst <b id="acc-te">&mdash;</b> in TE against an
+    rms amplitude of <b id="acc-terms">&mdash;</b>. For comparison, Planck&rsquo;s
     own fractional uncertainty is 0.8% at &#8467;&nbsp;&asymp;&nbsp;1000 and 2.3% at
     &#8467;&nbsp;&asymp;&nbsp;2000, so the emulator error is well inside the measurement
     error everywhere on this plot. Below &#8467;&nbsp;=&nbsp;30 the emulator is better still,

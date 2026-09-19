@@ -4,13 +4,36 @@ Builds the emulator embedded in `outreach/cmb-spectrum.html`. A Boltzmann code
 cannot run in a browser, so CAMB is run offline and compressed into something a
 page can evaluate on every slider move.
 
-## Pipeline
+## Pipeline (current: TT, EE and TE)
 
-    NPROC=4 python3 gen_theta.py 4000 7 train.npz   # CAMB over a Latin hypercube (~55 min)
-    NPROC=4 python3 gen_theta.py  600 99 test.npz   # independent held-out set    (~8 min)
-    python3 mlp.py  64 160 90000        # PCA(64) + 6->160->160->64 tanh MLP
-    python3 payload.py emulator_mlp.npz # base64 float32 + accuracy numbers
-    python3 assemble.py cmb-spectrum.html
+    NPROC=4 python3 gen_theta3.py 4000 7 train3.npz  # CAMB, all three spectra (~56 min)
+    NPROC=4 python3 gen_theta3.py  600 99 test3.npz  # independent held-out set (~9 min)
+    python3 joint.py 96 192 90000                    # one PCA + one MLP for all three
+    python3 payload3.py                              # base64 float32 + accuracy numbers
+    python3 assemble3.py cmb-spectrum.html
+
+The TT-only pipeline (`gen_theta.py`, `mlp.py`, `payload.py`, `assemble.py`) is
+kept for reference; it is what the page shipped before polarization was added.
+
+## Three spectra, one network
+
+TT and EE are emulated in log -- both are positive definite, EE bottoming out
+around 1e-4 uK^2. TE cannot be: it changes sign about 1900 times, so it is
+carried linearly. That has a reporting consequence worth keeping: a fractional
+error is meaningless where a curve passes through zero, so TE accuracy is
+quoted in absolute uK^2 against its rms amplitude, never as a percentage.
+
+A joint PCA across all three beats three separate bases, because the spectra
+share their parameter dependence -- TT's worst-case error actually improved,
+from 0.48% to 0.39%, on adding the other two.
+
+Held out against 600 CAMB models, through the shipped path, l >= 30:
+
+    TT   median 0.025%      worst 0.39%
+    EE   median 0.055%      worst 1.73%
+    TE   median 0.029 uK^2  worst 1.61 uK^2  (rms amplitude 44 uK^2)
+
+chi^2/N at Planck's own parameters: TT 1.01, TE 1.18, EE 1.00.
 
 `assemble.py` substitutes the payload and the Planck points into `cmb.js.html`
 and concatenates `cmb.head.html` + `cmb.prose.html` + the script.
