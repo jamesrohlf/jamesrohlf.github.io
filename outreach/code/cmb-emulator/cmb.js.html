@@ -176,7 +176,7 @@
       }
       // x ticks, on the bottom edge of whichever panel comes last
       var AX = SHOWR ? R1 : Y1;
-      [2, 5, 10, 30, 200, 500, 1000, 1500, 2000, 2500].forEach(function (lv) {
+      [2, 5, 10, 30, 100, 300, 600, 1000, 1500, 2000, 2500].forEach(function (lv) {
         var x = xpos(lv);
         g.appendChild(el('line', { x1:x, x2:x, y1:AX, y2:AX + 5,
                                    stroke:'var(--ink-faint)', 'stroke-width':1 }));
@@ -184,9 +184,21 @@
                              'font-size':12, fill:'var(--ink-faint)' });
         t.textContent = lv; g.appendChild(t);
       });
-      // the axis break between log and linear halves
+      // Planck's convention: logarithmic to l = 30 so the plateau is visible at
+      // all, linear above so the acoustic peaks come out evenly spaced. Mark the
+      // join and name both halves -- unlabelled it just reads as a mistake.
       g.appendChild(el('line', { x1:XB, x2:XB, y1:Y0, y2:Y1, stroke:'var(--rule)',
                                  'stroke-width':1, 'stroke-dasharray':'2 3' }));
+      [-4, 1].forEach(function (dx) {
+        g.appendChild(el('line', { x1:XB + dx - 3, x2:XB + dx + 3, y1:AX + 6, y2:AX - 2,
+                                   stroke:'var(--ink-faint)', 'stroke-width':1.2 }));
+      });
+      var lgl = el('text', { x:(X0 + XB) / 2, y:AX + 33, 'text-anchor':'middle',
+                             'font-size':10.5, fill:'var(--ink-faint)', 'font-style':'italic' });
+      lgl.textContent = 'logarithmic'; g.appendChild(lgl);
+      var lnl = el('text', { x:XB + (X1 - XB) * 0.12, y:AX + 33, 'text-anchor':'middle',
+                             'font-size':10.5, fill:'var(--ink-faint)', 'font-style':'italic' });
+      lnl.textContent = 'linear'; g.appendChild(lnl);
       g.appendChild(el('rect', { x:X0, y:Y0, width:X1 - X0, height:Y1 - Y0,
                                  fill:'none', stroke:'var(--ink-faint)', 'stroke-width':1 }));
 

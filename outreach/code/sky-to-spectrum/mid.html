@@ -1,0 +1,345 @@
+
+    <div class="rig">
+      <h3>A single spherical harmonic &mdash; <span id="ylm-id"></span></h3>
+      <canvas id="ylm" width="1800" height="940"></canvas>
+      <div class="knobs">
+        <div class="knob">
+          <label for="kl">&#8467; &mdash; angular scale</label><output id="ol"></output>
+          <input type="range" id="kl" min="1" max="250" step="1" value="6">
+          <span class="hint">about 180&deg;/&#8467; across, so larger &#8467; means finer detail</span>
+        </div>
+        <div class="knob">
+          <label for="km"><em>m</em> &mdash; orientation</label><output id="om"></output>
+          <input type="range" id="km" min="0" max="6" step="1" value="3">
+          <span class="hint">m = 0 is banded in latitude; m = &#8467; is banded in longitude</span>
+        </div>
+      </div>
+      <div class="bar">
+        <button type="button" class="ghost" data-l="1">&#8467; = 1 &middot; dipole</button>
+        <button type="button" class="ghost" data-l="2">2 &middot; quadrupole</button>
+        <button type="button" class="ghost" data-l="10">10</button>
+        <button type="button" class="ghost" data-l="50">50</button>
+        <button type="button" class="ghost" data-l="220">220 &middot; the first peak</button>
+        <button type="button" class="ghost" id="ylm-sweep">sweep m</button>
+        <label><input type="checkbox" id="ylm-grid" checked> graticule</label>
+      </div>
+      <p class="readout" id="ylm-out"></p>
+    </div>
+
+    <p>Every one of these patterns has the same characteristic size, set by &#8467; alone.
+    Sliding <em>m</em> changes where the pattern&rsquo;s lobes are aimed, not how big they are:
+    at m&nbsp;=&nbsp;0 the bands run round in latitude, at m&nbsp;=&nbsp;&#8467; they run in
+    longitude like the segments of an orange, and in between they tilt. The sky is a sum of all
+    of them at once, with a coefficient a<sub>&#8467;m</sub> in front of each, and the whole map
+    is those coefficients.</p>
+
+    <p>Here is the part that matters for cosmology, and it is easy to miss. <em>Latitude and
+    longitude with respect to what?</em> Nothing in the universe defines a pole; the one used
+    here is a convention, in practice the plane of our own galaxy. Choose a different pole and
+    every one of these pictures changes &mdash; the a<sub>&#8467;m</sub> at fixed &#8467; get
+    mixed among themselves, and a pattern that was banded in latitude becomes something else.
+    So an individual a<sub>&#8467;m</sub> cannot be a physical quantity: it depends on an
+    arbitrary choice we made.</p>
+
+    <p>&#8467; is a different matter entirely, and the distinction is the whole point.
+    Rotating the coordinates mixes the a<sub>&#8467;m</sub> <em>only among themselves at fixed
+    &#8467;</em> &mdash; it never moves power from one &#8467; to another. So &#8467; survives any
+    change of pole untouched, and the angular size that goes with it,
+    roughly 180&deg;/&#8467;, is a genuine statement about the sky. When the power spectrum peaks
+    at &#8467;&nbsp;&asymp;&nbsp;220 that is a real feature at a real angular scale of about
+    0.8&deg;, the size of the mottling in the map above; every observer, using any pole they
+    like, would find it at 220. One index is physics and the other is bookkeeping.</p>
+
+    <p>What does <em>not</em> change under that choice is the sum of |a<sub>&#8467;m</sub>|&sup2;
+    over all m at fixed &#8467;. Rotating the coordinates shuffles the terms but preserves the
+    total. That rotationally invariant combination is the only thing a universe with no preferred
+    direction is entitled to predict &mdash; and it is exactly the power spectrum defined in the
+    next section. The averaging over m is not a convenience for tidiness; it is the step that
+    throws away our arbitrary pole and keeps the physics.</p>
+
+    <p>It has a price, and the rest of this page is about paying it. Averaging over m is
+    averaging over 2&#8467;+1 numbers, and at small &#8467; there are very few of them.</p>
+
+    <h2>From a<sub>&#8467;m</sub> to C<sub>&#8467;</sub></h2>
+
+    <p>Cosmology does not predict the individual coefficients. Inflation predicts that they are
+    random &mdash; drawn from a Gaussian with zero mean &mdash; and predicts only their
+    <em>variance</em>. That variance is the power spectrum:</p>
+
+    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
+      C<sub>&#8467;</sub> = &#12296;|a<sub>&#8467;m</sub>|&sup2;&#12297; =
+      (1 / (2&#8467;+1)) &sum;<sub>m</sub> |a<sub>&#8467;m</sub>|&sup2;</p>
+
+    <p>So the procedure is: take the cleaned map, project it onto every Y<sub>&#8467;m</sub>
+    to get the coefficients, square them, and average over the 2&#8467;+1 orientations at each
+    &#8467;. One number per multipole. That is the entire reduction from a map of a million
+    pixels to a curve.</p>
+
+    <p>It is worth being clear about which step is which, because the two are easily run
+    together. Getting the a<sub>&#8467;m</sub> involves <em>no correlations at all</em>: it is a
+    single linear operation on the map, the same integral you would do to extract a Fourier
+    coefficient, one pixel at a time.</p>
+
+    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
+      a<sub>&#8467;m</sub> = &int; &Delta;T(<b>n&#770;</b>)
+      Y*<sub>&#8467;m</sub>(<b>n&#770;</b>) d&Omega;</p>
+
+    <p>The two-point function arrives only at the <em>next</em> step, when those coefficients are
+    squared. And it turns out that squaring-and-averaging is the same operation as measuring how
+    the temperature at one point correlates with the temperature at another a fixed angle away.
+    Write C(&theta;) for the average of
+    &Delta;T(<b>n&#770;</b><sub>1</sub>)&Delta;T(<b>n&#770;</b><sub>2</sub>) over all pairs of
+    directions separated by &theta;, and the two descriptions are related by a Legendre
+    transform:</p>
+
+    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
+      C(&theta;) = (1 / 4&pi;) &sum;<sub>&#8467;</sub>
+      (2&#8467;+1) C<sub>&#8467;</sub> P<sub>&#8467;</sub>(cos&nbsp;&theta;)</p>
+
+    <p>So the power spectrum and the angular correlation function carry exactly the same
+    information, packaged two ways, and in practice C<sub>&#8467;</sub> can be estimated by
+    either route: project the map onto harmonics and average the squares, or bin every pair of
+    pixels by their separation and transform. Masked skies make the first route awkward, which
+    is why the second is not merely of academic interest.</p>
+
+    <div class="rig">
+      <h3>The same measurement, done by counting pairs</h3>
+      <svg id="cf" viewBox="0 0 900 400" role="img" aria-labelledby="cfT cfD">
+        <title id="cfT">The angular correlation function, estimated from pixel pairs</title>
+        <desc id="cfD">The correlation of temperature between two points against their angular
+        separation, with an estimate made by binning randomly drawn pairs of directions from a
+        simulated sky, following the theoretical curve.</desc>
+      </svg>
+      <div class="legend">
+        <span class="sw-theory"><i></i>C(&theta;) from the model&rsquo;s C<sub>&#8467;</sub></span>
+        <span class="sw-draw"><i></i>binned pairs from one simulated sky</span>
+      </div>
+      <div class="bar">
+        <button type="button" id="cf-draw">draw a new sky</button>
+        <label>points
+          <select id="cf-n">
+            <option value="400">400</option>
+            <option value="1200" selected>1200</option>
+            <option value="2500">2500</option>
+          </select>
+        </label>
+      </div>
+      <p class="readout" id="cf-out"></p>
+      <p class="note">A deliberately coarse sky: only multipoles up to
+      &#8467;&nbsp;=&nbsp;48 are included, so the smallest features are a few degrees across and
+      a few thousand points can resolve them. Every pair of the chosen directions is binned by
+      its separation and the product of the two temperatures averaged &mdash; that average,
+      plotted against separation, is C(&theta;). Nothing about spherical harmonics is used in
+      the estimate itself.</p>
+      <p class="note">The points will not sit exactly on the curve, and that is not a defect of
+      the method. One sky is one realisation, and the same cosmic variance that afflicts the
+      power spectrum afflicts this: the scatter is largest at wide separations, where only the
+      few lowest multipoles contribute. Averaging two dozen independent skies brings the estimate
+      onto the curve to within a couple of percent of C(0) &mdash; which is the check that the
+      estimator is unbiased, and also the thing no observer can actually do.</p>
+    </div>
+
+    <p>One number falls out of that relation immediately. At zero separation it is a point
+    correlated with itself, so C(0) is just the variance of the map: summing this spectrum gives
+    C(0)&nbsp;=&nbsp;12,660&nbsp;&micro;K&sup2;, or 112&nbsp;&micro;K rms &mdash; the number in
+    the table at the top of this page. By 30&deg; the correlation has fallen to under 2% of that,
+    and beyond 60&deg; it goes slightly negative: on the largest scales a hot patch is, very
+    weakly, more likely to face a cold one.</p>
+
+    <p>And it is also where the fundamental limit comes in. To estimate a variance you need
+    samples, and at each &#8467; the universe gives you exactly 2&#8467;+1 of them. At
+    &#8467;&nbsp;=&nbsp;2 there are five. This explains the fundamental limit of measuring low
+    &#8467; in the power spectrum.</p>
+
+    <h2>Cosmic variance</h2>
+
+    <p>Below, the scarlet curve is a theoretical spectrum: the true C<sub>&#8467;</sub> of the
+    model. The grey points are what you would <em>measure</em> from one universe drawn from it
+    &mdash; a<sub>&#8467;m</sub> sampled at random, squared, averaged over m. Draw a new sky and
+    watch which end of the power spectrum moves.</p>
+
+    <div class="rig">
+      <h3>One universe at a time</h3>
+      <svg id="cv" viewBox="0 0 900 430" role="img" aria-labelledby="cvT cvD">
+        <title id="cvT">A single realisation of the power spectrum</title>
+        <desc id="cvD">The theoretical angular power spectrum with one random realisation
+        overlaid, showing large scatter at low multipoles and close agreement at high ones.</desc>
+      </svg>
+      <div class="legend">
+        <span class="sw-theory"><i></i>the model&rsquo;s true C<sub>&#8467;</sub></span>
+        <span class="sw-band"><i></i>&plusmn;1 cosmic variance</span>
+        <span class="sw-draw"><i></i>one realisation</span>
+      </div>
+      <div class="bar">
+        <button type="button" id="cv-draw">draw a new sky</button>
+        <button type="button" class="ghost" id="cv-many">average 100 skies</button>
+        <label><input type="checkbox" id="cv-band" checked> show the band</label>
+      </div>
+      <p class="readout" id="cv-out"></p>
+    </div>
+
+    <p>The high-&#8467; end barely moves: there are thousands of modes to average and the
+    estimate is tight. The low-&#8467; end lurches about by tens of percent every time, and no
+    improvement in the instrument can fix it. You would need more sky, and there is only one.</p>
+
+    <p>The precision available at each multipole is just the statistics of averaging
+    2&#8467;+1 squared Gaussians:</p>
+
+    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
+      &Delta;C<sub>&#8467;</sub> / C<sub>&#8467;</sub> =
+      &radic;(2 / (2&#8467;+1))</p>
+
+    <table class="scales">
+      <thead><tr><th>Multipole</th><th>Modes</th><th>Best possible</th><th>Planck&rsquo;s lower bar</th></tr></thead>
+      <tbody>
+        <tr><td>&#8467; = 2</td><td>5</td><td>63%</td><td>59%</td></tr>
+        <tr><td>&#8467; = 3</td><td>7</td><td>53%</td><td>48%</td></tr>
+        <tr><td>&#8467; = 5</td><td>11</td><td>43%</td><td>38%</td></tr>
+        <tr><td>&#8467; = 9</td><td>19</td><td>32%</td><td>31%</td></tr>
+        <tr><td>&#8467; = 100</td><td>201</td><td>10.0%</td><td>&mdash;</td></tr>
+        <tr><td>&#8467; = 1000</td><td>2001</td><td>3.2%</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <p>The last two columns are not fitted to each other. One is a counting argument about
+    how many independent modes exist on a sphere; the other is what Planck actually reports.
+    At the largest scales Planck is already doing as well as any experiment ever will.</p>
+
+    <p>It also explains a detail on the <a href="cmb-spectrum.html">power spectrum page</a>
+    that otherwise looks like a mistake: the error bars at low &#8467; are
+    <em>asymmetric</em>, much longer upward than downward. Averaging five squared Gaussians
+    gives a badly skewed distribution &mdash; it cannot go below zero but has a long tail
+    upward &mdash; so the uncertainty is lopsided. With two thousand modes the same
+    distribution is indistinguishable from a Gaussian, and the bars become symmetric.</p>
+
+    <h2>Why the power spectrum is plotted as &#8467;(&#8467;+1)C<sub>&#8467;</sub>/2&pi;</h2>
+
+    <p>The quantity that appears on every published CMB plot is not C<sub>&#8467;</sub> but
+    D<sub>&#8467;</sub>&nbsp;=&nbsp;&#8467;(&#8467;+1)C<sub>&#8467;</sub>/2&pi;. The reason is
+    that the contribution to the total temperature variance from a logarithmic interval in
+    &#8467; is approximately &#8467;(&#8467;+1)C<sub>&#8467;</sub>/2&pi;, so a spectrum with
+    equal power on all scales &mdash; the scale-invariant case &mdash; comes out flat. It puts
+    the eye in the right place: departures from flat are physics.</p>
+
+    <p>Adding up that variance across this spectrum gives about 112&nbsp;&micro;K, and the band
+    from &#8467;&nbsp;=&nbsp;100 to 300 alone supplies nearly 40% of it. That is the degree-wide
+    hot and cold blotches the sky is famous for &mdash; the first acoustic peak, seen directly.</p>
+
+    <h2>So what does the peak at &#8467;&nbsp;=&nbsp;220 mean?</h2>
+
+    <p>In plain terms: <b>it is the size of the blotches in the picture.</b> Nothing more exotic
+    than that. The map near the top of this page is mottled on a scale of very roughly one
+    degree, and a pattern one degree across is what &#8467;&nbsp;&asymp;&nbsp;180/1 &asymp; 200
+    means. The peak in the power spectrum is the statement, made quantitatively, that the sky has
+    more contrast at that angular size than at any other.</p>
+
+    <p>Read the map that way and the whole spectrum becomes legible. The broad swathes of colour
+    spanning tens of degrees are the low multipoles, the left-hand end of the power spectrum. The
+    fine speckle is high &#8467;, the right-hand end. And the dominant texture, the scale your eye
+    settles on, is the first peak at &#8467;&nbsp;&asymp;&nbsp;220 &mdash; 49 arcminutes, about
+    the width of your little fingernail at arm&rsquo;s length, or one and a half full moons.</p>
+
+    <p>Where does that particular size come from? Before the universe went transparent, the
+    photons and baryons behaved as a single fluid, and pressure waves ran through it at about
+    58% of the speed of light. The farthest such a wave could travel between the beginning and
+    last scattering is the <em>sound horizon</em>: 144&nbsp;Mpc in today&rsquo;s units. The mode
+    whose wave had just completed one compression when the plasma froze out ended up with the
+    largest temperature contrast &mdash; and that is the first peak. Every peak after it is a
+    mode that got through two compressions, three, and so on.</p>
+
+    <p>So a fixed physical length is sitting on the last-scattering surface, and we are looking
+    at it from 13,870&nbsp;Mpc away. That is a triangle: 144&nbsp;Mpc seen from 13,870&nbsp;Mpc
+    subtends 0.6&deg;. The peak lands near &#8467;&nbsp;=&nbsp;220 rather than exactly
+    180/0.6&nbsp;=&nbsp;300 because the oscillations are being driven by decaying gravitational
+    potentials, which shifts the peaks somewhat; the clean scale
+    &pi;/&theta;<sub>&lowast;</sub>&nbsp;=&nbsp;302 is the acoustic scale, and the first peak sits
+    at about 0.73 of it.</p>
+
+    <p><b>And this is where the cosmological parameters come in.</b> The numerator of that
+    triangle, the sound horizon, is fixed by conditions <em>before</em> recombination &mdash; how
+    much matter and how many baryons there were, which set both the sound speed and how long the
+    plasma phase lasted. The denominator, the distance to the last-scattering surface, is fixed by
+    everything that happened <em>since</em> &mdash; the expansion history, and so H&#8320; and the
+    dark energy. The position of the peak measures the ratio of the two. That ratio is
+    &theta;<sub>&lowast;</sub>, and it is why moving any of the six parameters on
+    <a href="cmb-spectrum.html">the power spectrum page</a> slides the peaks left or right.
+    The blotch size in a photograph of the infant universe is a measurement of what the universe
+    is made of.</p>
+
+    <h2>What is needed for the real measurement</h2>
+
+    <p>Everything above is true and none of it is sufficient. What a real experiment measures is
+    not C<sub>&#8467;</sub> but something closer to
+    (C<sub>&#8467;</sub>&nbsp;+&nbsp;N<sub>&#8467;</sub>)&nbsp;B<sub>&#8467;</sub>&sup2;, smeared
+    across neighbouring multipoles by the mask, with foreground residuals on top. Undoing that is
+    most of the work.</p>
+
+    <h3>The beam</h3>
+    <p>No telescope has infinite resolution, and a finite beam suppresses small-scale power
+    severely. A Gaussian beam multiplies the spectrum by
+    exp(&minus;&#8467;(&#8467;+1)&sigma;&sup2;); for Planck&rsquo;s 7&prime; channel that is a
+    factor of 0.44 at &#8467;&nbsp;=&nbsp;1000 and about 1/160 at &#8467;&nbsp;=&nbsp;2500. All of
+    that has to be divided back out, which means the beam must be known to better than the
+    precision you want on the answer &mdash; measured in flight, from planets. The pixels
+    themselves add a second, smaller window function of the same kind.</p>
+
+    <h3>Noise, and a trick for avoiding it</h3>
+    <p>Detector noise adds power rather than removing it, so a naive spectrum is biased upward
+    everywhere, most damagingly at high &#8467; where the signal has been beaten down by the
+    beam. Subtracting an estimate of the noise works, but any error in that estimate goes
+    straight into the answer. The standard escape is to <em>cross</em>-correlate maps made from
+    independent detectors, or from different halves of the mission: the sky is common to both and
+    survives, the noise is not and averages away. It removes the bias without having to know the
+    noise level at all.</p>
+
+    <h3>Foregrounds</h3>
+    <p>Our galaxy is far brighter than the CMB over much of the sky. It is separated out by
+    observing at many frequencies &mdash; Planck used nine, from 30 to 857&nbsp;GHz &mdash; and
+    exploiting the fact that synchrotron, free-free and dust each have their own spectrum while
+    the CMB is a blackbody. What survives that is not zero, so the likelihood carries extra free
+    parameters for the leftovers: residual dust, unresolved point sources, the cosmic infrared
+    background, the thermal and kinetic Sunyaev&ndash;Zel&rsquo;dovich effects. Planck&rsquo;s
+    high-&#8467; temperature likelihood fits roughly twenty such nuisance parameters alongside the
+    six that matter.</p>
+
+    <h3>The mask</h3>
+    <p>Whatever cannot be cleaned is cut out, and a cut sky is no longer a sphere. Spherical
+    harmonics are only orthogonal over the complete sphere, so on a masked map the multipoles
+    leak into one another and what comes out is a smeared version of the spectrum. The
+    coupling can be computed and inverted, but two costs remain: the estimate at one &#8467; is
+    correlated with its neighbours, and you have fewer modes, so cosmic variance grows as
+    1/&radic;f<sub>sky</sub>. Keeping two-thirds of the sky inflates every error bar on this page
+    by about 23%.</p>
+
+    <h3>Calibration, and the dipole again</h3>
+    <p>An overall scale error would move the whole spectrum up or down and mimic
+    A<sub>s</sub>. The calibrator turns out to be the dipole: not the 3.36&nbsp;mK one from our
+    motion through the universe, but the small annual modulation from the Earth&rsquo;s own orbit,
+    whose amplitude is known to exquisite precision from celestial mechanics. Planck calibrates
+    against it to better than a tenth of a percent.</p>
+
+    <h3>Lensing</h3>
+    <p>The light has crossed 13&nbsp;billion light years of intervening structure, and its path
+    has been bent. Gravitational lensing shifts features by a few arcminutes, which slightly
+    smooths the peaks and troughs. It must be modelled &mdash; and, as it happens, it is also a
+    signal in its own right, carrying information about the matter the light passed through.</p>
+
+    <h3>And the statistics at the ends</h3>
+    <p>At high &#8467; there are enough modes that the estimated spectrum is Gaussian and a
+    covariance matrix suffices. At low &#8467; it is not, for the reason this page has been
+    making all along: with five modes the distribution of an estimated variance is badly skewed,
+    so Planck uses an exact pixel-based likelihood below
+    &#8467;&nbsp;&asymp;&nbsp;30 and the Gaussian approximation above it. The join between the
+    two is visible in every Planck plot if you know to look for it.</p>
+
+    <p class="note">The spectrum plotted here is &Lambda;CDM at the Planck 2018 parameters,
+    from the same emulator used on the
+    <a href="cmb-spectrum.html">CMB power spectrum page</a>, so the two agree by construction.
+    The comparison column is the Planck 2018 binned likelihood from the ESA Planck Legacy
+    Archive. Monopole from Fixsen (2009); dipole amplitude from Planck 2018 results I.</p>
+
+    <p class="note">Further afield: <a href="cmb-spectrum.html">the CMB power spectrum</a>
+    with all six parameters on sliders; <a href="lcdm.html">&Lambda;CDM and the six
+    parameters</a>; <a href="calculator.html">the cosmology calculator</a>.</p>
+
+  </main>

@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>From Sky Map to Power Spectrum — Jim Rohlf</title>
+  <meta property="og:site_name" content="Jim Rohlf — DESI">
+  <meta name="description" content="How a map of the microwave sky becomes the CMB power spectrum: removing the monopole and dipole, decomposing into spherical harmonics, squaring and averaging over m, and why the largest scales can never be measured precisely.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/sky-to-spectrum.html">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+  <style>
+    .rig { border:1px solid var(--rule); border-radius:10px; padding:.9rem 1rem 1rem;
+           margin:1.4rem 0 1.6rem; background:var(--paper); }
+    .rig h3 { margin:0 0 .5rem; font:700 .82rem var(--font-body);
+              text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); }
+    .rig canvas { display:block; width:100%; height:auto; border-radius:6px;
+                  background:var(--cream); }
+    .rig svg { display:block; width:100%; height:auto; }
+
+    .knobs { display:grid; grid-template-columns:repeat(auto-fit, minmax(13rem,1fr));
+             gap:.5rem 1.4rem; margin:.9rem 0 0; }
+    .knob { display:grid; grid-template-columns:1fr auto; align-items:baseline; gap:.1rem .5rem; }
+    .knob label { font-size:.84rem; font-weight:600; color:var(--ink-soft); }
+    .knob output { font-family:var(--font-mono); font-size:.82rem; color:var(--ink);
+                   font-variant-numeric:tabular-nums; }
+    .knob input[type=range] { grid-column:1 / -1; width:100%; accent-color:var(--scarlet); margin:.1rem 0 .2rem; }
+    .knob .hint { grid-column:1 / -1; font-size:.72rem; color:var(--ink-faint); margin:-.1rem 0 .1rem; }
+
+    .bar { display:flex; flex-wrap:wrap; gap:.5rem .8rem; align-items:center; margin-top:.85rem; }
+    .bar button { font:700 .85rem var(--font-body); cursor:pointer; padding:.44rem 1rem;
+                  border:1px solid var(--scarlet); border-radius:5px;
+                  background:var(--scarlet); color:#fff;
+                  transition:background var(--ease), border-color var(--ease); }
+    .bar button:hover { background:var(--scarlet-bright); border-color:var(--scarlet-bright); }
+    .bar button:active { transform:translateY(1px); }
+    .bar button.ghost { background:var(--cream); color:var(--ink); border-color:var(--rule); }
+    .bar button.ghost:hover { background:var(--scarlet); border-color:var(--scarlet); color:#fff; }
+    .bar label { font-size:.82rem; color:var(--ink-soft); display:flex; align-items:center; gap:.3rem; }
+
+    .readout { display:flex; flex-wrap:wrap; gap:.15rem 1.3rem; margin:.7rem 0 0;
+               font-size:.82rem; font-family:var(--font-mono); color:var(--ink-soft);
+               font-variant-numeric:tabular-nums; }
+    .readout b { color:var(--ink); font-weight:700; }
+    .legend { display:flex; flex-wrap:wrap; gap:.2rem 1.1rem; font-size:.78rem;
+              color:var(--ink-faint); margin:.5rem 0 0; }
+    .legend i { display:inline-block; width:1.4rem; height:0; vertical-align:middle;
+                border-top:2px solid currentColor; margin-right:.3rem; }
+    .sw-theory { color:var(--scarlet); } .sw-band { color:var(--ink-faint); }
+    .sw-draw { color:var(--ink-soft); }
+
+    .scales { width:100%; border-collapse:collapse; font-size:.85rem; margin:1rem 0 1.4rem; }
+    .scales th, .scales td { padding:.2rem .5rem; border-bottom:1px dotted var(--rule); text-align:right; }
+    .scales th:first-child, .scales td:first-child { text-align:left; }
+    .scales thead th { border-bottom:1px solid var(--rule); font:700 .7rem var(--font-body);
+                       text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); }
+    .scales td { font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+    .plotfig { margin:1.3rem 0 1.7rem; }
+    .plotfig svg { display:block; width:100%; height:auto; }
+    .plotfig figcaption { font-size:.78rem; color:var(--ink-faint); margin:.5rem 0 0;
+                          max-width:var(--measure); text-align:left; margin-inline:0; }
+
+    .skyfig { margin:1.3rem 0 1.6rem; }
+    .skyfig img { display:block; width:100%; height:auto; border-radius:6px; }
+    /* site.css centres figcaption by default; these read as notes, not captions */
+    .skyfig figcaption { font-size:.78rem; color:var(--ink-faint); margin:.55rem 0 0;
+                         max-width:var(--measure); text-align:left; margin-inline:0; }
+    .skyscale { display:flex; align-items:center; gap:.45rem; margin:.6rem 0 0;
+                font-size:.78rem; font-family:var(--font-mono); color:var(--ink-soft);
+                flex-wrap:wrap; }
+    .skyscale i { display:inline-block; width:1.5rem; height:.85rem; border-radius:2px;
+                  border:1px solid var(--rule); vertical-align:middle; }
+    .skyscale span { display:inline-flex; align-items:center; gap:.3rem; }
+
+    .warn { border-left:3px solid var(--gold); background:var(--cream);
+            padding:.7rem .9rem; margin:1.2rem 0 1.4rem; border-radius:0 6px 6px 0;
+            max-width:var(--measure); }
+    .warn p { margin:0; } .warn p + p { margin-top:.5rem; }
+    .warn .tag { display:block; font:700 .72rem var(--font-body); text-transform:uppercase;
+                 letter-spacing:.07em; color:var(--ink-soft); margin-bottom:.35rem; }
+
+    .note { font-size:.78rem; color:var(--ink-faint); margin:.9rem 0 0; max-width:var(--measure); }
+  </style>
+</head>
+<body>
+  <main id="main">
+    <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
+
+    <h1>From Sky Map to Power Spectrum</h1>
+
+    <p class="lede">The microwave background is a picture of the sky. The thing cosmologists
+    actually fit is a <b>power spectrum</b>. Getting from one to the other is a specific and rather
+    beautiful procedure, and the last step of it explains why the left-hand end of that power
+    spectrum can never be measured well &mdash; no matter how good the telescope.</p>
+
+    <h2>First, the temperature</h2>
+
+    <p>Before any of this there was a simpler measurement: point a microwave receiver at the
+    sky and ask what the spectrum is. COBE&rsquo;s FIRAS instrument answered in 1990, and the
+    answer is the most perfect blackbody ever measured &mdash; departures from the Planck curve
+    below about fifty parts per million, at a temperature of
+    2.72548&nbsp;&plusmn;&nbsp;0.00057&nbsp;K. Point it somewhere else and you get the same
+    blackbody, to the same precision, in every direction.</p>
+
+    <figure class="plotfig">
+<svg viewBox="0 0 800 492" role="img" aria-labelledby="f1t f1d">
+<title id="f1t">The COBE FIRAS spectrum of the microwave background</title>
+<desc id="f1d">Intensity against frequency, with a 2.725 kelvin blackbody curve through the measurements, and residuals beneath magnified ten thousand times that remain consistent with zero.</desc>
+<line x1="70" x2="740" y1="300.0" y2="300.0" stroke="var(--rule)" stroke-width="1"/>
+<text x="62.0" y="304.0" text-anchor="end" font-size="12" fill="var(--ink-faint)" >0</text>
+<line x1="70" x2="740" y1="233.8" y2="233.8" stroke="var(--rule)" stroke-width="1"/>
+<text x="62.0" y="237.8" text-anchor="end" font-size="12" fill="var(--ink-faint)" >100</text>
+<line x1="70" x2="740" y1="167.6" y2="167.6" stroke="var(--rule)" stroke-width="1"/>
+<text x="62.0" y="171.6" text-anchor="end" font-size="12" fill="var(--ink-faint)" >200</text>
+<line x1="70" x2="740" y1="101.4" y2="101.4" stroke="var(--rule)" stroke-width="1"/>
+<text x="62.0" y="105.4" text-anchor="end" font-size="12" fill="var(--ink-faint)" >300</text>
+<line x1="70" x2="740" y1="35.2" y2="35.2" stroke="var(--rule)" stroke-width="1"/>
+<text x="62.0" y="39.2" text-anchor="end" font-size="12" fill="var(--ink-faint)" >400</text>
+<line x1="70.0" x2="70.0" y1="432" y2="437" stroke="var(--ink-faint)"/>
+<text x="70.0" y="451.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >0</text>
+<line x1="218.9" x2="218.9" y1="432" y2="437" stroke="var(--ink-faint)"/>
+<text x="218.9" y="451.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >5</text>
+<line x1="367.8" x2="367.8" y1="432" y2="437" stroke="var(--ink-faint)"/>
+<text x="367.8" y="451.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >10</text>
+<line x1="516.7" x2="516.7" y1="432" y2="437" stroke="var(--ink-faint)"/>
+<text x="516.7" y="451.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >15</text>
+<line x1="665.6" x2="665.6" y1="432" y2="437" stroke="var(--ink-faint)"/>
+<text x="665.6" y="451.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >20</text>
+<rect x="70" y="22" width="670" height="278" fill="none" stroke="var(--ink-faint)"/>
+<path d="M87.9 284.8 L89.5 282.1 L91.1 279.3 L92.7 276.4 L94.4 273.3 L96.0 270.1 L97.6 266.8 L99.3 263.3 L100.9 259.8 L102.5 256.1 L104.1 252.4 L105.8 248.5 L107.4 244.6 L109.0 240.7 L110.6 236.7 L112.3 232.6 L113.9 228.5 L115.5 224.3 L117.2 220.1 L118.8 215.9 L120.4 211.7 L122.0 207.4 L123.7 203.2 L125.3 198.9 L126.9 194.7 L128.5 190.4 L130.2 186.2 L131.8 182.0 L133.4 177.8 L135.0 173.6 L136.7 169.5 L138.3 165.4 L139.9 161.3 L141.6 157.3 L143.2 153.3 L144.8 149.3 L146.4 145.5 L148.1 141.6 L149.7 137.8 L151.3 134.1 L152.9 130.5 L154.6 126.9 L156.2 123.3 L157.8 119.9 L159.5 116.5 L161.1 113.2 L162.7 109.9 L164.3 106.7 L166.0 103.7 L167.6 100.6 L169.2 97.7 L170.8 94.8 L172.5 92.0 L174.1 89.3 L175.7 86.7 L177.3 84.2 L179.0 81.7 L180.6 79.4 L182.2 77.1 L183.9 74.9 L185.5 72.7 L187.1 70.7 L188.7 68.8 L190.4 66.9 L192.0 65.1 L193.6 63.4 L195.2 61.8 L196.9 60.3 L198.5 58.8 L200.1 57.4 L201.8 56.2 L203.4 55.0 L205.0 53.8 L206.6 52.8 L208.3 51.8 L209.9 50.9 L211.5 50.1 L213.1 49.4 L214.8 48.7 L216.4 48.1 L218.0 47.6 L219.7 47.2 L221.3 46.8 L222.9 46.5 L224.5 46.3 L226.2 46.2 L227.8 46.1 L229.4 46.1 L231.0 46.1 L232.7 46.2 L234.3 46.4 L235.9 46.6 L237.5 46.9 L239.2 47.3 L240.8 47.7 L242.4 48.1 L244.1 48.7 L245.7 49.2 L247.3 49.9 L248.9 50.5 L250.6 51.3 L252.2 52.0 L253.8 52.9 L255.4 53.8 L257.1 54.7 L258.7 55.6 L260.3 56.6 L262.0 57.7 L263.6 58.8 L265.2 59.9 L266.8 61.1 L268.5 62.3 L270.1 63.5 L271.7 64.8 L273.3 66.1 L275.0 67.4 L276.6 68.8 L278.2 70.2 L279.8 71.6 L281.5 73.1 L283.1 74.6 L284.7 76.1 L286.4 77.6 L288.0 79.1 L289.6 80.7 L291.2 82.3 L292.9 83.9 L294.5 85.6 L296.1 87.2 L297.7 88.9 L299.4 90.6 L301.0 92.3 L302.6 94.0 L304.3 95.7 L305.9 97.4 L307.5 99.2 L309.1 100.9 L310.8 102.7 L312.4 104.5 L314.0 106.3 L315.6 108.1 L317.3 109.9 L318.9 111.7 L320.5 113.5 L322.1 115.3 L323.8 117.1 L325.4 118.9 L327.0 120.7 L328.7 122.6 L330.3 124.4 L331.9 126.2 L333.5 128.0 L335.2 129.8 L336.8 131.7 L338.4 133.5 L340.0 135.3 L341.7 137.1 L343.3 138.9 L344.9 140.7 L346.6 142.5 L348.2 144.3 L349.8 146.1 L351.4 147.9 L353.1 149.7 L354.7 151.4 L356.3 153.2 L357.9 155.0 L359.6 156.7 L361.2 158.4 L362.8 160.2 L364.4 161.9 L366.1 163.6 L367.7 165.3 L369.3 167.0 L371.0 168.7 L372.6 170.4 L374.2 172.0 L375.8 173.7 L377.5 175.3 L379.1 176.9 L380.7 178.5 L382.3 180.2 L384.0 181.7 L385.6 183.3 L387.2 184.9 L388.9 186.4 L390.5 188.0 L392.1 189.5 L393.7 191.0 L395.4 192.5 L397.0 194.0 L398.6 195.5 L400.2 197.0 L401.9 198.4 L403.5 199.9 L405.1 201.3 L406.8 202.7 L408.4 204.1 L410.0 205.5 L411.6 206.8 L413.3 208.2 L414.9 209.5 L416.5 210.9 L418.1 212.2 L419.8 213.5 L421.4 214.8 L423.0 216.0 L424.6 217.3 L426.3 218.6 L427.9 219.8 L429.5 221.0 L431.2 222.2 L432.8 223.4 L434.4 224.6 L436.0 225.7 L437.7 226.9 L439.3 228.0 L440.9 229.1 L442.5 230.2 L444.2 231.3 L445.8 232.4 L447.4 233.5 L449.1 234.5 L450.7 235.6 L452.3 236.6 L453.9 237.6 L455.6 238.6 L457.2 239.6 L458.8 240.6 L460.4 241.6 L462.1 242.5 L463.7 243.4 L465.3 244.4 L466.9 245.3 L468.6 246.2 L470.2 247.1 L471.8 248.0 L473.5 248.8 L475.1 249.7 L476.7 250.5 L478.3 251.3 L480.0 252.2 L481.6 253.0 L483.2 253.8 L484.8 254.5 L486.5 255.3 L488.1 256.1 L489.7 256.8 L491.4 257.6 L493.0 258.3 L494.6 259.0 L496.2 259.7 L497.9 260.4 L499.5 261.1 L501.1 261.8 L502.7 262.4 L504.4 263.1 L506.0 263.7 L507.6 264.4 L509.2 265.0 L510.9 265.6 L512.5 266.2 L514.1 266.8 L515.8 267.4 L517.4 268.0 L519.0 268.6 L520.6 269.1 L522.3 269.7 L523.9 270.2 L525.5 270.7 L527.1 271.3 L528.8 271.8 L530.4 272.3 L532.0 272.8 L533.7 273.3 L535.3 273.8 L536.9 274.3 L538.5 274.7 L540.2 275.2 L541.8 275.6 L543.4 276.1 L545.0 276.5 L546.7 277.0 L548.3 277.4 L549.9 277.8 L551.5 278.2 L553.2 278.6 L554.8 279.0 L556.4 279.4 L558.1 279.8 L559.7 280.2 L561.3 280.5 L562.9 280.9 L564.6 281.3 L566.2 281.6 L567.8 282.0 L569.4 282.3 L571.1 282.6 L572.7 283.0 L574.3 283.3 L576.0 283.6 L577.6 283.9 L579.2 284.2 L580.8 284.5 L582.5 284.8 L584.1 285.1 L585.7 285.4 L587.3 285.7 L589.0 286.0 L590.6 286.2 L592.2 286.5 L593.9 286.8 L595.5 287.0 L597.1 287.3 L598.7 287.5 L600.4 287.8 L602.0 288.0 L603.6 288.2 L605.2 288.5 L606.9 288.7 L608.5 288.9 L610.1 289.1 L611.7 289.3 L613.4 289.5 L615.0 289.8 L616.6 290.0 L618.3 290.2 L619.9 290.3 L621.5 290.5 L623.1 290.7 L624.8 290.9 L626.4 291.1 L628.0 291.3 L629.6 291.4 L631.3 291.6 L632.9 291.8 L634.5 291.9 L636.2 292.1 L637.8 292.3 L639.4 292.4 L641.0 292.6 L642.7 292.7 L644.3 292.9 L645.9 293.0 L647.5 293.2 L649.2 293.3 L650.8 293.4 L652.4 293.6 L654.0 293.7 L655.7 293.8 L657.3 293.9 L658.9 294.1 L660.6 294.2 L662.2 294.3 L663.8 294.4 L665.4 294.5 L667.1 294.6 L668.7 294.8 L670.3 294.9 L671.9 295.0 L673.6 295.1 L675.2 295.2 L676.8 295.3 L678.5 295.4 L680.1 295.5 L681.7 295.6 L683.3 295.7 L685.0 295.7 L686.6 295.8 L688.2 295.9 L689.8 296.0 L691.5 296.1 L693.1 296.2 L694.7 296.2 L696.3 296.3 L698.0 296.4 L699.6 296.5 L701.2 296.5 L702.9 296.6 L704.5 296.7 L706.1 296.8 L707.7 296.8 L709.4 296.9 L711.0 297.0 L712.6 297.0 L714.2 297.1 L715.9 297.1 L717.5 297.2 L719.1 297.3 L720.8 297.3 L722.4 297.4 L724.0 297.4 L725.6 297.5 L727.3 297.5 L728.9 297.6 L730.5 297.6 L732.1 297.7 L733.8 297.7 L735.4 297.8 L737.0 297.8" fill="none" stroke="var(--scarlet)" stroke-width="2"/>
+<circle cx="137.6" cy="167.1" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="151.0" cy="134.8" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="164.7" cy="106.0" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="178.1" cy="83.0" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="191.5" cy="65.6" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="205.2" cy="53.7" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="218.6" cy="47.5" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="232.3" cy="46.2" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="245.7" cy="49.2" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="259.1" cy="55.9" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="272.8" cy="65.6" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="286.2" cy="77.4" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="299.6" cy="90.8" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="313.3" cy="105.5" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="326.7" cy="120.3" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="340.4" cy="135.7" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="353.8" cy="150.4" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="367.2" cy="164.8" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="380.9" cy="178.7" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="394.3" cy="191.6" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="407.7" cy="203.5" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="421.4" cy="214.7" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="434.8" cy="224.8" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="448.5" cy="234.2" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="461.9" cy="242.4" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="475.3" cy="249.8" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="489.0" cy="256.5" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="502.4" cy="262.3" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="515.8" cy="267.4" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="529.5" cy="272.0" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="542.9" cy="275.9" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="556.6" cy="279.4" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="570.0" cy="282.4" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="583.4" cy="285.0" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="597.1" cy="287.3" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="610.5" cy="289.2" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="624.2" cy="290.9" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="637.6" cy="292.2" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="651.0" cy="293.4" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="664.7" cy="294.5" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="678.1" cy="295.3" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="691.5" cy="296.2" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<circle cx="705.2" cy="297.0" r="2.6" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<text x="20.0" y="161.0" text-anchor="middle" font-size="13" fill="var(--ink-soft)" transform="rotate(-90 20 161)">intensity  [MJy/sr]</text>
+<text x="405.0" y="40.0" text-anchor="middle" font-size="13" fill="var(--ink-soft)" >COBE/FIRAS measurements, and a 2.725 K blackbody</text>
+<rect x="70" y="340" width="670" height="92" fill="none" stroke="var(--ink-faint)"/>
+<line x1="70" x2="740" y1="386.0" y2="386.0" stroke="var(--ink-faint)" stroke-dasharray="3 3"/>
+<line x1="137.6" x2="137.6" y1="388.1" y2="381.6" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="137.6" cy="384.9" r="1.8" fill="var(--ink-soft)"/>
+<line x1="151.0" x2="151.0" y1="388.3" y2="379.6" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="151.0" cy="383.9" r="1.8" fill="var(--ink-soft)"/>
+<line x1="164.7" x2="164.7" y1="388.3" y2="376.8" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="164.7" cy="382.6" r="1.8" fill="var(--ink-soft)"/>
+<line x1="178.1" x2="178.1" y1="390.4" y2="379.8" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="178.1" cy="385.1" r="1.8" fill="var(--ink-soft)"/>
+<line x1="191.5" x2="191.5" y1="386.7" y2="376.6" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="191.5" cy="381.6" r="1.8" fill="var(--ink-soft)"/>
+<line x1="205.2" x2="205.2" y1="397.7" y2="388.1" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="205.2" cy="392.9" r="1.8" fill="var(--ink-soft)"/>
+<line x1="218.6" x2="218.6" y1="397.0" y2="388.8" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="218.6" cy="392.9" r="1.8" fill="var(--ink-soft)"/>
+<line x1="232.3" x2="232.3" y1="392.4" y2="384.2" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="232.3" cy="388.3" r="1.8" fill="var(--ink-soft)"/>
+<line x1="245.7" x2="245.7" y1="382.3" y2="375.0" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="245.7" cy="378.6" r="1.8" fill="var(--ink-soft)"/>
+<line x1="259.1" x2="259.1" y1="388.3" y2="381.9" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="259.1" cy="385.1" r="1.8" fill="var(--ink-soft)"/>
+<line x1="272.8" x2="272.8" y1="389.4" y2="383.5" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="272.8" cy="386.5" r="1.8" fill="var(--ink-soft)"/>
+<line x1="286.2" x2="286.2" y1="385.8" y2="380.2" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="286.2" cy="383.0" r="1.8" fill="var(--ink-soft)"/>
+<line x1="299.6" x2="299.6" y1="393.6" y2="388.5" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="299.6" cy="391.1" r="1.8" fill="var(--ink-soft)"/>
+<line x1="313.3" x2="313.3" y1="386.5" y2="381.9" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="313.3" cy="384.2" r="1.8" fill="var(--ink-soft)"/>
+<line x1="326.7" x2="326.7" y1="386.7" y2="381.6" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="326.7" cy="384.2" r="1.8" fill="var(--ink-soft)"/>
+<line x1="340.4" x2="340.4" y1="393.6" y2="388.1" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="340.4" cy="390.8" r="1.8" fill="var(--ink-soft)"/>
+<line x1="353.8" x2="353.8" y1="387.1" y2="380.7" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="353.8" cy="383.9" r="1.8" fill="var(--ink-soft)"/>
+<line x1="367.2" x2="367.2" y1="386.9" y2="379.6" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="367.2" cy="383.2" r="1.8" fill="var(--ink-soft)"/>
+<line x1="380.9" x2="380.9" y1="387.6" y2="379.3" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="380.9" cy="383.5" r="1.8" fill="var(--ink-soft)"/>
+<line x1="394.3" x2="394.3" y1="397.7" y2="387.6" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="394.3" cy="392.7" r="1.8" fill="var(--ink-soft)"/>
+<line x1="407.7" x2="407.7" y1="401.6" y2="391.5" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="407.7" cy="396.6" r="1.8" fill="var(--ink-soft)"/>
+<line x1="421.4" x2="421.4" y1="377.9" y2="367.4" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="421.4" cy="372.7" r="1.8" fill="var(--ink-soft)"/>
+<line x1="434.8" x2="434.8" y1="389.9" y2="379.3" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="434.8" cy="384.6" r="1.8" fill="var(--ink-soft)"/>
+<line x1="448.5" x2="448.5" y1="392.7" y2="382.1" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="448.5" cy="387.4" r="1.8" fill="var(--ink-soft)"/>
+<line x1="461.9" x2="461.9" y1="389.7" y2="379.6" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="461.9" cy="384.6" r="1.8" fill="var(--ink-soft)"/>
+<line x1="475.3" x2="475.3" y1="394.7" y2="385.1" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="475.3" cy="389.9" r="1.8" fill="var(--ink-soft)"/>
+<line x1="489.0" x2="489.0" y1="389.2" y2="380.0" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="489.0" cy="384.6" r="1.8" fill="var(--ink-soft)"/>
+<line x1="502.4" x2="502.4" y1="384.4" y2="375.6" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="502.4" cy="380.0" r="1.8" fill="var(--ink-soft)"/>
+<line x1="515.8" x2="515.8" y1="393.1" y2="384.4" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="515.8" cy="388.8" r="1.8" fill="var(--ink-soft)"/>
+<line x1="529.5" x2="529.5" y1="394.7" y2="386.0" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="529.5" cy="390.4" r="1.8" fill="var(--ink-soft)"/>
+<line x1="542.9" x2="542.9" y1="389.0" y2="379.3" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="542.9" cy="384.2" r="1.8" fill="var(--ink-soft)"/>
+<line x1="556.6" x2="556.6" y1="389.7" y2="379.1" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="556.6" cy="384.4" r="1.8" fill="var(--ink-soft)"/>
+<line x1="570.0" x2="570.0" y1="388.8" y2="376.8" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="570.0" cy="382.8" r="1.8" fill="var(--ink-soft)"/>
+<line x1="583.4" x2="583.4" y1="400.0" y2="387.1" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="583.4" cy="393.6" r="1.8" fill="var(--ink-soft)"/>
+<line x1="597.1" x2="597.1" y1="391.5" y2="377.7" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="597.1" cy="384.6" r="1.8" fill="var(--ink-soft)"/>
+<line x1="610.5" x2="610.5" y1="387.4" y2="372.7" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="610.5" cy="380.0" r="1.8" fill="var(--ink-soft)"/>
+<line x1="624.2" x2="624.2" y1="399.6" y2="384.4" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="624.2" cy="392.0" r="1.8" fill="var(--ink-soft)"/>
+<line x1="637.6" x2="637.6" y1="395.4" y2="379.3" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="637.6" cy="387.4" r="1.8" fill="var(--ink-soft)"/>
+<line x1="651.0" x2="651.0" y1="393.6" y2="374.7" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="651.0" cy="384.2" r="1.8" fill="var(--ink-soft)"/>
+<line x1="664.7" x2="664.7" y1="392.7" y2="367.4" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="664.7" cy="380.0" r="1.8" fill="var(--ink-soft)"/>
+<line x1="678.1" x2="678.1" y1="393.1" y2="352.6" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="678.1" cy="372.9" r="1.8" fill="var(--ink-soft)"/>
+<line x1="691.5" x2="691.5" y1="432.0" y2="377.0" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="691.5" cy="412.7" r="1.8" fill="var(--ink-soft)"/>
+<line x1="705.2" x2="705.2" y1="432.0" y2="420.5" stroke="var(--ink-soft)" stroke-width="1"/>
+<circle cx="705.2" cy="432.0" r="1.8" fill="var(--scarlet)"/>
+<text x="62.0" y="355.5" text-anchor="end" font-size="11" fill="var(--ink-faint)" >+150</text>
+<text x="62.0" y="424.5" text-anchor="end" font-size="11" fill="var(--ink-faint)" >−150</text>
+<text x="20.0" y="386.0" text-anchor="middle" font-size="11" fill="var(--ink-soft)" transform="rotate(-90 20 386)">residual [kJy/sr]</text>
+<text x="405.0" y="472.0" text-anchor="middle" font-size="13" fill="var(--ink-soft)" >frequency  [cm⁻¹]</text>
+<text x="734.0" y="356.0" text-anchor="end" font-size="11" fill="var(--ink-faint)" >residuals, vertical scale × 347</text>
+<text x="734.0" y="426.0" text-anchor="end" font-size="10" fill="var(--scarlet)" >1 point beyond ±200 clipped</text>
+</svg>
+      <figcaption>The COBE/FIRAS measurement of the microwave background spectrum, with a
+      2.725&nbsp;K Planck curve drawn through it. The lower panel shows what is left over after
+      subtracting that curve, on a vertical scale stretched by a factor of 347 &mdash; the
+      departures are consistent with zero across the band. Fitting the temperature is brutally
+      sharp: 2.725&nbsp;K gives &chi;&sup2;&nbsp;=&nbsp;49 for 43 points, while
+      2.720&nbsp;K or 2.730&nbsp;K give &chi;&sup2; of order 435,000. One point at the top of
+      the band, where the instrument is least sensitive, runs off the residual scale.
+      <br>Data: Fixsen et al. 1996, ApJ 473, 576, Table 4, via NASA LAMBDA.</figcaption>
+    </figure>
+
+    <p>That single fact is the argument that this radiation is primordial. A blackbody spectrum
+    is what thermal equilibrium produces, and nothing in the universe today is capable of making
+    one this good across the whole sky; starlight reprocessed by dust, for instance, is nothing
+    like a blackbody. Equally important, expansion <em>preserves</em> the blackbody form. Stretch
+    every wavelength by the same factor and a Planck curve at one temperature becomes a Planck
+    curve at a lower one, with T scaling as 1/a. So a thermal spectrum today is direct evidence
+    of a thermal past, and the temperature tells you how far back.</p>
+
+    <p>The universe became transparent when it had cooled enough for protons and electrons to
+    combine into neutral hydrogen &mdash; at a redshift of about 1090, when the temperature was
+    roughly 2970&nbsp;K, some 0.26&nbsp;eV. The same photons have been travelling freely ever
+    since, and the universe has expanded by a factor of about
+    <b>1090</b> in the meantime, cooling them by exactly that factor to the 2.725&nbsp;K we
+    measure. The microwave background is the light of the moment the first atoms formed,
+    redshifted by a factor of 1090.</p>
+
+    <p>Three things get called &ldquo;recombination&rdquo; in casual speech and they are not
+    quite the same event. Hydrogen actually recombines earlier: half the electrons are bound by
+    redshift 1276. Photons stop scattering later, when the free electrons have thinned enough
+    that the optical depth falls to one, and that is the 1090 above &mdash; the redshift that
+    sets how much the light we receive has been stretched. Later still, at redshift 1060, the
+    baryons stop being dragged along by the photons, and it is <em>that</em> epoch which fixes
+    the standard ruler used for <a href="bao.html">baryon acoustic oscillations</a>. The
+    ordering matters: recombination is a condition on the gas, decoupling a condition on the
+    photons, and the drag epoch a condition on the baryons.</p>
+
+    <p>Nor is the last-scattering surface really a surface. Photons did not all take their final
+    scattering at the same instant &mdash; the probability is spread over a range of redshift
+    with a half-maximum width of about 200, so the light arriving now was released anywhere
+    between redshift 980 and 1180, across which the plasma cooled from about 3220&nbsp;K to
+    2680&nbsp;K. It is a shell some tens of millions of light years thick, not a wall, and that
+    thickness is itself one of the things that smooths out the smallest features in the
+    spectrum.</p>
+
+    <p>Recombination happens at 0.26&nbsp;eV rather than at hydrogen&rsquo;s
+    13.6&nbsp;eV binding energy because photons outnumber baryons by about 1.6&nbsp;billion to
+    one: even far out on the tail of the distribution there are enough energetic photons to keep
+    hydrogen ionized until the temperature has fallen well below the naive threshold.</p>
+
+    <figure class="plotfig">
+<svg viewBox="0 0 800 400" role="img" aria-labelledby="f2t f2d">
+<title id="f2t">The Wien tail of a blackbody, and where hydrogen ionisation sits</title>
+<desc id="f2d">The blackbody photon number spectrum plotted against photon energy in units of kT on a logarithmic vertical axis, falling by twenty orders of magnitude. The band COBE measured is shaded near the left; the energy needed to ionise hydrogen at recombination lies far out to the right.</desc>
+<line x1="70" x2="760" y1="30.8" y2="30.8" stroke="var(--rule)"/>
+<text x="62.0" y="34.8" text-anchor="end" font-size="11" fill="var(--ink-faint)" >1</text>
+<line x1="70" x2="760" y1="85.2" y2="85.2" stroke="var(--rule)"/>
+<text x="62.0" y="89.2" text-anchor="end" font-size="11" fill="var(--ink-faint)" >10<tspan baseline-shift="super" font-size="8">-4</tspan></text>
+<line x1="70" x2="760" y1="139.6" y2="139.6" stroke="var(--rule)"/>
+<text x="62.0" y="143.6" text-anchor="end" font-size="11" fill="var(--ink-faint)" >10<tspan baseline-shift="super" font-size="8">-8</tspan></text>
+<line x1="70" x2="760" y1="194.0" y2="194.0" stroke="var(--rule)"/>
+<text x="62.0" y="198.0" text-anchor="end" font-size="11" fill="var(--ink-faint)" >10<tspan baseline-shift="super" font-size="8">-12</tspan></text>
+<line x1="70" x2="760" y1="248.4" y2="248.4" stroke="var(--rule)"/>
+<text x="62.0" y="252.4" text-anchor="end" font-size="11" fill="var(--ink-faint)" >10<tspan baseline-shift="super" font-size="8">-16</tspan></text>
+<line x1="70" x2="760" y1="302.8" y2="302.8" stroke="var(--rule)"/>
+<text x="62.0" y="306.8" text-anchor="end" font-size="11" fill="var(--ink-faint)" >10<tspan baseline-shift="super" font-size="8">-20</tspan></text>
+<line x1="70.0" x2="70.0" y1="330" y2="335" stroke="var(--ink-faint)"/>
+<text x="70.0" y="349.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >0</text>
+<line x1="185.0" x2="185.0" y1="330" y2="335" stroke="var(--ink-faint)"/>
+<text x="185.0" y="349.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >10</text>
+<line x1="300.0" x2="300.0" y1="330" y2="335" stroke="var(--ink-faint)"/>
+<text x="300.0" y="349.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >20</text>
+<line x1="415.0" x2="415.0" y1="330" y2="335" stroke="var(--ink-faint)"/>
+<text x="415.0" y="349.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >30</text>
+<line x1="530.0" x2="530.0" y1="330" y2="335" stroke="var(--ink-faint)"/>
+<text x="530.0" y="349.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >40</text>
+<line x1="645.0" x2="645.0" y1="330" y2="335" stroke="var(--ink-faint)"/>
+<text x="645.0" y="349.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >50</text>
+<line x1="760.0" x2="760.0" y1="330" y2="335" stroke="var(--ink-faint)"/>
+<text x="760.0" y="349.0" text-anchor="middle" font-size="12" fill="var(--ink-faint)" >60</text>
+<rect x="83.8" y="24" width="115.0" height="306" fill="var(--scarlet)" opacity="0.10"/>
+<text x="141.3" y="40.0" text-anchor="middle" font-size="11" fill="var(--scarlet)" >measured by COBE</text>
+<path d="M70.6 53.8 L71.6 48.2 L72.5 45.5 L73.5 43.9 L74.5 42.7 L75.5 41.8 L76.5 41.1 L77.5 40.5 L78.5 40.1 L79.5 39.7 L80.4 39.4 L81.4 39.2 L82.4 39.0 L83.4 38.8 L84.4 38.7 L85.4 38.6 L86.4 38.6 L87.3 38.6 L88.3 38.5 L89.3 38.6 L90.3 38.6 L91.3 38.6 L92.3 38.7 L93.3 38.8 L94.2 38.9 L95.2 39.0 L96.2 39.1 L97.2 39.2 L98.2 39.3 L99.2 39.5 L100.2 39.6 L101.2 39.8 L102.1 40.0 L103.1 40.2 L104.1 40.3 L105.1 40.5 L106.1 40.7 L107.1 41.0 L108.1 41.2 L109.0 41.4 L110.0 41.6 L111.0 41.9 L112.0 42.1 L113.0 42.3 L114.0 42.6 L115.0 42.8 L115.9 43.1 L116.9 43.4 L117.9 43.6 L118.9 43.9 L119.9 44.2 L120.9 44.5 L121.9 44.8 L122.8 45.0 L123.8 45.3 L124.8 45.6 L125.8 45.9 L126.8 46.2 L127.8 46.5 L128.8 46.9 L129.8 47.2 L130.7 47.5 L131.7 47.8 L132.7 48.1 L133.7 48.5 L134.7 48.8 L135.7 49.1 L136.7 49.4 L137.6 49.8 L138.6 50.1 L139.6 50.5 L140.6 50.8 L141.6 51.1 L142.6 51.5 L143.6 51.8 L144.5 52.2 L145.5 52.5 L146.5 52.9 L147.5 53.2 L148.5 53.6 L149.5 54.0 L150.5 54.3 L151.5 54.7 L152.4 55.0 L153.4 55.4 L154.4 55.8 L155.4 56.2 L156.4 56.5 L157.4 56.9 L158.4 57.3 L159.3 57.6 L160.3 58.0 L161.3 58.4 L162.3 58.8 L163.3 59.2 L164.3 59.5 L165.3 59.9 L166.2 60.3 L167.2 60.7 L168.2 61.1 L169.2 61.5 L170.2 61.9 L171.2 62.3 L172.2 62.6 L173.2 63.0 L174.1 63.4 L175.1 63.8 L176.1 64.2 L177.1 64.6 L178.1 65.0 L179.1 65.4 L180.1 65.8 L181.0 66.2 L182.0 66.6 L183.0 67.0 L184.0 67.4 L185.0 67.8 L186.0 68.2 L187.0 68.7 L187.9 69.1 L188.9 69.5 L189.9 69.9 L190.9 70.3 L191.9 70.7 L192.9 71.1 L193.9 71.5 L194.8 71.9 L195.8 72.3 L196.8 72.8 L197.8 73.2 L198.8 73.6 L199.8 74.0 L200.8 74.4 L201.8 74.8 L202.7 75.3 L203.7 75.7 L204.7 76.1 L205.7 76.5 L206.7 76.9 L207.7 77.4 L208.7 77.8 L209.6 78.2 L210.6 78.6 L211.6 79.1 L212.6 79.5 L213.6 79.9 L214.6 80.3 L215.6 80.8 L216.5 81.2 L217.5 81.6 L218.5 82.0 L219.5 82.5 L220.5 82.9 L221.5 83.3 L222.5 83.8 L223.5 84.2 L224.4 84.6 L225.4 85.0 L226.4 85.5 L227.4 85.9 L228.4 86.3 L229.4 86.8 L230.4 87.2 L231.3 87.6 L232.3 88.1 L233.3 88.5 L234.3 89.0 L235.3 89.4 L236.3 89.8 L237.3 90.3 L238.2 90.7 L239.2 91.1 L240.2 91.6 L241.2 92.0 L242.2 92.5 L243.2 92.9 L244.2 93.3 L245.2 93.8 L246.1 94.2 L247.1 94.6 L248.1 95.1 L249.1 95.5 L250.1 96.0 L251.1 96.4 L252.1 96.9 L253.0 97.3 L254.0 97.7 L255.0 98.2 L256.0 98.6 L257.0 99.1 L258.0 99.5 L259.0 100.0 L259.9 100.4 L260.9 100.9 L261.9 101.3 L262.9 101.7 L263.9 102.2 L264.9 102.6 L265.9 103.1 L266.8 103.5 L267.8 104.0 L268.8 104.4 L269.8 104.9 L270.8 105.3 L271.8 105.8 L272.8 106.2 L273.8 106.7 L274.7 107.1 L275.7 107.6 L276.7 108.0 L277.7 108.5 L278.7 108.9 L279.7 109.4 L280.7 109.8 L281.6 110.3 L282.6 110.7 L283.6 111.2 L284.6 111.6 L285.6 112.1 L286.6 112.5 L287.6 113.0 L288.5 113.4 L289.5 113.9 L290.5 114.3 L291.5 114.8 L292.5 115.3 L293.5 115.7 L294.5 116.2 L295.5 116.6 L296.4 117.1 L297.4 117.5 L298.4 118.0 L299.4 118.4 L300.4 118.9 L301.4 119.4 L302.4 119.8 L303.3 120.3 L304.3 120.7 L305.3 121.2 L306.3 121.6 L307.3 122.1 L308.3 122.6 L309.3 123.0 L310.2 123.5 L311.2 123.9 L312.2 124.4 L313.2 124.8 L314.2 125.3 L315.2 125.8 L316.2 126.2 L317.2 126.7 L318.1 127.1 L319.1 127.6 L320.1 128.1 L321.1 128.5 L322.1 129.0 L323.1 129.4 L324.1 129.9 L325.0 130.4 L326.0 130.8 L327.0 131.3 L328.0 131.7 L329.0 132.2 L330.0 132.7 L331.0 133.1 L331.9 133.6 L332.9 134.1 L333.9 134.5 L334.9 135.0 L335.9 135.4 L336.9 135.9 L337.9 136.4 L338.8 136.8 L339.8 137.3 L340.8 137.8 L341.8 138.2 L342.8 138.7 L343.8 139.1 L344.8 139.6 L345.8 140.1 L346.7 140.5 L347.7 141.0 L348.7 141.5 L349.7 141.9 L350.7 142.4 L351.7 142.9 L352.7 143.3 L353.6 143.8 L354.6 144.3 L355.6 144.7 L356.6 145.2 L357.6 145.7 L358.6 146.1 L359.6 146.6 L360.5 147.1 L361.5 147.5 L362.5 148.0 L363.5 148.5 L364.5 148.9 L365.5 149.4 L366.5 149.9 L367.5 150.3 L368.4 150.8 L369.4 151.3 L370.4 151.7 L371.4 152.2 L372.4 152.7 L373.4 153.1 L374.4 153.6 L375.3 154.1 L376.3 154.5 L377.3 155.0 L378.3 155.5 L379.3 155.9 L380.3 156.4 L381.3 156.9 L382.2 157.4 L383.2 157.8 L384.2 158.3 L385.2 158.8 L386.2 159.2 L387.2 159.7 L388.2 160.2 L389.2 160.6 L390.1 161.1 L391.1 161.6 L392.1 162.0 L393.1 162.5 L394.1 163.0 L395.1 163.5 L396.1 163.9 L397.0 164.4 L398.0 164.9 L399.0 165.3 L400.0 165.8 L401.0 166.3 L402.0 166.8 L403.0 167.2 L403.9 167.7 L404.9 168.2 L405.9 168.6 L406.9 169.1 L407.9 169.6 L408.9 170.1 L409.9 170.5 L410.8 171.0 L411.8 171.5 L412.8 172.0 L413.8 172.4 L414.8 172.9 L415.8 173.4 L416.8 173.8 L417.8 174.3 L418.7 174.8 L419.7 175.3 L420.7 175.7 L421.7 176.2 L422.7 176.7 L423.7 177.2 L424.7 177.6 L425.6 178.1 L426.6 178.6 L427.6 179.1 L428.6 179.5 L429.6 180.0 L430.6 180.5 L431.6 180.9 L432.5 181.4 L433.5 181.9 L434.5 182.4 L435.5 182.8 L436.5 183.3 L437.5 183.8 L438.5 184.3 L439.5 184.7 L440.4 185.2 L441.4 185.7 L442.4 186.2 L443.4 186.6 L444.4 187.1 L445.4 187.6 L446.4 188.1 L447.3 188.5 L448.3 189.0 L449.3 189.5 L450.3 190.0 L451.3 190.5 L452.3 190.9 L453.3 191.4 L454.2 191.9 L455.2 192.4 L456.2 192.8 L457.2 193.3 L458.2 193.8 L459.2 194.3 L460.2 194.7 L461.2 195.2 L462.1 195.7 L463.1 196.2 L464.1 196.6 L465.1 197.1 L466.1 197.6 L467.1 198.1 L468.1 198.6 L469.0 199.0 L470.0 199.5 L471.0 200.0 L472.0 200.5 L473.0 200.9 L474.0 201.4 L475.0 201.9 L475.9 202.4 L476.9 202.9 L477.9 203.3 L478.9 203.8 L479.9 204.3 L480.9 204.8 L481.9 205.2 L482.8 205.7 L483.8 206.2 L484.8 206.7 L485.8 207.2 L486.8 207.6 L487.8 208.1 L488.8 208.6 L489.8 209.1 L490.7 209.6 L491.7 210.0 L492.7 210.5 L493.7 211.0 L494.7 211.5 L495.7 211.9 L496.7 212.4 L497.6 212.9 L498.6 213.4 L499.6 213.9 L500.6 214.3 L501.6 214.8 L502.6 215.3 L503.6 215.8 L504.5 216.3 L505.5 216.7 L506.5 217.2 L507.5 217.7 L508.5 218.2 L509.5 218.7 L510.5 219.1 L511.5 219.6 L512.4 220.1 L513.4 220.6 L514.4 221.1 L515.4 221.5 L516.4 222.0 L517.4 222.5 L518.4 223.0 L519.3 223.5 L520.3 223.9 L521.3 224.4 L522.3 224.9 L523.3 225.4 L524.3 225.9 L525.3 226.3 L526.2 226.8 L527.2 227.3 L528.2 227.8 L529.2 228.3 L530.2 228.8 L531.2 229.2 L532.2 229.7 L533.2 230.2 L534.1 230.7 L535.1 231.2 L536.1 231.6 L537.1 232.1 L538.1 232.6 L539.1 233.1 L540.1 233.6 L541.0 234.1 L542.0 234.5 L543.0 235.0 L544.0 235.5 L545.0 236.0 L546.0 236.5 L547.0 236.9 L547.9 237.4 L548.9 237.9 L549.9 238.4 L550.9 238.9 L551.9 239.4 L552.9 239.8 L553.9 240.3 L554.8 240.8 L555.8 241.3 L556.8 241.8 L557.8 242.3 L558.8 242.7 L559.8 243.2 L560.8 243.7 L561.8 244.2 L562.7 244.7 L563.7 245.1 L564.7 245.6 L565.7 246.1 L566.7 246.6 L567.7 247.1 L568.7 247.6 L569.6 248.0 L570.6 248.5 L571.6 249.0 L572.6 249.5 L573.6 250.0 L574.6 250.5 L575.6 250.9 L576.5 251.4 L577.5 251.9 L578.5 252.4 L579.5 252.9 L580.5 253.4 L581.5 253.8 L582.5 254.3 L583.5 254.8 L584.4 255.3 L585.4 255.8 L586.4 256.3 L587.4 256.8 L588.4 257.2 L589.4 257.7 L590.4 258.2 L591.3 258.7 L592.3 259.2 L593.3 259.7 L594.3 260.1 L595.3 260.6 L596.3 261.1 L597.3 261.6 L598.2 262.1 L599.2 262.6 L600.2 263.0 L601.2 263.5 L602.2 264.0 L603.2 264.5 L604.2 265.0 L605.2 265.5 L606.1 266.0 L607.1 266.4 L608.1 266.9 L609.1 267.4 L610.1 267.9 L611.1 268.4 L612.1 268.9 L613.0 269.4 L614.0 269.8 L615.0 270.3 L616.0 270.8 L617.0 271.3 L618.0 271.8 L619.0 272.3 L619.9 272.7 L620.9 273.2 L621.9 273.7 L622.9 274.2 L623.9 274.7 L624.9 275.2 L625.9 275.7 L626.8 276.1 L627.8 276.6 L628.8 277.1 L629.8 277.6 L630.8 278.1 L631.8 278.6 L632.8 279.1 L633.8 279.5 L634.7 280.0 L635.7 280.5 L636.7 281.0 L637.7 281.5 L638.7 282.0 L639.7 282.5 L640.7 282.9 L641.6 283.4 L642.6 283.9 L643.6 284.4 L644.6 284.9 L645.6 285.4 L646.6 285.9 L647.6 286.4 L648.5 286.8 L649.5 287.3 L650.5 287.8 L651.5 288.3 L652.5 288.8 L653.5 289.3 L654.5 289.8 L655.5 290.2 L656.4 290.7 L657.4 291.2 L658.4 291.7 L659.4 292.2 L660.4 292.7 L661.4 293.2 L662.4 293.7 L663.3 294.1 L664.3 294.6 L665.3 295.1 L666.3 295.6 L667.3 296.1 L668.3 296.6 L669.3 297.1 L670.2 297.5 L671.2 298.0 L672.2 298.5 L673.2 299.0 L674.2 299.5 L675.2 300.0 L676.2 300.5 L677.2 301.0 L678.1 301.4 L679.1 301.9 L680.1 302.4 L681.1 302.9 L682.1 303.4 L683.1 303.9 L684.1 304.4 L685.0 304.9 L686.0 305.3 L687.0 305.8 L688.0 306.3 L689.0 306.8 L690.0 307.3 L691.0 307.8 L691.9 308.3 L692.9 308.8 L693.9 309.2 L694.9 309.7 L695.9 310.2 L696.9 310.7 L697.9 311.2 L698.8 311.7 L699.8 312.2 L700.8 312.7 L701.8 313.2 L702.8 313.6 L703.8 314.1 L704.8 314.6 L705.8 315.1 L706.7 315.6 L707.7 316.1 L708.7 316.6 L709.7 317.1 L710.7 317.5 L711.7 318.0 L712.7 318.5 L713.6 319.0 L714.6 319.5 L715.6 320.0 L716.6 320.5 L717.6 321.0 L718.6 321.5 L719.6 321.9 L720.5 322.4 L721.5 322.9 L722.5 323.4 L723.5 323.9 L724.5 324.4 L725.5 324.9 L726.5 325.4 L727.5 325.9 L728.4 326.3 L729.4 326.8 L730.4 327.3 L731.4 327.8 L732.4 328.3 L733.4 328.8 L734.4 329.3 L735.3 329.8" fill="none" stroke="var(--scarlet)" stroke-width="2"/>
+<line x1="380.5" x2="380.5" y1="24" y2="330" stroke="var(--gold)" stroke-width="1.4" stroke-dasharray="5 4"/>
+<line x1="680.6" x2="680.6" y1="24" y2="330" stroke="var(--ink)" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="374.5" y="64.0" text-anchor="end" font-size="11" fill="var(--gold)" >one ionising photon</text>
+<text x="374.5" y="78.0" text-anchor="end" font-size="11" fill="var(--gold)" >per baryon  (5850 K)</text>
+<text x="674.6" y="104.0" text-anchor="end" font-size="11" fill="var(--ink)" >13.6 eV at 2973 K</text>
+<text x="674.6" y="118.0" text-anchor="end" font-size="11" fill="var(--ink)" >(recombination)</text>
+<rect x="70" y="24" width="690" height="306" fill="none" stroke="var(--ink-faint)"/>
+<text x="415.0" y="372.0" text-anchor="middle" font-size="13" fill="var(--ink-soft)" >photon energy in units of kT</text>
+<text x="20.0" y="177.0" text-anchor="middle" font-size="12" fill="var(--ink-soft)" transform="rotate(-90 20 177)">fraction of photons per unit ln E</text>
+</svg>
+      <figcaption>Why that works. A blackbody has the same shape whatever its temperature, so
+      this curve serves for all of them: it is the fraction of photons per unit ln&nbsp;E,
+      against photon energy measured in units of kT. COBE measured the shaded stretch, out to
+      about eleven e-foldings down the tail. Hydrogen ionisation at the temperature of
+      recombination sits at 53 &mdash; twenty orders of magnitude further down the same curve,
+      and still not negligible, because there are 1.6&nbsp;billion photons for every baryon.
+      One ionising photon per baryon remains at about 5850&nbsp;K; by 2973&nbsp;K there are
+      2&times;10<sup>&minus;11</sup> of them, and the hydrogen stays neutral.</figcaption>
+    </figure>
+
+    <figure class="skyfig">
+      <img src="img/cmb/planck-cmb-2018.jpg" width="1400" height="707" loading="lazy"
+           alt="An oval all-sky projection of the cosmic microwave background. Fine mottled
+                structure covers the whole sky in blue and red speckles a fraction of a degree
+                across, with no preferred direction and no trace of the Milky Way, which has
+                been removed.">
+      <p class="skyscale">
+        <span><i style="background:#3050b0"></i>&minus;300&nbsp;&micro;K</span>
+        <span><i style="background:#f0e0e0"></i>0</span>
+        <span><i style="background:#f04010"></i>+300&nbsp;&micro;K</span>
+        <span style="color:var(--ink-faint)">&mdash; deviations from 2.7255&nbsp;K</span>
+      </p>
+      <figcaption>The microwave sky after the monopole, the dipole and the galaxy have been
+      removed: temperature differences of a few parts in 10<sup>5</sup>, plotted over the whole
+      celestial sphere in the same oval projection used throughout this page. The colour scale
+      runs from &minus;300 to +300&nbsp;&micro;K. Every feature you can see is a sound wave in
+      the plasma, frozen at the moment the universe became transparent.
+      <br>From the Planck Legacy release of July 2018, the mission&rsquo;s final data release.
+      Credit: ESA/Planck Collaboration (ESA Standard Licence).</figcaption>
+    </figure>
+
+    <h2>The sky you actually measure</h2>
+
+    <p>Having established what the radiation <em>is</em>, the cosmology is in the departures from
+    uniformity. Point the receiver in different directions and the temperature is almost, but not
+    quite, the same.</p>
+
+    <p>Those departures are conventionally sorted by <em>how many times the pattern changes sign
+    as you go round the sky</em>, and the first two terms have names worth being precise about.
+    The <b>monopole</b> is the part of the sky that is the same in every direction &mdash; a
+    single number, the average temperature over the whole sphere, with no direction attached to
+    it at all. Subtract it and by construction the sky averages to zero. The <b>dipole</b> is the
+    part that is hotter in one direction and colder in exactly the opposite direction, with a
+    smooth gradient between: one hot pole, one cold pole. It is the simplest pattern that
+    <em>has</em> a direction.</p>
+
+    <p>These are not ad-hoc labels. They are the first two terms of the same expansion in
+    spherical harmonics used further down this page &mdash; the monopole is
+    &#8467;&nbsp;=&nbsp;0, a constant over the sphere; the dipole is &#8467;&nbsp;=&nbsp;1; the
+    quadrupole, with four alternating lobes, is &#8467;&nbsp;=&nbsp;2. The power spectrum simply
+    continues the same series out to &#8467;&nbsp;=&nbsp;2500 and beyond. Cosmology lives from
+    the quadrupole upward, because the first two terms turn out to be about us rather than about
+    the early universe. The monopole tells us <em>when</em> we are living: its value is fixed by
+    how much the universe has expanded since the first atoms formed, a factor of 1090, and an
+    observer at a different epoch would measure a different number. The dipole tells us
+    <em>how we are moving</em>: the Sun carried around the Galaxy, the Galaxy through the Local
+    Group, and the Local Group towards the mass concentrations beyond it, about 370&nbsp;km/s in
+    total. That number is not independent of the table above: divide the dipole amplitude by the
+    monopole and multiply by the speed of light &mdash; 3.3621&nbsp;mK / 2.72548&nbsp;K &mdash;
+    and you get 370&nbsp;km/s (369.82&nbsp;&plusmn;&nbsp;0.11&nbsp;km/s from Planck), which is how
+    the velocity is measured in the first place.
+    Moving with respect to <em>what</em> needs care: radiation is made of photons
+    and has no rest frame. What the microwave background does pick out is the one frame in which
+    it looks <em>isotropic</em> &mdash; the same temperature in every direction, no dipole. That
+    frame is singled out by the matter and radiation of the universe happening to be at rest in
+    it, not by any preference in the laws of physics, and our 370&nbsp;km/s is measured against
+    it. On the standard assumption &mdash; see the note below &mdash; neither the monopole nor the
+    dipole is a property of the early universe, and everything from &#8467;&nbsp;=&nbsp;2 upward
+    is.</p>
+
+    <div class="warn">
+      <span class="tag">An assumption worth naming</span>
+      <p>That the dipole is <em>entirely</em> our motion is an assumption, not a measurement.
+      With one sky there is no way to separate a Doppler dipole from an intrinsic one: a genuine
+      &#8467;&nbsp;=&nbsp;1 fluctuation in the early universe would look exactly the same. The
+      velocity above is obtained by attributing the whole 3.3621&nbsp;mK to our motion, which
+      presumes the universe is statistically isotropic &mdash; that a primordial dipole should be
+      no bigger than a typical primordial quadrupole, and the quadrupole is some thousand times
+      smaller than what we see.</p>
+      <p>It is a reasonable assumption and it is also testable, because our motion should tip the
+      counts of distant objects in the same direction: slightly more sources ahead of us than
+      behind. Surveys of radio sources and quasars do find such a dipole, aligned with the CMB
+      one &mdash; but with roughly twice the amplitude the CMB velocity predicts, discrepant at
+      around five standard deviations in several analyses. The result is disputed and may yet
+      prove to be a systematic in the source catalogues. If it survives, then either the CMB
+      dipole is not purely kinematic, or the universe is not as isotropic as the whole framework
+      on this page assumes. Take the 370&nbsp;km/s as the value <em>within</em> that assumption.</p>
+    </div>
+
+    <table class="scales">
+      <thead><tr><th>Component</th><th>Amplitude</th><th>What it is</th></tr></thead>
+      <tbody>
+        <tr><td>Monopole</td><td>2.7255 K</td><td>a blackbody: the early universe, cooled by 1090&times;</td></tr>
+        <tr><td>Dipole</td><td>3.3621 mK</td><td>our motion relative to the frame where the CMB is isotropic</td></tr>
+        <tr><td>Anisotropies</td><td>~112 &micro;K</td><td>the cosmology</td></tr>
+      </tbody>
+    </table>
+
+    <p>Five orders of magnitude separate the first from the last. The monopole is the
+    measurement above &mdash; the most informative number of the three, and the one that
+    establishes what we are looking at &mdash; but it carries no <em>angular</em> information,
+    so it plays no part in a power spectrum. The dipole is not primordial either: it is the
+    Doppler shift from the Solar System&rsquo;s motion at about 370&nbsp;km/s toward Leo, an
+    effect of where we happen to be rather than of the early universe. Both are subtracted
+    before the angular analysis begins. What remains is a field of fluctuations of order one
+    part in 10<sup>5</sup>.</p>
+
+    <h2>What has to come off first</h2>
+
+    <p>Between us and the last-scattering surface sits our own galaxy, which is bright at
+    microwave frequencies and not remotely uniform: synchrotron emission from cosmic-ray
+    electrons, free-free from ionized gas, thermal emission from dust. These are removed by
+    observing at many frequencies at once and exploiting the fact that they have different
+    spectra while the CMB has a blackbody one. Whatever survives near the galactic plane is
+    simply cut out, and the resulting hole in the sky has consequences of its own &mdash; you
+    cannot decompose a sphere into spherical harmonics if you are missing part of it, so the
+    modes get coupled and have to be untangled afterwards.</p>
+
+    <h2>Decomposing the sphere</h2>
+
+    <p>Any function on a sphere can be written as a sum of spherical harmonics, the way any
+    function on a line can be written as a sum of sines and cosines:</p>
+
+    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
+      &Delta;T(<b>n&#770;</b>) = &sum;<sub>&#8467;m</sub>
+      a<sub>&#8467;m</sub> Y<sub>&#8467;m</sub>(<b>n&#770;</b>)</p>
+
+    <p>The index &#8467; sets the angular scale &mdash; roughly 180&deg;/&#8467; &mdash; and
+    <em>m</em> sets the orientation of the pattern on the sky. For each &#8467; there are
+    2&#8467;+1 values of <em>m</em>, running from &minus;&#8467; to +&#8467;. Below is what a
+    single one looks like: red where the pattern is hot, blue where it is cold, on the same
+    oval all-sky projection used for the real maps.</p>
+
+    <div class="rig">
+      <h3>A single spherical harmonic &mdash; <span id="ylm-id"></span></h3>
+      <canvas id="ylm" width="1800" height="940"></canvas>
+      <div class="knobs">
+        <div class="knob">
+          <label for="kl">&#8467; &mdash; angular scale</label><output id="ol"></output>
+          <input type="range" id="kl" min="1" max="250" step="1" value="6">
+          <span class="hint">about 180&deg;/&#8467; across, so larger &#8467; means finer detail</span>
+        </div>
+        <div class="knob">
+          <label for="km"><em>m</em> &mdash; orientation</label><output id="om"></output>
+          <input type="range" id="km" min="0" max="6" step="1" value="3">
+          <span class="hint">m = 0 is banded in latitude; m = &#8467; is banded in longitude</span>
+        </div>
+      </div>
+      <div class="bar">
+        <button type="button" class="ghost" data-l="1">&#8467; = 1 &middot; dipole</button>
+        <button type="button" class="ghost" data-l="2">2 &middot; quadrupole</button>
+        <button type="button" class="ghost" data-l="10">10</button>
+        <button type="button" class="ghost" data-l="50">50</button>
+        <button type="button" class="ghost" data-l="220">220 &middot; the first peak</button>
+        <button type="button" class="ghost" id="ylm-sweep">sweep m</button>
+        <label><input type="checkbox" id="ylm-grid" checked> graticule</label>
+      </div>
+      <p class="readout" id="ylm-out"></p>
+    </div>
+
+    <p>Every one of these patterns has the same characteristic size, set by &#8467; alone.
+    Sliding <em>m</em> changes where the pattern&rsquo;s lobes are aimed, not how big they are:
+    at m&nbsp;=&nbsp;0 the bands run round in latitude, at m&nbsp;=&nbsp;&#8467; they run in
+    longitude like the segments of an orange, and in between they tilt. The sky is a sum of all
+    of them at once, with a coefficient a<sub>&#8467;m</sub> in front of each, and the whole map
+    is those coefficients.</p>
+
+    <p>Here is the part that matters for cosmology, and it is easy to miss. <em>Latitude and
+    longitude with respect to what?</em> Nothing in the universe defines a pole; the one used
+    here is a convention, in practice the plane of our own galaxy. Choose a different pole and
+    every one of these pictures changes &mdash; the a<sub>&#8467;m</sub> at fixed &#8467; get
+    mixed among themselves, and a pattern that was banded in latitude becomes something else.
+    So an individual a<sub>&#8467;m</sub> cannot be a physical quantity: it depends on an
+    arbitrary choice we made.</p>
+
+    <p>&#8467; is a different matter entirely, and the distinction is the whole point.
+    Rotating the coordinates mixes the a<sub>&#8467;m</sub> <em>only among themselves at fixed
+    &#8467;</em> &mdash; it never moves power from one &#8467; to another. So &#8467; survives any
+    change of pole untouched, and the angular size that goes with it,
+    roughly 180&deg;/&#8467;, is a genuine statement about the sky. When the power spectrum peaks
+    at &#8467;&nbsp;&asymp;&nbsp;220 that is a real feature at a real angular scale of about
+    0.8&deg;, the size of the mottling in the map above; every observer, using any pole they
+    like, would find it at 220. One index is physics and the other is bookkeeping.</p>
+
+    <p>What does <em>not</em> change under that choice is the sum of |a<sub>&#8467;m</sub>|&sup2;
+    over all m at fixed &#8467;. Rotating the coordinates shuffles the terms but preserves the
+    total. That rotationally invariant combination is the only thing a universe with no preferred
+    direction is entitled to predict &mdash; and it is exactly the power spectrum defined in the
+    next section. The averaging over m is not a convenience for tidiness; it is the step that
+    throws away our arbitrary pole and keeps the physics.</p>
+
+    <p>It has a price, and the rest of this page is about paying it. Averaging over m is
+    averaging over 2&#8467;+1 numbers, and at small &#8467; there are very few of them.</p>
+
+    <h2>From a<sub>&#8467;m</sub> to C<sub>&#8467;</sub></h2>
+
+    <p>Cosmology does not predict the individual coefficients. Inflation predicts that they are
+    random &mdash; drawn from a Gaussian with zero mean &mdash; and predicts only their
+    <em>variance</em>. That variance is the power spectrum:</p>
+
+    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
+      C<sub>&#8467;</sub> = &#12296;|a<sub>&#8467;m</sub>|&sup2;&#12297; =
+      (1 / (2&#8467;+1)) &sum;<sub>m</sub> |a<sub>&#8467;m</sub>|&sup2;</p>
+
+    <p>So the procedure is: take the cleaned map, project it onto every Y<sub>&#8467;m</sub>
+    to get the coefficients, square them, and average over the 2&#8467;+1 orientations at each
+    &#8467;. One number per multipole. That is the entire reduction from a map of a million
+    pixels to a curve.</p>
+
+    <p>It is worth being clear about which step is which, because the two are easily run
+    together. Getting the a<sub>&#8467;m</sub> involves <em>no correlations at all</em>: it is a
+    single linear operation on the map, the same integral you would do to extract a Fourier
+    coefficient, one pixel at a time.</p>
+
+    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
+      a<sub>&#8467;m</sub> = &int; &Delta;T(<b>n&#770;</b>)
+      Y*<sub>&#8467;m</sub>(<b>n&#770;</b>) d&Omega;</p>
+
+    <p>The two-point function arrives only at the <em>next</em> step, when those coefficients are
+    squared. And it turns out that squaring-and-averaging is the same operation as measuring how
+    the temperature at one point correlates with the temperature at another a fixed angle away.
+    Write C(&theta;) for the average of
+    &Delta;T(<b>n&#770;</b><sub>1</sub>)&Delta;T(<b>n&#770;</b><sub>2</sub>) over all pairs of
+    directions separated by &theta;, and the two descriptions are related by a Legendre
+    transform:</p>
+
+    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
+      C(&theta;) = (1 / 4&pi;) &sum;<sub>&#8467;</sub>
+      (2&#8467;+1) C<sub>&#8467;</sub> P<sub>&#8467;</sub>(cos&nbsp;&theta;)</p>
+
+    <p>So the power spectrum and the angular correlation function carry exactly the same
+    information, packaged two ways, and in practice C<sub>&#8467;</sub> can be estimated by
+    either route: project the map onto harmonics and average the squares, or bin every pair of
+    pixels by their separation and transform. Masked skies make the first route awkward, which
+    is why the second is not merely of academic interest.</p>
+
+    <div class="rig">
+      <h3>The same measurement, done by counting pairs</h3>
+      <svg id="cf" viewBox="0 0 900 400" role="img" aria-labelledby="cfT cfD">
+        <title id="cfT">The angular correlation function, estimated from pixel pairs</title>
+        <desc id="cfD">The correlation of temperature between two points against their angular
+        separation, with an estimate made by binning randomly drawn pairs of directions from a
+        simulated sky, following the theoretical curve.</desc>
+      </svg>
+      <div class="legend">
+        <span class="sw-theory"><i></i>C(&theta;) from the model&rsquo;s C<sub>&#8467;</sub></span>
+        <span class="sw-draw"><i></i>binned pairs from one simulated sky</span>
+      </div>
+      <div class="bar">
+        <button type="button" id="cf-draw">draw a new sky</button>
+        <label>points
+          <select id="cf-n">
+            <option value="400">400</option>
+            <option value="1200" selected>1200</option>
+            <option value="2500">2500</option>
+          </select>
+        </label>
+      </div>
+      <p class="readout" id="cf-out"></p>
+      <p class="note">A deliberately coarse sky: only multipoles up to
+      &#8467;&nbsp;=&nbsp;48 are included, so the smallest features are a few degrees across and
+      a few thousand points can resolve them. Every pair of the chosen directions is binned by
+      its separation and the product of the two temperatures averaged &mdash; that average,
+      plotted against separation, is C(&theta;). Nothing about spherical harmonics is used in
+      the estimate itself.</p>
+      <p class="note">The points will not sit exactly on the curve, and that is not a defect of
+      the method. One sky is one realisation, and the same cosmic variance that afflicts the
+      power spectrum afflicts this: the scatter is largest at wide separations, where only the
+      few lowest multipoles contribute. Averaging two dozen independent skies brings the estimate
+      onto the curve to within a couple of percent of C(0) &mdash; which is the check that the
+      estimator is unbiased, and also the thing no observer can actually do.</p>
+    </div>
+
+    <p>One number falls out of that relation immediately. At zero separation it is a point
+    correlated with itself, so C(0) is just the variance of the map: summing this spectrum gives
+    C(0)&nbsp;=&nbsp;12,660&nbsp;&micro;K&sup2;, or 112&nbsp;&micro;K rms &mdash; the number in
+    the table at the top of this page. By 30&deg; the correlation has fallen to under 2% of that,
+    and beyond 60&deg; it goes slightly negative: on the largest scales a hot patch is, very
+    weakly, more likely to face a cold one.</p>
+
+    <p>And it is also where the fundamental limit comes in. To estimate a variance you need
+    samples, and at each &#8467; the universe gives you exactly 2&#8467;+1 of them. At
+    &#8467;&nbsp;=&nbsp;2 there are five. This explains the fundamental limit of measuring low
+    &#8467; in the power spectrum.</p>
+
+    <h2>Cosmic variance</h2>
+
+    <p>Below, the scarlet curve is a theoretical spectrum: the true C<sub>&#8467;</sub> of the
+    model. The grey points are what you would <em>measure</em> from one universe drawn from it
+    &mdash; a<sub>&#8467;m</sub> sampled at random, squared, averaged over m. Draw a new sky and
+    watch which end of the power spectrum moves.</p>
+
+    <div class="rig">
+      <h3>One universe at a time</h3>
+      <svg id="cv" viewBox="0 0 900 430" role="img" aria-labelledby="cvT cvD">
+        <title id="cvT">A single realisation of the power spectrum</title>
+        <desc id="cvD">The theoretical angular power spectrum with one random realisation
+        overlaid, showing large scatter at low multipoles and close agreement at high ones.</desc>
+      </svg>
+      <div class="legend">
+        <span class="sw-theory"><i></i>the model&rsquo;s true C<sub>&#8467;</sub></span>
+        <span class="sw-band"><i></i>&plusmn;1 cosmic variance</span>
+        <span class="sw-draw"><i></i>one realisation</span>
+      </div>
+      <div class="bar">
+        <button type="button" id="cv-draw">draw a new sky</button>
+        <button type="button" class="ghost" id="cv-many">average 100 skies</button>
+        <label><input type="checkbox" id="cv-band" checked> show the band</label>
+      </div>
+      <p class="readout" id="cv-out"></p>
+    </div>
+
+    <p>The high-&#8467; end barely moves: there are thousands of modes to average and the
+    estimate is tight. The low-&#8467; end lurches about by tens of percent every time, and no
+    improvement in the instrument can fix it. You would need more sky, and there is only one.</p>
+
+    <p>The precision available at each multipole is just the statistics of averaging
+    2&#8467;+1 squared Gaussians:</p>
+
+    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
+      &Delta;C<sub>&#8467;</sub> / C<sub>&#8467;</sub> =
+      &radic;(2 / (2&#8467;+1))</p>
+
+    <table class="scales">
+      <thead><tr><th>Multipole</th><th>Modes</th><th>Best possible</th><th>Planck&rsquo;s lower bar</th></tr></thead>
+      <tbody>
+        <tr><td>&#8467; = 2</td><td>5</td><td>63%</td><td>59%</td></tr>
+        <tr><td>&#8467; = 3</td><td>7</td><td>53%</td><td>48%</td></tr>
+        <tr><td>&#8467; = 5</td><td>11</td><td>43%</td><td>38%</td></tr>
+        <tr><td>&#8467; = 9</td><td>19</td><td>32%</td><td>31%</td></tr>
+        <tr><td>&#8467; = 100</td><td>201</td><td>10.0%</td><td>&mdash;</td></tr>
+        <tr><td>&#8467; = 1000</td><td>2001</td><td>3.2%</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <p>The last two columns are not fitted to each other. One is a counting argument about
+    how many independent modes exist on a sphere; the other is what Planck actually reports.
+    At the largest scales Planck is already doing as well as any experiment ever will.</p>
+
+    <p>It also explains a detail on the <a href="cmb-spectrum.html">power spectrum page</a>
+    that otherwise looks like a mistake: the error bars at low &#8467; are
+    <em>asymmetric</em>, much longer upward than downward. Averaging five squared Gaussians
+    gives a badly skewed distribution &mdash; it cannot go below zero but has a long tail
+    upward &mdash; so the uncertainty is lopsided. With two thousand modes the same
+    distribution is indistinguishable from a Gaussian, and the bars become symmetric.</p>
+
+    <h2>Why the power spectrum is plotted as &#8467;(&#8467;+1)C<sub>&#8467;</sub>/2&pi;</h2>
+
+    <p>The quantity that appears on every published CMB plot is not C<sub>&#8467;</sub> but
+    D<sub>&#8467;</sub>&nbsp;=&nbsp;&#8467;(&#8467;+1)C<sub>&#8467;</sub>/2&pi;. The reason is
+    that the contribution to the total temperature variance from a logarithmic interval in
+    &#8467; is approximately &#8467;(&#8467;+1)C<sub>&#8467;</sub>/2&pi;, so a spectrum with
+    equal power on all scales &mdash; the scale-invariant case &mdash; comes out flat. It puts
+    the eye in the right place: departures from flat are physics.</p>
+
+    <p>Adding up that variance across this spectrum gives about 112&nbsp;&micro;K, and the band
+    from &#8467;&nbsp;=&nbsp;100 to 300 alone supplies nearly 40% of it. That is the degree-wide
+    hot and cold blotches the sky is famous for &mdash; the first acoustic peak, seen directly.</p>
+
+    <h2>So what does the peak at &#8467;&nbsp;=&nbsp;220 mean?</h2>
+
+    <p>In plain terms: <b>it is the size of the blotches in the picture.</b> Nothing more exotic
+    than that. The map near the top of this page is mottled on a scale of very roughly one
+    degree, and a pattern one degree across is what &#8467;&nbsp;&asymp;&nbsp;180/1 &asymp; 200
+    means. The peak in the power spectrum is the statement, made quantitatively, that the sky has
+    more contrast at that angular size than at any other.</p>
+
+    <p>Read the map that way and the whole spectrum becomes legible. The broad swathes of colour
+    spanning tens of degrees are the low multipoles, the left-hand end of the power spectrum. The
+    fine speckle is high &#8467;, the right-hand end. And the dominant texture, the scale your eye
+    settles on, is the first peak at &#8467;&nbsp;&asymp;&nbsp;220 &mdash; 49 arcminutes, about
+    the width of your little fingernail at arm&rsquo;s length, or one and a half full moons.</p>
+
+    <p>Where does that particular size come from? Before the universe went transparent, the
+    photons and baryons behaved as a single fluid, and pressure waves ran through it at about
+    58% of the speed of light. The farthest such a wave could travel between the beginning and
+    last scattering is the <em>sound horizon</em>: 144&nbsp;Mpc in today&rsquo;s units. The mode
+    whose wave had just completed one compression when the plasma froze out ended up with the
+    largest temperature contrast &mdash; and that is the first peak. Every peak after it is a
+    mode that got through two compressions, three, and so on.</p>
+
+    <p>So a fixed physical length is sitting on the last-scattering surface, and we are looking
+    at it from 13,870&nbsp;Mpc away. That is a triangle: 144&nbsp;Mpc seen from 13,870&nbsp;Mpc
+    subtends 0.6&deg;. The peak lands near &#8467;&nbsp;=&nbsp;220 rather than exactly
+    180/0.6&nbsp;=&nbsp;300 because the oscillations are being driven by decaying gravitational
+    potentials, which shifts the peaks somewhat; the clean scale
+    &pi;/&theta;<sub>&lowast;</sub>&nbsp;=&nbsp;302 is the acoustic scale, and the first peak sits
+    at about 0.73 of it.</p>
+
+    <p><b>And this is where the cosmological parameters come in.</b> The numerator of that
+    triangle, the sound horizon, is fixed by conditions <em>before</em> recombination &mdash; how
+    much matter and how many baryons there were, which set both the sound speed and how long the
+    plasma phase lasted. The denominator, the distance to the last-scattering surface, is fixed by
+    everything that happened <em>since</em> &mdash; the expansion history, and so H&#8320; and the
+    dark energy. The position of the peak measures the ratio of the two. That ratio is
+    &theta;<sub>&lowast;</sub>, and it is why moving any of the six parameters on
+    <a href="cmb-spectrum.html">the power spectrum page</a> slides the peaks left or right.
+    The blotch size in a photograph of the infant universe is a measurement of what the universe
+    is made of.</p>
+
+    <h2>What is needed for the real measurement</h2>
+
+    <p>Everything above is true and none of it is sufficient. What a real experiment measures is
+    not C<sub>&#8467;</sub> but something closer to
+    (C<sub>&#8467;</sub>&nbsp;+&nbsp;N<sub>&#8467;</sub>)&nbsp;B<sub>&#8467;</sub>&sup2;, smeared
+    across neighbouring multipoles by the mask, with foreground residuals on top. Undoing that is
+    most of the work.</p>
+
+    <h3>The beam</h3>
+    <p>No telescope has infinite resolution, and a finite beam suppresses small-scale power
+    severely. A Gaussian beam multiplies the spectrum by
+    exp(&minus;&#8467;(&#8467;+1)&sigma;&sup2;); for Planck&rsquo;s 7&prime; channel that is a
+    factor of 0.44 at &#8467;&nbsp;=&nbsp;1000 and about 1/160 at &#8467;&nbsp;=&nbsp;2500. All of
+    that has to be divided back out, which means the beam must be known to better than the
+    precision you want on the answer &mdash; measured in flight, from planets. The pixels
+    themselves add a second, smaller window function of the same kind.</p>
+
+    <h3>Noise, and a trick for avoiding it</h3>
+    <p>Detector noise adds power rather than removing it, so a naive spectrum is biased upward
+    everywhere, most damagingly at high &#8467; where the signal has been beaten down by the
+    beam. Subtracting an estimate of the noise works, but any error in that estimate goes
+    straight into the answer. The standard escape is to <em>cross</em>-correlate maps made from
+    independent detectors, or from different halves of the mission: the sky is common to both and
+    survives, the noise is not and averages away. It removes the bias without having to know the
+    noise level at all.</p>
+
+    <h3>Foregrounds</h3>
+    <p>Our galaxy is far brighter than the CMB over much of the sky. It is separated out by
+    observing at many frequencies &mdash; Planck used nine, from 30 to 857&nbsp;GHz &mdash; and
+    exploiting the fact that synchrotron, free-free and dust each have their own spectrum while
+    the CMB is a blackbody. What survives that is not zero, so the likelihood carries extra free
+    parameters for the leftovers: residual dust, unresolved point sources, the cosmic infrared
+    background, the thermal and kinetic Sunyaev&ndash;Zel&rsquo;dovich effects. Planck&rsquo;s
+    high-&#8467; temperature likelihood fits roughly twenty such nuisance parameters alongside the
+    six that matter.</p>
+
+    <h3>The mask</h3>
+    <p>Whatever cannot be cleaned is cut out, and a cut sky is no longer a sphere. Spherical
+    harmonics are only orthogonal over the complete sphere, so on a masked map the multipoles
+    leak into one another and what comes out is a smeared version of the spectrum. The
+    coupling can be computed and inverted, but two costs remain: the estimate at one &#8467; is
+    correlated with its neighbours, and you have fewer modes, so cosmic variance grows as
+    1/&radic;f<sub>sky</sub>. Keeping two-thirds of the sky inflates every error bar on this page
+    by about 23%.</p>
+
+    <h3>Calibration, and the dipole again</h3>
+    <p>An overall scale error would move the whole spectrum up or down and mimic
+    A<sub>s</sub>. The calibrator turns out to be the dipole: not the 3.36&nbsp;mK one from our
+    motion through the universe, but the small annual modulation from the Earth&rsquo;s own orbit,
+    whose amplitude is known to exquisite precision from celestial mechanics. Planck calibrates
+    against it to better than a tenth of a percent.</p>
+
+    <h3>Lensing</h3>
+    <p>The light has crossed 13&nbsp;billion light years of intervening structure, and its path
+    has been bent. Gravitational lensing shifts features by a few arcminutes, which slightly
+    smooths the peaks and troughs. It must be modelled &mdash; and, as it happens, it is also a
+    signal in its own right, carrying information about the matter the light passed through.</p>
+
+    <h3>And the statistics at the ends</h3>
+    <p>At high &#8467; there are enough modes that the estimated spectrum is Gaussian and a
+    covariance matrix suffices. At low &#8467; it is not, for the reason this page has been
+    making all along: with five modes the distribution of an estimated variance is badly skewed,
+    so Planck uses an exact pixel-based likelihood below
+    &#8467;&nbsp;&asymp;&nbsp;30 and the Gaussian approximation above it. The join between the
+    two is visible in every Planck plot if you know to look for it.</p>
+
+    <p class="note">The spectrum plotted here is &Lambda;CDM at the Planck 2018 parameters,
+    from the same emulator used on the
+    <a href="cmb-spectrum.html">CMB power spectrum page</a>, so the two agree by construction.
+    The comparison column is the Planck 2018 binned likelihood from the ESA Planck Legacy
+    Archive. Monopole from Fixsen (2009); dipole amplitude from Planck 2018 results I.</p>
+
+    <p class="note">Further afield: <a href="cmb-spectrum.html">the CMB power spectrum</a>
+    with all six parameters on sliders; <a href="lcdm.html">&Lambda;CDM and the six
+    parameters</a>; <a href="calculator.html">the cosmology calculator</a>.</p>
+
+  </main>
+  <script>
+  (function () {
+    'use strict';
+    var FID = {"lmin":2,"lmax":2500,"Dl":[1019.5006,967.2827,914.6643,875.849,849.9736,833.3399,822.5269,818.1286,818.0606,820.134,824.7981,830.2101,837.7259,845.8046,855.9555,867.6841,879.4716,892.6016,905.4492,918.9862,933.2285,947.4549,961.8568,976.842,992.0734,1007.8648,1023.7979,1039.8265,1056.2674,1072.4018,1089.1544,1105.9446,1122.7969,1140.4093,1157.7435,1175.3338,1193.2503,1211.4753,1230.0464,1248.9524,1268.1194,1287.4434,1306.8624,1326.3312,1345.7294,1365.0936,1384.4852,1403.9817,1423.7346,1443.8745,1464.313,1484.918,1505.6154,1526.3481,1547.2051,1568.3385,1589.7612,1611.4381,1633.4069,1656.1217,1678.8366,1701.5514,1724.2663,1748.0042,1771.7421,1795.48,1819.2179,1842.9558,1866.6937,1890.4316,1914.1694,1940.079,1965.9885,1991.8981,2017.8076,2043.7172,2069.6267,2095.5363,2121.4458,2149.0921,2176.7384,2204.3847,2232.031,2259.6774,2287.3237,2314.97,2342.6163,2371.946,2401.2757,2430.6054,2459.9351,2489.2648,2518.5945,2547.9242,2577.2539,2608.5285,2639.803,2671.0776,2702.3522,2733.6268,2764.9013,2796.1759,2827.4505,2860.259,2893.0675,2925.8761,2958.6846,2991.4931,3024.3016,3057.1101,3089.9186,3123.7482,3157.5777,3191.4072,3225.2367,3259.0662,3292.8958,3326.7253,3360.5548,3395.0179,3429.4809,3463.944,3498.407,3532.8701,3567.3331,3601.7962,3636.2592,3670.9047,3705.5502,3740.1957,3774.8411,3809.4866,3844.1321,3878.7775,3913.423,3947.714,3982.005,4016.2959,4050.5869,4084.8779,4119.1688,4153.4598,4187.7508,4221.0104,4254.27,4287.5296,4320.7892,4354.0488,4387.3084,4420.568,4453.8276,4485.3308,4516.8341,4548.3373,4579.8406,4611.3439,4642.8471,4674.3504,4705.8537,4735.088,4764.3224,4793.5568,4822.7911,4852.0255,4881.2598,4910.4942,4939.7286,4966.0891,4992.4496,5018.8101,5045.1706,5071.5311,5097.8916,5124.2521,5150.6126,5173.5779,5196.5431,5219.5084,5242.4736,5265.4388,5288.4041,5311.3693,5334.3346,5353.4085,5372.4824,5391.5563,5410.6302,5429.7041,5448.778,5467.8519,5486.9258,5501.6685,5516.4113,5531.154,5545.8968,5560.6395,5575.3822,5590.125,5604.8677,5614.9171,5624.9664,5635.0157,5645.0651,5655.1144,5665.1638,5675.2131,5685.2625,5690.3411,5695.4198,5700.4985,5705.5771,5710.6558,5715.7344,5720.8131,5725.8917,5726.0431,5726.1944,5726.3458,5726.4971,5726.6485,5726.7998,5726.9512,5727.1025,5722.2682,5717.4339,5712.5995,5707.7652,5702.9309,5698.0966,5693.2623,5688.4279,5678.7191,5669.0104,5659.3016,5649.5928,5639.884,5630.1752,5620.4665,5610.7577,5596.3832,5582.0088,5567.6344,5553.2599,5538.8855,5524.5111,5510.1366,5495.7622,5477.0398,5458.3174,5439.5949,5420.8725,5402.1501,5383.4276,5364.7052,5345.9828,5323.2785,5300.5743,5277.87,5255.1658,5232.4615,5209.7572,5187.053,5164.3487,5138.252,5112.1553,5086.0586,5059.9618,5033.8651,5007.7684,4981.6717,4955.5749,4926.6035,4897.6321,4868.6606,4839.6892,4810.7178,4781.7463,4752.7749,4723.8035,4692.5964,4661.3894,4630.1823,4598.9753,4567.7683,4536.5612,4505.3542,4474.1471,4441.3564,4408.5656,4375.7749,4342.9841,4310.1934,4277.4026,4244.6118,4211.8211,4178.0736,4144.3261,4110.5786,4076.8311,4043.0836,4009.3361,3975.5886,3941.8411,3907.8425,3873.844,3839.8454,3805.8469,3771.8484,3737.8498,3703.8513,3669.8528,3636.2617,3602.6707,3569.0796,3535.4886,3501.8976,3468.3065,3434.7155,3401.1244,3368.5754,3336.0264,3303.4774,3270.9284,3238.3793,3205.8303,3173.2813,3140.7323,3109.8082,3078.8841,3047.96,3017.036,2986.1119,2955.1878,2924.2637,2893.3397,2864.5674,2835.7952,2807.0229,2778.2506,2749.4784,2720.7061,2691.9339,2663.1616,2636.9391,2610.7166,2584.4941,2558.2716,2532.0491,2505.8266,2479.6041,2453.3816,2430.1094,2406.8371,2383.5649,2360.2926,2337.0204,2313.7481,2290.4759,2267.2036,2247.1762,2227.1487,2207.1213,2187.0938,2167.0663,2147.0389,2127.0114,2106.984,2090.4028,2073.8217,2057.2405,2040.6594,2024.0782,2007.4971,1990.9159,1974.3348,1961.2967,1948.2587,1935.2207,1922.1827,1909.1447,1896.1067,1883.0687,1870.0307,1860.539,1851.0473,1841.5556,1832.0638,1822.5721,1813.0804,1803.5886,1794.0969,1788.0472,1781.9975,1775.9478,1769.8982,1763.8485,1757.7988,1751.7491,1745.6994,1742.9475,1740.1956,1737.4436,1734.6917,1731.9398,1729.1879,1726.436,1723.6841,1723.9784,1724.2728,1724.5672,1724.8616,1725.156,1725.4503,1725.7447,1726.0391,1729.0739,1732.1088,1735.1437,1738.1785,1741.2134,1744.2482,1747.2831,1750.3179,1755.737,1761.1561,1766.5752,1771.9943,1777.4134,1782.8325,1788.2515,1793.6706,1801.0601,1808.4496,1815.839,1823.2285,1830.618,1838.0075,1845.3969,1852.7864,1861.7165,1870.6465,1879.5766,1888.5066,1897.4367,1906.3667,1915.2968,1924.2268,1934.2511,1944.2754,1954.2997,1964.3239,1974.3482,1984.3725,1994.3968,2004.421,2015.0702,2025.7194,2036.3685,2047.0177,2057.6668,2068.316,2078.9651,2089.6143,2100.4855,2111.3568,2122.228,2133.0993,2143.9705,2154.8418,2165.713,2176.5843,2187.2241,2197.8639,2208.5037,2219.1436,2229.7834,2240.4232,2251.063,2261.7029,2271.7434,2281.784,2291.8245,2301.8651,2311.9056,2321.9462,2331.9868,2342.0273,2351.0871,2360.1469,2369.2067,2378.2665,2387.3263,2396.3861,2405.4459,2414.5057,2422.2904,2430.0752,2437.8599,2445.6446,2453.4294,2461.2141,2468.9989,2476.7836,2483.0447,2489.3057,2495.5667,2501.8278,2508.0888,2514.3498,2520.6109,2526.8719,2531.4738,2536.0757,2540.6776,2545.2795,2549.8814,2554.4833,2559.0852,2563.6871,2566.4832,2569.2792,2572.0752,2574.8713,2577.6673,2580.4633,2583.2594,2586.0554,2587.0133,2587.9713,2588.9292,2589.8872,2590.8451,2591.8031,2592.761,2593.719,2592.8548,2591.9906,2591.1265,2590.2623,2589.3982,2588.534,2587.6698,2586.8057,2584.1946,2581.5836,2578.9725,2576.3615,2573.7504,2571.1394,2568.5283,2565.9173,2561.696,2557.4748,2553.2535,2549.0322,2544.811,2540.5897,2536.3685,2532.1472,2526.4996,2520.852,2515.2043,2509.5567,2503.9091,2498.2615,2492.6139,2486.9663,2480.0801,2473.194,2466.3079,2459.4218,2452.5357,2445.6496,2438.7635,2431.8773,2424.0286,2416.1799,2408.3312,2400.4825,2392.6338,2384.7851,2376.9364,2369.0877,2360.5701,2352.0524,2343.5348,2335.0172,2326.4995,2317.9819,2309.4642,2300.9466,2292.0506,2283.1546,2274.2586,2265.3626,2256.4666,2247.5707,2238.6747,2229.7787,2220.7946,2211.8105,2202.8265,2193.8424,2184.8583,2175.8743,2166.8902,2157.9061,2149.1245,2140.3429,2131.5613,2122.7797,2113.9981,2105.2164,2096.4348,2087.6532,2079.3636,2071.074,2062.7844,2054.4948,2046.2052,2037.9156,2029.626,2021.3364,2013.8024,2006.2683,1998.7343,1991.2003,1983.6662,1976.1322,1968.5982,1961.0641,1954.5102,1947.9563,1941.4023,1934.8484,1928.2945,1921.7406,1915.1866,1908.6327,1903.2512,1897.8697,1892.4883,1887.1068,1881.7253,1876.3438,1870.9623,1865.5808,1861.5303,1857.4798,1853.4293,1849.3788,1845.3283,1841.2778,1837.2272,1833.1767,1830.579,1827.9812,1825.3835,1822.7857,1820.188,1817.5902,1814.9925,1812.3947,1811.3091,1810.2234,1809.1377,1808.0521,1806.9664,1805.8808,1804.7951,1803.7095,1804.1468,1804.5841,1805.0214,1805.4587,1805.8961,1806.3334,1806.7707,1807.208,1809.1287,1811.0494,1812.97,1814.8907,1816.8114,1818.732,1820.6527,1822.5734,1825.9136,1829.2539,1832.5942,1835.9344,1839.2747,1842.6149,1845.9552,1849.2955,1853.9531,1858.6108,1863.2684,1867.9261,1872.5838,1877.2414,1881.8991,1886.5568,1892.376,1898.1953,1904.0145,1909.8338,1915.6531,1921.4723,1927.2916,1933.1109,1939.8803,1946.6498,1953.4193,1960.1888,1966.9583,1973.7277,1980.4972,1987.2667,1994.7601,2002.2536,2009.747,2017.2404,2024.7339,2032.2273,2039.7208,2047.2142,2055.202,2063.1897,2071.1775,2079.1652,2087.153,2095.1408,2103.1285,2111.1163,2119.3372,2127.5581,2135.7789,2143.9998,2152.2207,2160.4416,2168.6625,2176.8834,2185.0612,2193.239,2201.4168,2209.5947,2217.7725,2225.9503,2234.1281,2242.3059,2250.1901,2258.0742,2265.9583,2273.8425,2281.7266,2289.6107,2297.4949,2305.379,2312.7564,2320.1338,2327.5112,2334.8886,2342.2661,2349.6435,2357.0209,2364.3983,2371.0066,2377.6149,2384.2233,2390.8316,2397.4399,2404.0482,2410.6565,2417.2649,2422.9151,2428.5653,2434.2156,2439.8658,2445.516,2451.1663,2456.8165,2462.4667,2466.9665,2471.4662,2475.9659,2480.4656,2484.9654,2489.4651,2493.9648,2498.4645,2501.6259,2504.7872,2507.9486,2511.1099,2514.2713,2517.4326,2520.5939,2523.7553,2525.4885,2527.2217,2528.9549,2530.6881,2532.4213,2534.1545,2535.8877,2537.6209,2537.8082,2537.9954,2538.1827,2538.3699,2538.5572,2538.7444,2538.9317,2539.119,2537.7726,2536.4262,2535.0799,2533.7335,2532.3872,2531.0408,2529.6944,2528.3481,2525.4186,2522.4892,2519.5597,2516.6302,2513.7008,2510.7713,2507.8418,2504.9124,2500.4541,2495.9959,2491.5376,2487.0794,2482.6212,2478.1629,2473.7047,2469.2464,2463.3039,2457.3613,2451.4187,2445.4761,2439.5335,2433.591,2427.6484,2421.7058,2414.3572,2407.0085,2399.6599,2392.3112,2384.9626,2377.6139,2370.2653,2362.9166,2354.3406,2345.7645,2337.1885,2328.6124,2320.0364,2311.4603,2302.8843,2294.3082,2284.6718,2275.0354,2265.399,2255.7625,2246.1261,2236.4897,2226.8533,2217.2168,2206.678,2196.1391,2185.6002,2175.0613,2164.5224,2153.9835,2143.4446,2132.9058,2121.7037,2110.5016,2099.2995,2088.0974,2076.8954,2065.6933,2054.4912,2043.2891,2031.5913,2019.8935,2008.1957,1996.4979,1984.8001,1973.1022,1961.4044,1949.7066,1937.7381,1925.7695,1913.801,1901.8325,1889.8639,1877.8954,1865.9269,1853.9583,1841.961,1829.9636,1817.9662,1805.9688,1793.9715,1781.9741,1769.9767,1757.9793,1746.1649,1734.3504,1722.5359,1710.7215,1698.907,1687.0925,1675.2781,1663.4636,1652.0114,1640.5591,1629.1069,1617.6547,1606.2025,1594.7503,1583.2981,1571.8458,1560.9528,1550.0598,1539.1667,1528.2737,1517.3806,1506.4876,1495.5946,1484.7015,1474.5219,1464.3423,1454.1627,1443.9831,1433.8035,1423.6238,1413.4442,1403.2646,1393.9372,1384.6097,1375.2823,1365.9548,1356.6274,1347.2999,1337.9725,1328.645,1320.2831,1311.9213,1303.5594,1295.1975,1286.8356,1278.4737,1270.1118,1261.75,1254.4537,1247.1574,1239.8612,1232.5649,1225.2687,1217.9724,1210.6761,1203.3799,1197.208,1191.036,1184.8641,1178.6922,1172.5203,1166.3483,1160.1764,1154.0045,1148.9811,1143.9578,1138.9344,1133.911,1128.8877,1123.8643,1118.8409,1113.8176,1109.9402,1106.0629,1102.1855,1098.3082,1094.4309,1090.5535,1086.6762,1082.7989,1080.0507,1077.3026,1074.5544,1071.8063,1069.0581,1066.31,1063.5618,1060.8137,1059.1452,1057.4766,1055.8081,1054.1396,1052.471,1050.8025,1049.134,1047.4654,1046.7859,1046.1064,1045.4269,1044.7474,1044.0679,1043.3884,1042.7088,1042.0293,1042.2549,1042.4805,1042.706,1042.9316,1043.1572,1043.3827,1043.6083,1043.8339,1044.8228,1045.8118,1046.8007,1047.7897,1048.7787,1049.7676,1050.7566,1051.7455,1053.3835,1055.0215,1056.6595,1058.2975,1059.9355,1061.5735,1063.2115,1064.8495,1066.9823,1069.1151,1071.2479,1073.3807,1075.5135,1077.6463,1079.7791,1081.9119,1084.4096,1086.9073,1089.405,1091.9027,1094.4005,1096.8982,1099.3959,1101.8936,1104.6108,1107.3279,1110.0451,1112.7622,1115.4794,1118.1965,1120.9137,1123.6309,1126.4299,1129.229,1132.0281,1134.8272,1137.6262,1140.4253,1143.2244,1146.0235,1148.7683,1151.5131,1154.258,1157.0028,1159.7476,1162.4925,1165.2373,1167.9821,1170.5433,1173.1045,1175.6657,1178.2268,1180.788,1183.3492,1185.9104,1188.4716,1190.7241,1192.9766,1195.2291,1197.4817,1199.7342,1201.9867,1204.2392,1206.4918,1208.3313,1210.1709,1212.0105,1213.8501,1215.6897,1217.5293,1219.3689,1221.2084,1222.5513,1223.8942,1225.2371,1226.58,1227.9229,1229.2658,1230.6087,1231.9516,1232.7458,1233.54,1234.3342,1235.1284,1235.9226,1236.7168,1237.511,1238.3052,1238.5041,1238.703,1238.902,1239.1009,1239.2998,1239.4988,1239.6977,1239.8966,1239.4741,1239.0515,1238.629,1238.2065,1237.7839,1237.3614,1236.9388,1236.5163,1235.4589,1234.4015,1233.3442,1232.2868,1231.2295,1230.1721,1229.1148,1228.0574,1226.3666,1224.6758,1222.9851,1221.2943,1219.6035,1217.9127,1216.2219,1214.5312,1212.2355,1209.9398,1207.6441,1205.3484,1203.0527,1200.757,1198.4613,1196.1656,1193.3242,1190.4827,1187.6412,1184.7998,1181.9583,1179.1168,1176.2753,1173.4339,1170.1096,1166.7853,1163.461,1160.1367,1156.8124,1153.4882,1150.1639,1146.8396,1143.1047,1139.3698,1135.6349,1131.9,1128.1651,1124.4302,1120.6953,1116.9604,1112.8901,1108.8197,1104.7493,1100.679,1096.6086,1092.5383,1088.4679,1084.3975,1080.0827,1075.7679,1071.4531,1067.1382,1062.8234,1058.5086,1054.1938,1049.8789,1045.4113,1040.9437,1036.4762,1032.0086,1027.541,1023.0734,1018.6058,1014.1382,1009.6152,1005.0922,1000.5692,996.0462,991.5232,987.0002,982.4772,977.9542,973.4697,968.9852,964.5007,960.0163,955.5318,951.0473,946.5628,942.0784,937.7231,933.3678,929.0125,924.6572,920.302,915.9467,911.5914,907.2361,903.095,898.954,894.8129,890.6718,886.5307,882.3896,878.2485,874.1075,870.2526,866.3977,862.5429,858.688,854.8332,850.9783,847.1234,843.2686,839.7625,836.2564,832.7503,829.2442,825.738,822.2319,818.7258,815.2197,812.1198,809.0198,805.9198,802.8198,799.7198,796.6199,793.5199,790.4199,787.7637,785.1074,782.4512,779.7949,777.1387,774.4824,771.8262,769.1699,766.9821,764.7942,762.6064,760.4185,758.2307,756.0428,753.855,751.6671,749.9596,748.2521,746.5446,744.8371,743.1295,741.422,739.7145,738.007,736.7816,735.5561,734.3307,733.1053,731.8799,730.6544,729.429,728.2036,727.4549,726.7062,725.9575,725.2088,724.4601,723.7113,722.9626,722.2139,721.9204,721.6269,721.3334,721.0399,720.7464,720.4529,720.1594,719.8659,719.9861,720.1063,720.2265,720.3467,720.4669,720.5871,720.7073,720.8275,721.3113,721.7951,722.2789,722.7626,723.2464,723.7302,724.214,724.6978,725.4875,726.2771,727.0668,727.8565,728.6462,729.4358,730.2255,731.0152,732.0497,733.0843,734.1189,735.1534,736.188,737.2226,738.2571,739.2917,740.5076,741.7236,742.9395,744.1554,745.3714,746.5873,747.8033,749.0192,750.353,751.6868,753.0206,754.3544,755.6882,757.022,758.3558,759.6896,761.0741,762.4586,763.8431,765.2276,766.6121,767.9966,769.3811,770.7656,772.1333,773.501,774.8688,776.2365,777.6042,778.9719,780.3396,781.7073,782.992,784.2767,785.5614,786.8462,788.1309,789.4156,790.7003,791.985,793.1216,794.2583,795.395,796.5316,797.6683,798.8049,799.9416,801.0783,802.0072,802.9361,803.865,804.7939,805.7229,806.6518,807.5807,808.5096,809.1784,809.8471,810.5158,811.1845,811.8532,812.522,813.1907,813.8594,814.2326,814.6057,814.9789,815.352,815.7252,816.0984,816.4715,816.8447,816.8999,816.9551,817.0103,817.0655,817.1207,817.1759,817.2311,817.2863,817.0018,816.7173,816.4328,816.1483,815.8638,815.5793,815.2949,815.0104,814.3703,813.7302,813.0901,812.45,811.8099,811.1698,810.5297,809.8896,808.8835,807.8774,806.8714,805.8653,804.8592,803.8531,802.847,801.8409,800.4697,799.0984,797.7272,796.3559,794.9847,793.6134,792.2422,790.871,789.1556,787.4402,785.7249,784.0095,782.2942,780.5788,778.8635,777.1481,775.1156,773.083,771.0504,769.0178,766.9853,764.9527,762.9201,760.8876,758.5675,756.2475,753.9274,751.6074,749.2874,746.9673,744.6473,742.3273,739.7594,737.1916,734.6238,732.056,729.4882,726.9204,724.3526,721.7848,719.0081,716.2314,713.4547,710.6781,707.9014,705.1247,702.348,699.5714,696.6288,693.6862,690.7436,687.801,684.8585,681.9159,678.9733,676.0307,672.9695,669.9083,666.8471,663.7859,660.7247,657.6635,654.6024,651.5412,648.4136,645.2861,642.1586,639.0311,635.9036,632.7761,629.6485,626.521,623.3796,620.2382,617.0967,613.9553,610.8139,607.6725,604.531,601.3896,598.2816,595.1737,592.0657,588.9577,585.8498,582.7418,579.6338,576.5259,573.4946,570.4633,567.432,564.4007,561.3694,558.3381,555.3068,552.2755,549.3636,546.4518,543.5399,540.628,537.7161,534.8043,531.8924,528.9805,526.2242,523.4678,520.7114,517.955,515.1986,512.4423,509.6859,506.9295,504.3607,501.7919,499.2231,496.6543,494.0854,491.5166,488.9478,486.379,484.0237,481.6685,479.3132,476.958,474.6027,472.2474,469.8922,467.5369,465.4161,463.2954,461.1746,459.0539,456.9331,454.8123,452.6916,450.5708,448.6982,446.8255,444.9529,443.0803,441.2076,439.335,437.4624,435.5897,433.974,432.3583,430.7426,429.1268,427.5111,425.8954,424.2797,422.6639,421.3094,419.9548,418.6002,417.2456,415.891,414.5365,413.1819,411.8273,410.7287,409.6301,408.5315,407.433,406.3344,405.2358,404.1372,403.0386,402.184,401.3295,400.4749,399.6203,398.7657,397.9112,397.0566,396.202,395.5739,394.9458,394.3177,393.6896,393.0615,392.4333,391.8052,391.1771,390.7545,390.3319,389.9093,389.4867,389.0641,388.6415,388.2189,387.7963,387.5565,387.3167,387.0769,386.8371,386.5973,386.3575,386.1177,385.8779,385.7965,385.7151,385.6337,385.5523,385.4709,385.3895,385.3081,385.2267,385.2751,385.3236,385.372,385.4205,385.4689,385.5174,385.5658,385.6143,385.761,385.9076,386.0543,386.201,386.3477,386.4944,386.6411,386.7878,387.0009,387.2139,387.427,387.6401,387.8531,388.0662,388.2793,388.4923,388.7404,388.9884,389.2364,389.4844,389.7324,389.9804,390.2284,390.4764,390.7281,390.9798,391.2315,391.4832,391.7348,391.9865,392.2382,392.4899,392.7149,392.9399,393.1649,393.39,393.615,393.84,394.065,394.2901,394.4649,394.6398,394.8146,394.9895,395.1643,395.3391,395.514,395.6888,395.7948,395.9007,396.0067,396.1127,396.2186,396.3246,396.4305,396.5365,396.557,396.5775,396.5981,396.6186,396.6391,396.6596,396.6801,396.7007,396.6198,396.539,396.4581,396.3773,396.2964,396.2156,396.1348,396.0539,395.8587,395.6635,395.4683,395.2731,395.0779,394.8827,394.6875,394.4923,394.1722,393.852,393.5318,393.2116,392.8914,392.5712,392.2511,391.9309,391.4806,391.0304,390.5802,390.13,389.6797,389.2295,388.7793,388.329,387.7519,387.1747,386.5975,386.0203,385.4431,384.866,384.2888,383.7116,383.0153,382.319,381.6227,380.9264,380.2301,379.5338,378.8375,378.1412,377.3337,376.5263,375.7189,374.9114,374.104,373.2965,372.4891,371.6816,370.7735,369.8653,368.9572,368.049,367.1409,366.2327,365.3246,364.4164,363.419,362.4215,361.4241,360.4266,359.4292,358.4318,357.4343,356.4369,355.3654,354.2939,353.2224,352.1509,351.0795,350.008,348.9365,347.865,346.7367,345.6085,344.4802,343.3519,342.2236,341.0954,339.9671,338.8388,337.6722,336.5056,335.339,334.1724,333.0058,331.8392,330.6726,329.506,328.3193,327.1327,325.9461,324.7594,323.5728,322.3861,321.1995,320.0128,318.8257,317.6386,316.4515,315.2644,314.0774,312.8903,311.7032,310.5161,309.3458,308.1755,307.0052,305.8349,304.6647,303.4944,302.3241,301.1538,300.0171,298.8804,297.7436,296.6069,295.4702,294.3335,293.1968,292.06,290.972,289.884,288.796,287.708,286.62,285.532,284.444,283.356,282.3298,281.3036,280.2774,279.2512,278.225,277.1988,276.1726,275.1463,274.193,273.2396,272.2862,271.3328,270.3795,269.4261,268.4727,267.5193,266.6479,265.7764,264.9049,264.0335,263.162,262.2905,261.419,260.5476,259.7649,258.9823,258.1997,257.417,256.6344,255.8518,255.0691,254.2865,253.5992,252.912,252.2247,251.5374,250.8501,250.1629,249.4756,248.7883,248.1986,247.6088,247.0191,246.4294,245.8396,245.2499,244.6602,244.0704,243.5761,243.0817,242.5874,242.093,241.5987,241.1043,240.61,240.1156,239.7128,239.3101,238.9073,238.5045,238.1017,237.699,237.2962,236.8934,236.5767,236.26,235.9432,235.6265,235.3098,234.9931,234.6764,234.3596,234.1224,233.8851,233.6479,233.4106,233.1733,232.9361,232.6988,232.4615,232.2965,232.1315,231.9665,231.8015,231.6365,231.4715,231.3064,231.1414,231.0397,230.938,230.8364,230.7347,230.633,230.5313,230.4296,230.3279,230.2776,230.2272,230.1769,230.1265,230.0762,230.0259,229.9755,229.9252,229.9133,229.9015,229.8896,229.8778,229.8659,229.8541,229.8422,229.8304,229.8436,229.8568,229.8701,229.8833,229.8965,229.9098,229.923,229.9362,229.9619,229.9875,230.0132,230.0388,230.0645,230.0901,230.1157,230.1414,230.1663,230.1912,230.2161,230.241,230.2659,230.2908,230.3156,230.3405,230.3527,230.3648,230.377,230.3891,230.4013,230.4134,230.4256,230.4377,230.4274,230.4171,230.4068,230.3965,230.3863,230.376,230.3657,230.3554,230.3144,230.2734,230.2324,230.1914,230.1504,230.1094,230.0684,230.0274,229.9477,229.8679,229.7882,229.7085,229.6288,229.549,229.4693,229.3896,229.2633,229.137,229.0107,228.8844,228.7581,228.6318,228.5055,228.3792,228.1989,228.0187,227.8384,227.6581,227.4778,227.2975,227.1172,226.937,226.6975,226.4581,226.2187,225.9793,225.7398,225.5004,225.261,225.0216,224.7214,224.4212,224.121,223.8208,223.5206,223.2204,222.9202,222.62,222.2607,221.9015,221.5422,221.183,220.8237,220.4645,220.1052,219.7459,219.3292,218.9125,218.4958,218.0791,217.6624,217.2456,216.8289,216.4122,215.9411,215.4701,214.999,214.528,214.0569,213.5858,213.1148,212.6437,212.1217,211.5998,211.0778,210.5558,210.0338,209.5118,208.9898,208.4678,207.899,207.3302,206.7613,206.1925,205.6236,205.0548,204.486,203.9171,203.3069,202.6967,202.0865,201.4762,200.866,200.2558,199.6456,199.0354,198.3922,197.749,197.1058,196.4626,195.8194,195.1762,194.533,193.8898,193.2216,192.5534,191.8852,191.217,190.5488,189.8806,189.2124,188.5441,187.8591,187.174,186.489,185.8039,185.1188,184.4338,183.7487,183.0636,182.3704,181.6771,180.9839,180.2906,179.5974,178.9041,178.2109,177.5176,176.8246,176.1315,175.4384,174.7453,174.0522,173.3592,172.6661,171.973,171.2879,170.6028,169.9176,169.2325,168.5474,167.8623,167.1771,166.492,165.8218,165.1515,164.4813,163.811,163.1408,162.4705,161.8003,161.13,160.4814,159.8328,159.1842,158.5356,157.8869,157.2383,156.5897,155.9411,155.3205,154.6999,154.0794,153.4588,152.8382,152.2177,151.5971,150.9765,150.3892,149.8019,149.2146,148.6273,148.04,147.4526,146.8653,146.278,145.7284,145.1788,144.6292,144.0796,143.53,142.9804,142.4308,141.8813,141.3735,140.8657,140.358,139.8502,139.3424,138.8347,138.3269,137.8191,137.3548,136.8905,136.4262,135.9619,135.4976,135.0333,134.5689,134.1046,133.6843,133.2641,132.8438,132.4235,132.0032,131.5829,131.1626,130.7423,130.366,129.9896,129.6132,129.2369,128.8605,128.4841,128.1078,127.7314,127.3983,127.0652,126.7321,126.399,126.0659,125.7328,125.3997,125.0666,124.7758,124.485,124.1942,123.9035,123.6127,123.3219,123.0311,122.7403,122.4906,122.2408,121.9911,121.7413,121.4916,121.2418,120.9921,120.7423,120.5303,120.3182,120.1062,119.8942,119.6821,119.4701,119.258,119.046,118.8672,118.6884,118.5097,118.3309,118.1521,117.9733,117.7946,117.6158,117.4656,117.3154,117.1652,117.015,116.8648,116.7146,116.5644,116.4142,116.2877,116.1613,116.0348,115.9084,115.7819,115.6554,115.529,115.4025,115.2952,115.1879,115.0806,114.9732,114.8659,114.7586,114.6513,114.5439,114.4511,114.3582,114.2653,114.1725,114.0796,113.9867,113.8938,113.801,113.7179,113.6349,113.5518,113.4687,113.3857,113.3026,113.2196,113.1365,113.059,112.9815,112.9039,112.8264,112.7489,112.6714,112.5938,112.5163,112.4398,112.3633,112.2868,112.2103,112.1339,112.0574,111.9809,111.9044,111.8247,111.7451,111.6654,111.5858,111.5062,111.4265,111.3469,111.2672,111.1801,111.093,111.0059,110.9188,110.8317,110.7446,110.6575,110.5704,110.4718,110.3733,110.2747,110.1761,110.0776,109.979,109.8804,109.7819,109.669,109.5561,109.4432,109.3304,109.2175,109.1046,108.9917,108.8788,108.7508,108.6227,108.4947,108.3666,108.2385,108.1105,107.9824,107.8544,107.7107,107.567,107.4233,107.2796,107.1359,106.9921,106.8484,106.7047,106.5447,106.3846,106.2246,106.0645,105.9044,105.7444,105.5843,105.4243,105.2474,105.0706,104.8938,104.717,104.5402,104.3634,104.1866,104.0098,103.8159,103.6221,103.4283,103.2345,103.0406,102.8468,102.653,102.4591,102.2485,102.0378,101.8271,101.6164,101.4057,101.195,100.9843,100.7736,100.5477,100.3218,100.0959,99.87,99.6442,99.4183,99.1924,98.9665,98.7277,98.4889,98.2501,98.0114,97.7726,97.5338,97.295,97.0562,96.8072,96.5581,96.3091,96.06,95.811,95.562,95.3129,95.0639,94.8072,94.5506,94.2939,94.0373,93.7806,93.5239,93.2673,93.0106,92.7489,92.4872,92.2254,91.9637,91.702,91.4402,91.1785,90.9168,90.6526,90.3884,90.1243,89.8601,89.5959,89.3317,89.0676,88.8034,88.5393,88.2752,88.0111,87.747,87.4828,87.2187,86.9546,86.6905,86.4288,86.1672,85.9055,85.6438,85.3821,85.1205,84.8588,84.5971,84.3401,84.0832,83.8262,83.5692,83.3123,83.0553,82.7983,82.5414,82.2918,82.0422,81.7926,81.5431,81.2935,81.0439,80.7943,80.5448,80.3048,80.0648,79.8248,79.5848,79.3448,79.1048,78.8648,78.6248,78.3935,78.1621,77.9308,77.6995]};                       // { lmin, lmax, Dl[] }
+    var LMIN = FID.lmin, DL = FID.Dl, NL = DL.length;
+    function Cl(l) {                         // D_l -> C_l, muK^2
+      return 2 * Math.PI * DL[l - LMIN] / (l * (l + 1));
+    }
+
+    // ---- Gaussian deviates, Box-Muller with a spare -------------------------
+    var spare = null;
+    function gauss() {
+      if (spare !== null) { var s = spare; spare = null; return s; }
+      var u, v, r;
+      do { u = 2 * Math.random() - 1; v = 2 * Math.random() - 1; r = u * u + v * v; }
+      while (r === 0 || r >= 1);
+      var f = Math.sqrt(-2 * Math.log(r) / r);
+      spare = v * f; return u * f;
+    }
+
+    // =========================================================================
+    // (B)  a single spherical harmonic, on a Mollweide projection
+    // =========================================================================
+    var cv2 = document.getElementById('ylm'), cx = cv2.getContext('2d');
+    var CW = cv2.width, CH = cv2.height;
+    // Allocated once: at 1800x940 these are ~25 MB, and rebuilding them on every
+    // slider step would thrash the collector.
+    var IMG = cx.createImageData(CW, CH);
+    var VALS = new Float64Array(CW * CH), SEEN = new Uint8Array(CW * CH);
+
+    // Normalised associated Legendre by the stable recurrence: computing
+    // P_l^m directly overflows by l of a few tens, the normalised form does not.
+    function lam(l, m, x) {
+      var somx2 = Math.sqrt(Math.max(0, 1 - x * x));
+      var pmm = Math.sqrt(1 / (4 * Math.PI)), k;
+      for (k = 1; k <= m; k++) pmm *= -Math.sqrt((2 * k + 1) / (2 * k)) * somx2;
+      if (l === m) return pmm;
+      var pmmp1 = Math.sqrt(2 * m + 3) * x * pmm;
+      if (l === m + 1) return pmmp1;
+      var prev = pmm, curr = pmmp1, ll, a, b;
+      for (ll = m + 2; ll <= l; ll++) {
+        a = Math.sqrt((4 * ll * ll - 1) / (ll * ll - m * m));
+        b = Math.sqrt(((ll - 1) * (ll - 1) - m * m) / (4 * (ll - 1) * (ll - 1) - 1));
+        var next = a * (x * curr - b * prev);
+        prev = curr; curr = next;
+      }
+      return curr;
+    }
+
+    function drawYlm() {
+      var l = +document.getElementById('kl').value,
+          m = +document.getElementById('km').value;
+      if (m > l) { m = l; document.getElementById('km').value = m; }
+      document.getElementById('km').max = l;
+      document.getElementById('ol').textContent = l;
+      document.getElementById('om').textContent = m;
+      document.getElementById('ylm-id').innerHTML =
+        'Y<sub>&#8467;m</sub> with &#8467; = <b>' + l + '</b>, m = <b>' + m + '</b>';
+
+      var D = IMG.data;
+      var cxm = CW / 2, cym = CH / 2, Rx = CW / 2 - 4, Ry = CH / 2 - 4;
+      var vmax = 0, y, x, i;
+      VALS.fill(0); SEEN.fill(0);
+      var vals = VALS, seen = SEEN;
+
+      for (y = 0; y < CH; y++) {
+        // Mollweide: invert y to latitude, then x to longitude on that row
+        var ty = (y - cym) / Ry;
+        if (Math.abs(ty) > 1) continue;
+        var theta = Math.asin(ty);
+        var sinPhi = (2 * theta + Math.sin(2 * theta)) / Math.PI;
+        if (Math.abs(sinPhi) > 1) continue;
+        var latSin = sinPhi;                      // sin(latitude) = cos(polar angle)
+        var L = lam(l, m, latSin);                // depends on the row only
+        var halfW = Math.cos(theta);
+        for (x = 0; x < CW; x++) {
+          var tx = (x - cxm) / Rx;
+          if (Math.abs(tx) > halfW) continue;
+          var lon = Math.PI * tx / Math.max(halfW, 1e-9);   // -pi .. pi
+          var v = L * (m === 0 ? 1 : Math.SQRT2 * Math.cos(m * lon));
+          i = y * CW + x; vals[i] = v; seen[i] = 1;
+          if (Math.abs(v) > vmax) vmax = Math.abs(v);
+        }
+      }
+      if (vmax === 0) vmax = 1;
+      for (i = 0; i < CW * CH; i++) {
+        var p = i * 4;
+        if (!seen[i]) { D[p] = D[p+1] = D[p+2] = 0; D[p+3] = 0; continue; }
+        var t = vals[i] / vmax;                    // -1 .. 1, blue -> white -> red
+        var r, g, b;
+        if (t >= 0) { r = 255; g = Math.round(255 * (1 - t)); b = Math.round(255 * (1 - t)); }
+        else        { b = 255; g = Math.round(255 * (1 + t)); r = Math.round(255 * (1 + t)); }
+        D[p] = r; D[p+1] = g; D[p+2] = b; D[p+3] = 255;
+      }
+      cx.clearRect(0, 0, CW, CH);
+      cx.putImageData(IMG, 0, 0);
+
+      if (document.getElementById('ylm-grid').checked) {
+        cx.strokeStyle = 'rgba(0,0,0,.18)'; cx.lineWidth = 1;
+        var lat, lon2;
+        for (lat = -60; lat <= 60; lat += 30) {          // parallels
+          cx.beginPath();
+          for (x = 0; x <= CW; x++) {
+            var tx2 = (x - cxm) / Rx, th = Math.asin(Math.max(-1, Math.min(1, Math.sin(lat * Math.PI / 180))));
+            var yy = cym + Ry * Math.sin(th);
+            if (Math.abs(tx2) > Math.cos(th)) continue;
+            if (x === 0) cx.moveTo(x, yy); else cx.lineTo(x, yy);
+          }
+          cx.stroke();
+        }
+        cx.beginPath(); cx.ellipse(cxm, cym, Rx, Ry, 0, 0, 2 * Math.PI); cx.stroke();
+      }
+      // Stamped on the canvas as well: the picture should say what it is.
+      var ink = getComputedStyle(document.documentElement)
+                  .getPropertyValue('--ink').trim() || '#222';
+      cx.font = '600 20px ui-sans-serif, -apple-system, system-ui, sans-serif';
+      cx.textAlign = 'left'; cx.textBaseline = 'top';
+      cx.fillStyle = ink;
+      cx.fillText('\u2113 = ' + l + '    m = ' + m, 14, 12);
+
+      var deg = 180 / l;
+      var scale = deg >= 1 ? deg.toFixed(deg < 10 ? 2 : 1) + '&deg;'
+                           : (deg * 60).toFixed(0) + '&prime;';
+      document.getElementById('ylm-out').innerHTML =
+        'angular scale &asymp; <b>' + scale + '</b>' +
+        ' &nbsp;·&nbsp; this &#8467; has <b>' + (2 * l + 1) + '</b> orientations' +
+        ' &nbsp;·&nbsp; showing m = <b>' + m + '</b>' +
+        (l >= 200 && l <= 240
+          ? ' &nbsp;·&nbsp; <b style="color:var(--scarlet)">the first acoustic peak sits here</b>'
+          : '');
+    }
+    ['kl', 'km'].forEach(function (id) {
+      document.getElementById(id).addEventListener('input', drawYlm);
+    });
+    document.getElementById('ylm-grid').addEventListener('change', drawYlm);
+    document.getElementById('ylm-sweep').addEventListener('click', function () {
+      var l = +document.getElementById('kl').value, m = 0;
+      var step = Math.max(1, Math.ceil(l / 24));   // ~24 frames whatever l is
+      var t = setInterval(function () {
+        document.getElementById('km').value = Math.min(m, l); drawYlm();
+        if (m >= l) clearInterval(t);
+        m += step;
+      }, 150);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('button[data-l]'), function (b) {
+      b.addEventListener('click', function () {
+        var l = +b.getAttribute('data-l');
+        document.getElementById('kl').value = l;
+        document.getElementById('km').value = Math.min(+document.getElementById('km').value, l);
+        drawYlm();
+      });
+    });
+
+    // =========================================================================
+    // (C)  the correlation function, estimated the way it really is: by taking
+    //      pairs of directions and averaging the product of their temperatures.
+    //      Truncated at l = 48 so a few thousand points can actually resolve it.
+    // =========================================================================
+    var CFLMAX = 48;
+
+    function legendreP(lmax, x) {           // P_0..P_lmax at one x
+      var p = new Float64Array(lmax + 1);
+      p[0] = 1; if (lmax >= 1) p[1] = x;
+      for (var l = 2; l <= lmax; l++) p[l] = ((2*l-1)*x*p[l-1] - (l-1)*p[l-2]) / l;
+      return p;
+    }
+    // theory C(theta) for the truncated spectrum
+    function cfTheory(thetaDeg) {
+      var p = legendreP(CFLMAX, Math.cos(thetaDeg * Math.PI / 180)), s = 0, l;
+      for (l = 2; l <= CFLMAX; l++) s += (2*l+1) * Cl(l) * p[l] / (4 * Math.PI);
+      return s;
+    }
+    // all normalised associated Legendre at one x, for every (l,m) up to lmax
+    function lamAll(lmax, x) {
+      var out = [], somx2 = Math.sqrt(Math.max(0, 1 - x*x)), m, l;
+      for (m = 0; m <= lmax; m++) {
+        var col = new Float64Array(lmax + 1);
+        var pmm = Math.sqrt(1 / (4 * Math.PI));
+        for (var k = 1; k <= m; k++) pmm *= -Math.sqrt((2*k+1)/(2*k)) * somx2;
+        col[m] = pmm;
+        if (m + 1 <= lmax) col[m+1] = Math.sqrt(2*m+3) * x * pmm;
+        for (l = m + 2; l <= lmax; l++) {
+          var a = Math.sqrt((4*l*l - 1) / (l*l - m*m));
+          var b = Math.sqrt(((l-1)*(l-1) - m*m) / (4*(l-1)*(l-1) - 1));
+          col[l] = a * (x * col[l-1] - b * col[l-2]);
+        }
+        out.push(col);
+      }
+      return out;
+    }
+    function drawSkySample(N) {
+      // a_lm in the real basis: a_l0, and a cosine and sine pair for each m>0
+      var A0 = [], AC = [], AS = [], l, m;
+      for (l = 0; l <= CFLMAX; l++) {
+        var sd = l >= 2 ? Math.sqrt(Cl(l)) : 0;     // monopole and dipole removed
+        A0[l] = sd * gauss();
+        AC[l] = new Float64Array(l + 1); AS[l] = new Float64Array(l + 1);
+        for (m = 1; m <= l; m++) { AC[l][m] = sd * gauss(); AS[l][m] = sd * gauss(); }
+      }
+      var xs = new Float64Array(N), ys = new Float64Array(N), zs = new Float64Array(N),
+          T = new Float64Array(N), i;
+      for (i = 0; i < N; i++) {
+        var u = 2 * Math.random() - 1, ph = 2 * Math.PI * Math.random();
+        var st = Math.sqrt(1 - u*u);
+        xs[i] = st * Math.cos(ph); ys[i] = st * Math.sin(ph); zs[i] = u;
+        var lam = lamAll(CFLMAX, u), t = 0;
+        for (l = 2; l <= CFLMAX; l++) {
+          t += A0[l] * lam[0][l];
+          for (m = 1; m <= l; m++)
+            t += Math.SQRT2 * lam[m][l] * (AC[l][m]*Math.cos(m*ph) + AS[l][m]*Math.sin(m*ph));
+        }
+        T[i] = t;
+      }
+      return { x:xs, y:ys, z:zs, T:T, N:N };
+    }
+    function pairBin(S, nbin) {
+      var sum = new Float64Array(nbin), cnt = new Float64Array(nbin), i, j;
+      for (i = 0; i < S.N; i++) for (j = i + 1; j < S.N; j++) {
+        var d = S.x[i]*S.x[j] + S.y[i]*S.y[j] + S.z[i]*S.z[j];
+        if (d > 1) d = 1; if (d < -1) d = -1;
+        var b = Math.min(nbin - 1, Math.floor(Math.acos(d) / Math.PI * nbin));
+        sum[b] += S.T[i] * S.T[j]; cnt[b]++;
+      }
+      var out = [];
+      for (i = 0; i < nbin; i++) if (cnt[i] > 50)
+        out.push([(i + 0.5) / nbin * 180, sum[i] / cnt[i], cnt[i]]);
+      return out;
+    }
+
+    var cfSvg = document.getElementById('cf');
+    var F0 = 74, F1 = 884, G0 = 20, G1 = 336;
+    var cfLast = null;
+    function cfRender() {
+      var old = document.getElementById('cfbody');
+      if (old) old.parentNode.removeChild(old);
+      var g = el('g', { id:'cfbody' }), i;
+      var th = [], ymax = 0;
+      for (i = 0; i <= 180; i++) { var v = cfTheory(i); th.push(v); if (Math.abs(v) > ymax) ymax = Math.abs(v); }
+      if (cfLast) cfLast.forEach(function (p) { if (Math.abs(p[1]) > ymax) ymax = Math.abs(p[1]); });
+      var step = [500,1000,2000,4000,8000]; var YM = step[step.length-1];
+      for (i = 0; i < step.length; i++) if (ymax <= step[i]*0.95) { YM = step[i]; break; }
+      var fx = function (d) { return F0 + (F1-F0) * d / 180; };
+      var fy = function (v) { return (G0+G1)/2 - ((G1-G0)/2) * Math.max(-1, Math.min(1, v/YM)); };
+      [YM, YM/2, 0, -YM/2, -YM].forEach(function (v) {
+        g.appendChild(el('line', { x1:F0, x2:F1, y1:fy(v), y2:fy(v), stroke:'var(--rule)' }));
+        var t = el('text', { x:F0-8, y:fy(v)+4, 'text-anchor':'end', 'font-size':11,
+                             fill:'var(--ink-faint)' });
+        t.textContent = Math.round(v); g.appendChild(t);
+      });
+      [0,30,60,90,120,150,180].forEach(function (d) {
+        g.appendChild(el('line', { x1:fx(d), x2:fx(d), y1:G1, y2:G1+5, stroke:'var(--ink-faint)' }));
+        var t = el('text', { x:fx(d), y:G1+19, 'text-anchor':'middle', 'font-size':12,
+                             fill:'var(--ink-faint)' });
+        t.textContent = d + '\u00b0'; g.appendChild(t);
+      });
+      g.appendChild(el('rect', { x:F0, y:G0, width:F1-F0, height:G1-G0, fill:'none',
+                                 stroke:'var(--ink-faint)' }));
+      if (cfLast) {
+        var pg = el('g', {});
+        cfLast.forEach(function (p) {
+          pg.appendChild(el('circle', { cx:fx(p[0]), cy:fy(p[1]), r:2.4,
+                                        fill:'var(--ink-soft)', opacity:.85 }));
+        });
+        g.appendChild(pg);
+      }
+      var d2 = '';
+      for (i = 0; i <= 180; i++) d2 += (i ? 'L' : 'M') + fx(i).toFixed(1) + ' ' + fy(th[i]).toFixed(1) + ' ';
+      g.appendChild(el('path', { d:d2, fill:'none', stroke:'var(--scarlet)', 'stroke-width':2.1 }));
+      var xl = el('text', { x:(F0+F1)/2, y:G1+40, 'text-anchor':'middle', 'font-size':13,
+                            fill:'var(--ink-soft)' });
+      xl.textContent = 'separation between the two directions'; g.appendChild(xl);
+      var yl = el('text', { x:16, y:(G0+G1)/2, 'text-anchor':'middle', 'font-size':12,
+                            fill:'var(--ink-soft)',
+                            transform:'rotate(-90 16 ' + ((G0+G1)/2) + ')' });
+      yl.textContent = 'C(θ)   [μK²]'; g.appendChild(yl);
+      cfSvg.appendChild(g);
+    }
+    function cfDraw() {
+      var N = +document.getElementById('cf-n').value;
+      var t0 = performance.now();
+      var S = drawSkySample(N);
+      cfLast = pairBin(S, 60);
+      var ms = performance.now() - t0;
+      document.getElementById('cf-out').innerHTML =
+        '<b>' + N + '</b> directions &nbsp;·&nbsp; <b>' +
+        (N*(N-1)/2).toLocaleString() + '</b> pairs binned &nbsp;·&nbsp; ' +
+        Math.round(ms) + ' ms &nbsp;·&nbsp; multipoles up to &#8467; = ' + CFLMAX;
+      cfRender();
+    }
+    document.getElementById('cf-draw').addEventListener('click', cfDraw);
+    document.getElementById('cf-n').addEventListener('change', cfDraw);
+
+    // =========================================================================
+    // (A)  one realisation of the sky, and the spectrum you measure from it
+    // =========================================================================
+    var svg = document.getElementById('cv'), NS = 'http://www.w3.org/2000/svg';
+    var X0 = 74, X1 = 884, Y0 = 18, Y1 = 366, SPLIT = 30, FRAC = 0.22;
+    var XB = X0 + (X1 - X0) * FRAC, YMAX = 7000;
+    function xpos(l) {
+      if (l <= SPLIT) return X0 + (XB - X0) * Math.log(l / 2) / Math.log(SPLIT / 2);
+      return XB + (X1 - XB) * (l - SPLIT) / (2500 - SPLIT);
+    }
+    function ypos(d) { return Y1 - (Y1 - Y0) * Math.min(d / YMAX, 1.06); }
+    function el(n, at) { var e = document.createElementNS(NS, n), k;
+                         for (k in at) e.setAttribute(k, at[k]); return e; }
+
+    // Sum of (2l+1) squared Gaussians, divided by (2l+1). Exact where the
+    // skewness is the whole point; Gaussian once the mode count makes it moot.
+    function drawChi(l) {
+      var n = 2 * l + 1, s = 0, i;
+      if (n <= 200) { for (i = 0; i < n; i++) { var g = gauss(); s += g * g; } return s / n; }
+      return Math.max(0.02, 1 + Math.sqrt(2 / n) * gauss());
+    }
+    function realise(nSky) {
+      var out = new Float64Array(NL), l, k;
+      for (k = 0; k < NL; k++) out[k] = 0;
+      for (var s = 0; s < nSky; s++)
+        for (k = 0; k < NL; k++) out[k] += drawChi(k + LMIN);
+      for (k = 0; k < NL; k++) out[k] = DL[k] * out[k] / nSky;
+      return out;
+    }
+
+    // Bin for legibility: every l below 30, then widening bands.
+    function bins() {
+      var b = [], l = 2;
+      while (l <= 30) { b.push([l, l]); l++; }
+      var w = 4;
+      while (l <= 2500) { var hi = Math.min(2500, l + w - 1); b.push([l, hi]); l = hi + 1; w = Math.min(60, Math.round(w * 1.25)); }
+      return b;
+    }
+    var BINS = bins();
+    var lastDraw = null, lastN = 1;
+
+    function render() {
+      var old = document.getElementById('cvbody');
+      if (old) old.parentNode.removeChild(old);
+      var g = el('g', { id: 'cvbody' }), i, l;
+
+      for (i = 0; i <= 5; i++) {
+        var yv = YMAX * i / 5;
+        g.appendChild(el('line', { x1:X0, x2:X1, y1:ypos(yv), y2:ypos(yv),
+                                   stroke:'var(--rule)', 'stroke-width':1 }));
+        var t = el('text', { x:X0-8, y:ypos(yv)+4, 'text-anchor':'end', 'font-size':12,
+                             fill:'var(--ink-faint)' }); t.textContent = yv; g.appendChild(t);
+      }
+      [2,5,10,30,100,300,600,1000,1500,2000,2500].forEach(function (lv) {
+        var x = xpos(lv);
+        g.appendChild(el('line', { x1:x, x2:x, y1:Y1, y2:Y1+5, stroke:'var(--ink-faint)', 'stroke-width':1 }));
+        var t = el('text', { x:x, y:Y1+19, 'text-anchor':'middle', 'font-size':12,
+                             fill:'var(--ink-faint)' }); t.textContent = lv; g.appendChild(t);
+      });
+      // The axis is Planck's convention: logarithmic to l = 30 so the plateau is
+      // visible at all, linear above so the acoustic peaks are evenly spaced.
+      // Mark the join and name both halves -- unlabelled it reads as a mistake.
+      g.appendChild(el('line', { x1:XB, x2:XB, y1:Y0, y2:Y1, stroke:'var(--rule)',
+                                 'stroke-width':1, 'stroke-dasharray':'2 3' }));
+      [-4, 1].forEach(function (dx) {
+        g.appendChild(el('line', { x1:XB + dx - 3, x2:XB + dx + 3, y1:Y1 + 6, y2:Y1 - 2,
+                                   stroke:'var(--ink-faint)', 'stroke-width':1.2 }));
+      });
+      var lgl = el('text', { x:(X0 + XB) / 2, y:Y1 + 33, 'text-anchor':'middle',
+                             'font-size':10.5, fill:'var(--ink-faint)',
+                             'font-style':'italic' });
+      lgl.textContent = 'logarithmic'; g.appendChild(lgl);
+      var lnl = el('text', { x:XB + (X1 - XB) * 0.12, y:Y1 + 33, 'text-anchor':'middle',
+                             'font-size':10.5, fill:'var(--ink-faint)',
+                             'font-style':'italic' });
+      lnl.textContent = 'linear'; g.appendChild(lnl);
+      g.appendChild(el('rect', { x:X0, y:Y0, width:X1-X0, height:Y1-Y0, fill:'none',
+                                 stroke:'var(--ink-faint)', 'stroke-width':1 }));
+      var xl = el('text', { x:(X0+X1)/2, y:Y1+40, 'text-anchor':'middle', 'font-size':13,
+                            fill:'var(--ink-soft)' });
+      xl.textContent = 'multipole ℓ'; g.appendChild(xl);
+      var yl = el('text', { x:16, y:(Y0+Y1)/2, 'text-anchor':'middle', 'font-size':13,
+                            fill:'var(--ink-soft)',
+                            transform:'rotate(-90 16 ' + ((Y0+Y1)/2) + ')' });
+      yl.textContent = 'ℓ(ℓ+1)Cℓ/2π   [μK²]'; g.appendChild(yl);
+
+      if (document.getElementById('cv-band').checked) {
+        var up = '', dn = [], k;
+        for (k = 0; k < NL; k++) {
+          l = k + LMIN; var f = Math.sqrt(2 / (2 * l + 1));
+          up += (k ? 'L' : 'M') + xpos(l).toFixed(1) + ' ' + ypos(DL[k] * (1 + f)).toFixed(1) + ' ';
+          dn.push('L' + xpos(l).toFixed(1) + ' ' + ypos(DL[k] * Math.max(0, 1 - f)).toFixed(1) + ' ');
+        }
+        dn.reverse();
+        g.appendChild(el('path', { d: up + dn.join('') + 'Z', fill:'var(--ink-faint)',
+                                   opacity:.18, stroke:'none' }));
+      }
+      if (lastDraw) {
+        var pts = el('g', {});
+        BINS.forEach(function (b) {
+          var s = 0, n = 0, j;
+          for (j = b[0]; j <= b[1]; j++) { s += lastDraw[j - LMIN]; n++; }
+          var lc = 0.5 * (b[0] + b[1]);
+          pts.appendChild(el('circle', { cx:xpos(lc), cy:ypos(s / n), r:1.9,
+                                         fill:'var(--ink-soft)', opacity:.85 }));
+        });
+        g.appendChild(pts);
+      }
+      var d = '';
+      for (var k2 = 0; k2 < NL; k2++)
+        d += (k2 ? 'L' : 'M') + xpos(k2 + LMIN).toFixed(1) + ' ' + ypos(DL[k2]).toFixed(1) + ' ';
+      g.appendChild(el('path', { d:d, fill:'none', stroke:'var(--scarlet)', 'stroke-width':2.1 }));
+      svg.appendChild(g);
+
+      if (lastDraw) {
+        function dev(l) { var k = l - LMIN; return (lastDraw[k] / DL[k] - 1) * 100; }
+        document.getElementById('cv-out').innerHTML =
+          (lastN === 1 ? 'one sky' : lastN + ' skies averaged') +
+          ' &nbsp;·&nbsp; ℓ=2 is <b>' + dev(2).toFixed(0) + '%</b> off' +
+          ' &nbsp;·&nbsp; ℓ=10 <b>' + dev(10).toFixed(0) + '%</b>' +
+          ' &nbsp;·&nbsp; ℓ=220 <b>' + dev(220).toFixed(1) + '%</b>' +
+          ' &nbsp;·&nbsp; ℓ=1500 <b>' + dev(1500).toFixed(1) + '%</b>';
+      }
+    }
+    document.getElementById('cv-draw').addEventListener('click', function () {
+      lastDraw = realise(1); lastN = 1; render();
+    });
+    document.getElementById('cv-many').addEventListener('click', function () {
+      lastDraw = realise(100); lastN = 100; render();
+    });
+    document.getElementById('cv-band').addEventListener('change', render);
+
+    drawYlm();
+    lastDraw = realise(1); render();
+    cfDraw();
+  })();
+  </script>
+</body>
+</html>

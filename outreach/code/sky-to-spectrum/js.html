@@ -1,0 +1,431 @@
+  <script>
+  (function () {
+    'use strict';
+    var FID = __FID__;                       // { lmin, lmax, Dl[] }
+    var LMIN = FID.lmin, DL = FID.Dl, NL = DL.length;
+    function Cl(l) {                         // D_l -> C_l, muK^2
+      return 2 * Math.PI * DL[l - LMIN] / (l * (l + 1));
+    }
+
+    // ---- Gaussian deviates, Box-Muller with a spare -------------------------
+    var spare = null;
+    function gauss() {
+      if (spare !== null) { var s = spare; spare = null; return s; }
+      var u, v, r;
+      do { u = 2 * Math.random() - 1; v = 2 * Math.random() - 1; r = u * u + v * v; }
+      while (r === 0 || r >= 1);
+      var f = Math.sqrt(-2 * Math.log(r) / r);
+      spare = v * f; return u * f;
+    }
+
+    // =========================================================================
+    // (B)  a single spherical harmonic, on a Mollweide projection
+    // =========================================================================
+    var cv2 = document.getElementById('ylm'), cx = cv2.getContext('2d');
+    var CW = cv2.width, CH = cv2.height;
+    // Allocated once: at 1800x940 these are ~25 MB, and rebuilding them on every
+    // slider step would thrash the collector.
+    var IMG = cx.createImageData(CW, CH);
+    var VALS = new Float64Array(CW * CH), SEEN = new Uint8Array(CW * CH);
+
+    // Normalised associated Legendre by the stable recurrence: computing
+    // P_l^m directly overflows by l of a few tens, the normalised form does not.
+    function lam(l, m, x) {
+      var somx2 = Math.sqrt(Math.max(0, 1 - x * x));
+      var pmm = Math.sqrt(1 / (4 * Math.PI)), k;
+      for (k = 1; k <= m; k++) pmm *= -Math.sqrt((2 * k + 1) / (2 * k)) * somx2;
+      if (l === m) return pmm;
+      var pmmp1 = Math.sqrt(2 * m + 3) * x * pmm;
+      if (l === m + 1) return pmmp1;
+      var prev = pmm, curr = pmmp1, ll, a, b;
+      for (ll = m + 2; ll <= l; ll++) {
+        a = Math.sqrt((4 * ll * ll - 1) / (ll * ll - m * m));
+        b = Math.sqrt(((ll - 1) * (ll - 1) - m * m) / (4 * (ll - 1) * (ll - 1) - 1));
+        var next = a * (x * curr - b * prev);
+        prev = curr; curr = next;
+      }
+      return curr;
+    }
+
+    function drawYlm() {
+      var l = +document.getElementById('kl').value,
+          m = +document.getElementById('km').value;
+      if (m > l) { m = l; document.getElementById('km').value = m; }
+      document.getElementById('km').max = l;
+      document.getElementById('ol').textContent = l;
+      document.getElementById('om').textContent = m;
+      document.getElementById('ylm-id').innerHTML =
+        'Y<sub>&#8467;m</sub> with &#8467; = <b>' + l + '</b>, m = <b>' + m + '</b>';
+
+      var D = IMG.data;
+      var cxm = CW / 2, cym = CH / 2, Rx = CW / 2 - 4, Ry = CH / 2 - 4;
+      var vmax = 0, y, x, i;
+      VALS.fill(0); SEEN.fill(0);
+      var vals = VALS, seen = SEEN;
+
+      for (y = 0; y < CH; y++) {
+        // Mollweide: invert y to latitude, then x to longitude on that row
+        var ty = (y - cym) / Ry;
+        if (Math.abs(ty) > 1) continue;
+        var theta = Math.asin(ty);
+        var sinPhi = (2 * theta + Math.sin(2 * theta)) / Math.PI;
+        if (Math.abs(sinPhi) > 1) continue;
+        var latSin = sinPhi;                      // sin(latitude) = cos(polar angle)
+        var L = lam(l, m, latSin);                // depends on the row only
+        var halfW = Math.cos(theta);
+        for (x = 0; x < CW; x++) {
+          var tx = (x - cxm) / Rx;
+          if (Math.abs(tx) > halfW) continue;
+          var lon = Math.PI * tx / Math.max(halfW, 1e-9);   // -pi .. pi
+          var v = L * (m === 0 ? 1 : Math.SQRT2 * Math.cos(m * lon));
+          i = y * CW + x; vals[i] = v; seen[i] = 1;
+          if (Math.abs(v) > vmax) vmax = Math.abs(v);
+        }
+      }
+      if (vmax === 0) vmax = 1;
+      for (i = 0; i < CW * CH; i++) {
+        var p = i * 4;
+        if (!seen[i]) { D[p] = D[p+1] = D[p+2] = 0; D[p+3] = 0; continue; }
+        var t = vals[i] / vmax;                    // -1 .. 1, blue -> white -> red
+        var r, g, b;
+        if (t >= 0) { r = 255; g = Math.round(255 * (1 - t)); b = Math.round(255 * (1 - t)); }
+        else        { b = 255; g = Math.round(255 * (1 + t)); r = Math.round(255 * (1 + t)); }
+        D[p] = r; D[p+1] = g; D[p+2] = b; D[p+3] = 255;
+      }
+      cx.clearRect(0, 0, CW, CH);
+      cx.putImageData(IMG, 0, 0);
+
+      if (document.getElementById('ylm-grid').checked) {
+        cx.strokeStyle = 'rgba(0,0,0,.18)'; cx.lineWidth = 1;
+        var lat, lon2;
+        for (lat = -60; lat <= 60; lat += 30) {          // parallels
+          cx.beginPath();
+          for (x = 0; x <= CW; x++) {
+            var tx2 = (x - cxm) / Rx, th = Math.asin(Math.max(-1, Math.min(1, Math.sin(lat * Math.PI / 180))));
+            var yy = cym + Ry * Math.sin(th);
+            if (Math.abs(tx2) > Math.cos(th)) continue;
+            if (x === 0) cx.moveTo(x, yy); else cx.lineTo(x, yy);
+          }
+          cx.stroke();
+        }
+        cx.beginPath(); cx.ellipse(cxm, cym, Rx, Ry, 0, 0, 2 * Math.PI); cx.stroke();
+      }
+      // Stamped on the canvas as well: the picture should say what it is.
+      var ink = getComputedStyle(document.documentElement)
+                  .getPropertyValue('--ink').trim() || '#222';
+      cx.font = '600 20px ui-sans-serif, -apple-system, system-ui, sans-serif';
+      cx.textAlign = 'left'; cx.textBaseline = 'top';
+      cx.fillStyle = ink;
+      cx.fillText('\u2113 = ' + l + '    m = ' + m, 14, 12);
+
+      var deg = 180 / l;
+      var scale = deg >= 1 ? deg.toFixed(deg < 10 ? 2 : 1) + '&deg;'
+                           : (deg * 60).toFixed(0) + '&prime;';
+      document.getElementById('ylm-out').innerHTML =
+        'angular scale &asymp; <b>' + scale + '</b>' +
+        ' &nbsp;·&nbsp; this &#8467; has <b>' + (2 * l + 1) + '</b> orientations' +
+        ' &nbsp;·&nbsp; showing m = <b>' + m + '</b>' +
+        (l >= 200 && l <= 240
+          ? ' &nbsp;·&nbsp; <b style="color:var(--scarlet)">the first acoustic peak sits here</b>'
+          : '');
+    }
+    ['kl', 'km'].forEach(function (id) {
+      document.getElementById(id).addEventListener('input', drawYlm);
+    });
+    document.getElementById('ylm-grid').addEventListener('change', drawYlm);
+    document.getElementById('ylm-sweep').addEventListener('click', function () {
+      var l = +document.getElementById('kl').value, m = 0;
+      var step = Math.max(1, Math.ceil(l / 24));   // ~24 frames whatever l is
+      var t = setInterval(function () {
+        document.getElementById('km').value = Math.min(m, l); drawYlm();
+        if (m >= l) clearInterval(t);
+        m += step;
+      }, 150);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('button[data-l]'), function (b) {
+      b.addEventListener('click', function () {
+        var l = +b.getAttribute('data-l');
+        document.getElementById('kl').value = l;
+        document.getElementById('km').value = Math.min(+document.getElementById('km').value, l);
+        drawYlm();
+      });
+    });
+
+    // =========================================================================
+    // (C)  the correlation function, estimated the way it really is: by taking
+    //      pairs of directions and averaging the product of their temperatures.
+    //      Truncated at l = 48 so a few thousand points can actually resolve it.
+    // =========================================================================
+    var CFLMAX = 48;
+
+    function legendreP(lmax, x) {           // P_0..P_lmax at one x
+      var p = new Float64Array(lmax + 1);
+      p[0] = 1; if (lmax >= 1) p[1] = x;
+      for (var l = 2; l <= lmax; l++) p[l] = ((2*l-1)*x*p[l-1] - (l-1)*p[l-2]) / l;
+      return p;
+    }
+    // theory C(theta) for the truncated spectrum
+    function cfTheory(thetaDeg) {
+      var p = legendreP(CFLMAX, Math.cos(thetaDeg * Math.PI / 180)), s = 0, l;
+      for (l = 2; l <= CFLMAX; l++) s += (2*l+1) * Cl(l) * p[l] / (4 * Math.PI);
+      return s;
+    }
+    // all normalised associated Legendre at one x, for every (l,m) up to lmax
+    function lamAll(lmax, x) {
+      var out = [], somx2 = Math.sqrt(Math.max(0, 1 - x*x)), m, l;
+      for (m = 0; m <= lmax; m++) {
+        var col = new Float64Array(lmax + 1);
+        var pmm = Math.sqrt(1 / (4 * Math.PI));
+        for (var k = 1; k <= m; k++) pmm *= -Math.sqrt((2*k+1)/(2*k)) * somx2;
+        col[m] = pmm;
+        if (m + 1 <= lmax) col[m+1] = Math.sqrt(2*m+3) * x * pmm;
+        for (l = m + 2; l <= lmax; l++) {
+          var a = Math.sqrt((4*l*l - 1) / (l*l - m*m));
+          var b = Math.sqrt(((l-1)*(l-1) - m*m) / (4*(l-1)*(l-1) - 1));
+          col[l] = a * (x * col[l-1] - b * col[l-2]);
+        }
+        out.push(col);
+      }
+      return out;
+    }
+    function drawSkySample(N) {
+      // a_lm in the real basis: a_l0, and a cosine and sine pair for each m>0
+      var A0 = [], AC = [], AS = [], l, m;
+      for (l = 0; l <= CFLMAX; l++) {
+        var sd = l >= 2 ? Math.sqrt(Cl(l)) : 0;     // monopole and dipole removed
+        A0[l] = sd * gauss();
+        AC[l] = new Float64Array(l + 1); AS[l] = new Float64Array(l + 1);
+        for (m = 1; m <= l; m++) { AC[l][m] = sd * gauss(); AS[l][m] = sd * gauss(); }
+      }
+      var xs = new Float64Array(N), ys = new Float64Array(N), zs = new Float64Array(N),
+          T = new Float64Array(N), i;
+      for (i = 0; i < N; i++) {
+        var u = 2 * Math.random() - 1, ph = 2 * Math.PI * Math.random();
+        var st = Math.sqrt(1 - u*u);
+        xs[i] = st * Math.cos(ph); ys[i] = st * Math.sin(ph); zs[i] = u;
+        var lam = lamAll(CFLMAX, u), t = 0;
+        for (l = 2; l <= CFLMAX; l++) {
+          t += A0[l] * lam[0][l];
+          for (m = 1; m <= l; m++)
+            t += Math.SQRT2 * lam[m][l] * (AC[l][m]*Math.cos(m*ph) + AS[l][m]*Math.sin(m*ph));
+        }
+        T[i] = t;
+      }
+      return { x:xs, y:ys, z:zs, T:T, N:N };
+    }
+    function pairBin(S, nbin) {
+      var sum = new Float64Array(nbin), cnt = new Float64Array(nbin), i, j;
+      for (i = 0; i < S.N; i++) for (j = i + 1; j < S.N; j++) {
+        var d = S.x[i]*S.x[j] + S.y[i]*S.y[j] + S.z[i]*S.z[j];
+        if (d > 1) d = 1; if (d < -1) d = -1;
+        var b = Math.min(nbin - 1, Math.floor(Math.acos(d) / Math.PI * nbin));
+        sum[b] += S.T[i] * S.T[j]; cnt[b]++;
+      }
+      var out = [];
+      for (i = 0; i < nbin; i++) if (cnt[i] > 50)
+        out.push([(i + 0.5) / nbin * 180, sum[i] / cnt[i], cnt[i]]);
+      return out;
+    }
+
+    var cfSvg = document.getElementById('cf');
+    var F0 = 74, F1 = 884, G0 = 20, G1 = 336;
+    var cfLast = null;
+    function cfRender() {
+      var old = document.getElementById('cfbody');
+      if (old) old.parentNode.removeChild(old);
+      var g = el('g', { id:'cfbody' }), i;
+      var th = [], ymax = 0;
+      for (i = 0; i <= 180; i++) { var v = cfTheory(i); th.push(v); if (Math.abs(v) > ymax) ymax = Math.abs(v); }
+      if (cfLast) cfLast.forEach(function (p) { if (Math.abs(p[1]) > ymax) ymax = Math.abs(p[1]); });
+      var step = [500,1000,2000,4000,8000]; var YM = step[step.length-1];
+      for (i = 0; i < step.length; i++) if (ymax <= step[i]*0.95) { YM = step[i]; break; }
+      var fx = function (d) { return F0 + (F1-F0) * d / 180; };
+      var fy = function (v) { return (G0+G1)/2 - ((G1-G0)/2) * Math.max(-1, Math.min(1, v/YM)); };
+      [YM, YM/2, 0, -YM/2, -YM].forEach(function (v) {
+        g.appendChild(el('line', { x1:F0, x2:F1, y1:fy(v), y2:fy(v), stroke:'var(--rule)' }));
+        var t = el('text', { x:F0-8, y:fy(v)+4, 'text-anchor':'end', 'font-size':11,
+                             fill:'var(--ink-faint)' });
+        t.textContent = Math.round(v); g.appendChild(t);
+      });
+      [0,30,60,90,120,150,180].forEach(function (d) {
+        g.appendChild(el('line', { x1:fx(d), x2:fx(d), y1:G1, y2:G1+5, stroke:'var(--ink-faint)' }));
+        var t = el('text', { x:fx(d), y:G1+19, 'text-anchor':'middle', 'font-size':12,
+                             fill:'var(--ink-faint)' });
+        t.textContent = d + '\u00b0'; g.appendChild(t);
+      });
+      g.appendChild(el('rect', { x:F0, y:G0, width:F1-F0, height:G1-G0, fill:'none',
+                                 stroke:'var(--ink-faint)' }));
+      if (cfLast) {
+        var pg = el('g', {});
+        cfLast.forEach(function (p) {
+          pg.appendChild(el('circle', { cx:fx(p[0]), cy:fy(p[1]), r:2.4,
+                                        fill:'var(--ink-soft)', opacity:.85 }));
+        });
+        g.appendChild(pg);
+      }
+      var d2 = '';
+      for (i = 0; i <= 180; i++) d2 += (i ? 'L' : 'M') + fx(i).toFixed(1) + ' ' + fy(th[i]).toFixed(1) + ' ';
+      g.appendChild(el('path', { d:d2, fill:'none', stroke:'var(--scarlet)', 'stroke-width':2.1 }));
+      var xl = el('text', { x:(F0+F1)/2, y:G1+40, 'text-anchor':'middle', 'font-size':13,
+                            fill:'var(--ink-soft)' });
+      xl.textContent = 'separation between the two directions'; g.appendChild(xl);
+      var yl = el('text', { x:16, y:(G0+G1)/2, 'text-anchor':'middle', 'font-size':12,
+                            fill:'var(--ink-soft)',
+                            transform:'rotate(-90 16 ' + ((G0+G1)/2) + ')' });
+      yl.textContent = 'C(θ)   [μK²]'; g.appendChild(yl);
+      cfSvg.appendChild(g);
+    }
+    function cfDraw() {
+      var N = +document.getElementById('cf-n').value;
+      var t0 = performance.now();
+      var S = drawSkySample(N);
+      cfLast = pairBin(S, 60);
+      var ms = performance.now() - t0;
+      document.getElementById('cf-out').innerHTML =
+        '<b>' + N + '</b> directions &nbsp;·&nbsp; <b>' +
+        (N*(N-1)/2).toLocaleString() + '</b> pairs binned &nbsp;·&nbsp; ' +
+        Math.round(ms) + ' ms &nbsp;·&nbsp; multipoles up to &#8467; = ' + CFLMAX;
+      cfRender();
+    }
+    document.getElementById('cf-draw').addEventListener('click', cfDraw);
+    document.getElementById('cf-n').addEventListener('change', cfDraw);
+
+    // =========================================================================
+    // (A)  one realisation of the sky, and the spectrum you measure from it
+    // =========================================================================
+    var svg = document.getElementById('cv'), NS = 'http://www.w3.org/2000/svg';
+    var X0 = 74, X1 = 884, Y0 = 18, Y1 = 366, SPLIT = 30, FRAC = 0.22;
+    var XB = X0 + (X1 - X0) * FRAC, YMAX = 7000;
+    function xpos(l) {
+      if (l <= SPLIT) return X0 + (XB - X0) * Math.log(l / 2) / Math.log(SPLIT / 2);
+      return XB + (X1 - XB) * (l - SPLIT) / (2500 - SPLIT);
+    }
+    function ypos(d) { return Y1 - (Y1 - Y0) * Math.min(d / YMAX, 1.06); }
+    function el(n, at) { var e = document.createElementNS(NS, n), k;
+                         for (k in at) e.setAttribute(k, at[k]); return e; }
+
+    // Sum of (2l+1) squared Gaussians, divided by (2l+1). Exact where the
+    // skewness is the whole point; Gaussian once the mode count makes it moot.
+    function drawChi(l) {
+      var n = 2 * l + 1, s = 0, i;
+      if (n <= 200) { for (i = 0; i < n; i++) { var g = gauss(); s += g * g; } return s / n; }
+      return Math.max(0.02, 1 + Math.sqrt(2 / n) * gauss());
+    }
+    function realise(nSky) {
+      var out = new Float64Array(NL), l, k;
+      for (k = 0; k < NL; k++) out[k] = 0;
+      for (var s = 0; s < nSky; s++)
+        for (k = 0; k < NL; k++) out[k] += drawChi(k + LMIN);
+      for (k = 0; k < NL; k++) out[k] = DL[k] * out[k] / nSky;
+      return out;
+    }
+
+    // Bin for legibility: every l below 30, then widening bands.
+    function bins() {
+      var b = [], l = 2;
+      while (l <= 30) { b.push([l, l]); l++; }
+      var w = 4;
+      while (l <= 2500) { var hi = Math.min(2500, l + w - 1); b.push([l, hi]); l = hi + 1; w = Math.min(60, Math.round(w * 1.25)); }
+      return b;
+    }
+    var BINS = bins();
+    var lastDraw = null, lastN = 1;
+
+    function render() {
+      var old = document.getElementById('cvbody');
+      if (old) old.parentNode.removeChild(old);
+      var g = el('g', { id: 'cvbody' }), i, l;
+
+      for (i = 0; i <= 5; i++) {
+        var yv = YMAX * i / 5;
+        g.appendChild(el('line', { x1:X0, x2:X1, y1:ypos(yv), y2:ypos(yv),
+                                   stroke:'var(--rule)', 'stroke-width':1 }));
+        var t = el('text', { x:X0-8, y:ypos(yv)+4, 'text-anchor':'end', 'font-size':12,
+                             fill:'var(--ink-faint)' }); t.textContent = yv; g.appendChild(t);
+      }
+      [2,5,10,30,100,300,600,1000,1500,2000,2500].forEach(function (lv) {
+        var x = xpos(lv);
+        g.appendChild(el('line', { x1:x, x2:x, y1:Y1, y2:Y1+5, stroke:'var(--ink-faint)', 'stroke-width':1 }));
+        var t = el('text', { x:x, y:Y1+19, 'text-anchor':'middle', 'font-size':12,
+                             fill:'var(--ink-faint)' }); t.textContent = lv; g.appendChild(t);
+      });
+      // The axis is Planck's convention: logarithmic to l = 30 so the plateau is
+      // visible at all, linear above so the acoustic peaks are evenly spaced.
+      // Mark the join and name both halves -- unlabelled it reads as a mistake.
+      g.appendChild(el('line', { x1:XB, x2:XB, y1:Y0, y2:Y1, stroke:'var(--rule)',
+                                 'stroke-width':1, 'stroke-dasharray':'2 3' }));
+      [-4, 1].forEach(function (dx) {
+        g.appendChild(el('line', { x1:XB + dx - 3, x2:XB + dx + 3, y1:Y1 + 6, y2:Y1 - 2,
+                                   stroke:'var(--ink-faint)', 'stroke-width':1.2 }));
+      });
+      var lgl = el('text', { x:(X0 + XB) / 2, y:Y1 + 33, 'text-anchor':'middle',
+                             'font-size':10.5, fill:'var(--ink-faint)',
+                             'font-style':'italic' });
+      lgl.textContent = 'logarithmic'; g.appendChild(lgl);
+      var lnl = el('text', { x:XB + (X1 - XB) * 0.12, y:Y1 + 33, 'text-anchor':'middle',
+                             'font-size':10.5, fill:'var(--ink-faint)',
+                             'font-style':'italic' });
+      lnl.textContent = 'linear'; g.appendChild(lnl);
+      g.appendChild(el('rect', { x:X0, y:Y0, width:X1-X0, height:Y1-Y0, fill:'none',
+                                 stroke:'var(--ink-faint)', 'stroke-width':1 }));
+      var xl = el('text', { x:(X0+X1)/2, y:Y1+40, 'text-anchor':'middle', 'font-size':13,
+                            fill:'var(--ink-soft)' });
+      xl.textContent = 'multipole ℓ'; g.appendChild(xl);
+      var yl = el('text', { x:16, y:(Y0+Y1)/2, 'text-anchor':'middle', 'font-size':13,
+                            fill:'var(--ink-soft)',
+                            transform:'rotate(-90 16 ' + ((Y0+Y1)/2) + ')' });
+      yl.textContent = 'ℓ(ℓ+1)Cℓ/2π   [μK²]'; g.appendChild(yl);
+
+      if (document.getElementById('cv-band').checked) {
+        var up = '', dn = [], k;
+        for (k = 0; k < NL; k++) {
+          l = k + LMIN; var f = Math.sqrt(2 / (2 * l + 1));
+          up += (k ? 'L' : 'M') + xpos(l).toFixed(1) + ' ' + ypos(DL[k] * (1 + f)).toFixed(1) + ' ';
+          dn.push('L' + xpos(l).toFixed(1) + ' ' + ypos(DL[k] * Math.max(0, 1 - f)).toFixed(1) + ' ');
+        }
+        dn.reverse();
+        g.appendChild(el('path', { d: up + dn.join('') + 'Z', fill:'var(--ink-faint)',
+                                   opacity:.18, stroke:'none' }));
+      }
+      if (lastDraw) {
+        var pts = el('g', {});
+        BINS.forEach(function (b) {
+          var s = 0, n = 0, j;
+          for (j = b[0]; j <= b[1]; j++) { s += lastDraw[j - LMIN]; n++; }
+          var lc = 0.5 * (b[0] + b[1]);
+          pts.appendChild(el('circle', { cx:xpos(lc), cy:ypos(s / n), r:1.9,
+                                         fill:'var(--ink-soft)', opacity:.85 }));
+        });
+        g.appendChild(pts);
+      }
+      var d = '';
+      for (var k2 = 0; k2 < NL; k2++)
+        d += (k2 ? 'L' : 'M') + xpos(k2 + LMIN).toFixed(1) + ' ' + ypos(DL[k2]).toFixed(1) + ' ';
+      g.appendChild(el('path', { d:d, fill:'none', stroke:'var(--scarlet)', 'stroke-width':2.1 }));
+      svg.appendChild(g);
+
+      if (lastDraw) {
+        function dev(l) { var k = l - LMIN; return (lastDraw[k] / DL[k] - 1) * 100; }
+        document.getElementById('cv-out').innerHTML =
+          (lastN === 1 ? 'one sky' : lastN + ' skies averaged') +
+          ' &nbsp;·&nbsp; ℓ=2 is <b>' + dev(2).toFixed(0) + '%</b> off' +
+          ' &nbsp;·&nbsp; ℓ=10 <b>' + dev(10).toFixed(0) + '%</b>' +
+          ' &nbsp;·&nbsp; ℓ=220 <b>' + dev(220).toFixed(1) + '%</b>' +
+          ' &nbsp;·&nbsp; ℓ=1500 <b>' + dev(1500).toFixed(1) + '%</b>';
+      }
+    }
+    document.getElementById('cv-draw').addEventListener('click', function () {
+      lastDraw = realise(1); lastN = 1; render();
+    });
+    document.getElementById('cv-many').addEventListener('click', function () {
+      lastDraw = realise(100); lastN = 100; render();
+    });
+    document.getElementById('cv-band').addEventListener('change', render);
+
+    drawYlm();
+    lastDraw = realise(1); render();
+    cfDraw();
+  })();
+  </script>
+</body>
+</html>
