@@ -36,9 +36,25 @@
     // above remain the emulator's normalisation and are deliberately unchanged.
     // tau is the exception -- tau - 10 sigma is negative, so it clamps to the
     // trained range, -6.1 to +9.0 sigma.
-    var SPAN = 10;
+    var SPAN = 10;                 // Infinity when "full range" is ticked
     function smin(i) { return Math.max(LO[i], FID[i] - SPAN * PAR[i].sig); }
     function smax(i) { return Math.min(HI[i], FID[i] + SPAN * PAR[i].sig); }
+    // Derive the step rather than hard-coding it, so that Planck's value sits
+    // exactly on a notch in BOTH modes: reset then restores it exactly and the
+    // slider position always agrees with the readout.
+    function stepFor(i) {
+      var a = smin(i), b = smax(i), want = (b - a) / 300;
+      var k = Math.max(1, Math.round((FID[i] - a) / want));
+      return (FID[i] - a) / k;
+    }
+    function applyRange() {
+      PAR.forEach(function (p, i) {
+        var el = document.getElementById('k' + i);
+        var a = smin(i), b = smax(i);
+        cur[i] = Math.max(a, Math.min(b, cur[i]));   // keep the current model in range
+        el.min = a; el.max = b; el.step = stepFor(i);
+      });
+    }
 
     // ---- emulator ---------------------------------------------------------
     var h1 = new Float32Array(H), h2 = new Float32Array(H), co = new Float32Array(K),
@@ -298,7 +314,7 @@
           p.unit.trim() + '</span>' : '') + '</label>' +
         '<output id="o' + i + '"></output>' +
         '<input type="range" id="k' + i + '" min="' + smin(i) + '" max="' + smax(i) +
-          '" step="' + p.step + '" value="' + FID[i] + '">' +
+          '" step="' + stepFor(i) + '" value="' + FID[i] + '">' +
         '<span class="hint">' + p.hint + '</span>' +
         '<span class="sig"><span>Planck ' + FID[i].toFixed(p.dp) + '</span>' +
           '<span id="d' + i + '"></span></span>';
@@ -331,6 +347,10 @@
     });
     document.getElementById('logy').addEventListener('change', function () {
       LOGY = this.checked; draw();
+    });
+    document.getElementById('widerange').addEventListener('change', function () {
+      SPAN = this.checked ? Infinity : 10;   // smin/smax clamp to the trained box
+      applyRange(); sync(); draw();
     });
 
     document.getElementById('acc-med').textContent = EMU.err_med.toFixed(2) + '%';
