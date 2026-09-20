@@ -138,8 +138,9 @@
       </div>
 
       <div id="wigwrap" style="display:none">
-        <p class="postlead">The acoustic wiggles on their own &mdash; the broadband
-          divided out, on a linear k axis</p>
+        <p class="postlead">The acoustic wiggles on their own, on a linear k axis
+          <label style="font-weight:400"><input type="checkbox" id="dampwig">
+            ride them on the neutrino suppression</label></p>
         <svg id="wig" viewBox="0 0 900 208" role="img" aria-labelledby="wigT wigD">
           <title id="wigT">Baryon acoustic oscillations in the matter power spectrum</title>
           <desc id="wigD">The matter power spectrum divided by a smooth spectrum with the
@@ -257,6 +258,17 @@
     <p>So what this panel shows is that neutrinos do not change the wiggles' <em>shape</em>:
     not their spacing, not their phase, not their height relative to the curve they sit on. It
     does not show, and cannot show, that the wiggles are left alone. They are not.</p>
+
+    <p>To see the part that cancels, tick <b>ride them on the neutrino suppression</b>. The
+    divisor changes from this model's own smooth spectrum to the one it would have with
+    massless neutrinos, and the wiggle train drops away from one and settles onto a sinking
+    dashed envelope &mdash; the broadband suppression, now drawn underneath the wave rather
+    than divided out from under it. At 0.3&nbsp;eV the crests sit near 0.85 instead of 1.0,
+    and the whole pattern has come down with the envelope. Keep dragging the mass and watch
+    the wave sink while its shape stays rigid: the ratio of crest to envelope holds at 1.0656
+    from zero to half an eV, to four figures. Those two facts together &mdash; the wiggles are
+    damped, and damped by exactly the factor the broadband is &mdash; are the whole of what
+    neutrinos do to the acoustic feature in linear theory.</p>
 
     <p>Which of the two a survey can actually use is a live question, and the answer is not the
     obvious one. A BAO analysis deliberately throws the broadband away and fits only where the
@@ -743,7 +755,7 @@
     ];
     var FID = PAR.map(function (p) { return p.fid; });
     var cur = FID.slice();
-    var FIXOM = true, IZ = 0, SPAN = 10, MATCHS8 = false;
+    var FIXOM = true, IZ = 0, SPAN = 10, MATCHS8 = false, DAMP = false;
 
     var NORMAL_MIN = 0.059, INVERTED_MIN = 0.1015;
 
@@ -1134,6 +1146,18 @@
       return { W:out, rdh:rdOf(p) };
     }
 
+    // The suppression itself comes from the main emulator: it is a smooth
+    // function of k, so sampling it on the coarse grid and interpolating costs
+    // nothing -- it was only the oscillation that the coarse grid aliased.
+    function supAt(S, iz, k) {
+      if (k <= KH[0]) return S.R[iz * NK] * S.asFac;
+      if (k >= KH[NK - 1]) return S.R[iz * NK + NK - 1] * S.asFac;
+      var a = 0, b = NK - 1, m;
+      while (b - a > 1) { m = (a + b) >> 1; if (KH[m] <= k) a = m; else b = m; }
+      var t = (Math.log(k) - Math.log(KH[a])) / (Math.log(KH[b]) - Math.log(KH[a]));
+      return (S.R[iz * NK + a] + t * (S.R[iz * NK + b] - S.R[iz * NK + a])) * S.asFac;
+    }
+
     // ---- the wiggle panel ---------------------------------------------------
     var WK0 = 0.02, WK1 = 0.62, WX = 76, WXR = 884, WY0 = 24, WY1 = 164;
     function wxpos(k) { return WX + (WXR - WX) * (k - WK0) / (WK1 - WK0); }
@@ -1144,32 +1168,60 @@
       var G = wiggles(cur), rdh = G.rdh, iz = Math.min(IZ, WNZ - 1);
       var g = el('g', { id:'wigbody' }), i;
 
-      var ks = [], ws = [], amax = 1e-4;
+      // DAMP off: P / P_smooth(this model)   -- the suppression cancels exactly
+      // DAMP on : P / P_smooth(Sum m_nu = 0)  -- the wiggles ride the suppression
+      var S = DAMP ? spectra(cur) : null;
+      var ks = [], ws = [], wraw = [], env = [], amax = 1e-4, vlo = 1e30, vhi = -1e30;
       for (i = 0; i < WNX; i++) {
         var x = WX0 + (WX1 - WX0) * i / (WNX - 1), kk = x / rdh;
-        var w = G.W[iz * WNX + i];
-        ks.push(kk); ws.push(w);
-        if (kk >= WK0 && kk <= WK1 && Math.abs(w) > amax) amax = Math.abs(w);
+        var w = G.W[iz * WNX + i], e = DAMP ? supAt(S, IZ, kk) : 1;
+        var v = DAMP ? Math.exp(w) * e : w;
+        ks.push(kk); ws.push(v); wraw.push(w); env.push(e);
+        if (kk >= WK0 && kk <= WK1) {
+          if (Math.abs(w) > amax) amax = Math.abs(w);
+          if (v < vlo) vlo = v;
+          if (v > vhi) vhi = v;
+        }
       }
-      var hi = Math.max(0.02, amax * 1.18);
-      function wy(v) { return (WY0 + WY1) / 2 - (WY1 - WY0) / 2 * (v / hi); }
+      var hi, lo0;
+      if (DAMP) {
+        var pad = Math.max(0.01, (vhi - vlo) * 0.12);
+        lo0 = vlo - pad; hi = vhi + pad;
+      } else { hi = Math.max(0.02, amax * 1.18); lo0 = -hi; }
+      function wy(v) { return WY1 - (WY1 - WY0) * (v - lo0) / (hi - lo0); }
 
-      var step = hi > 0.05 ? 0.02 : (hi > 0.025 ? 0.01 : 0.005);
-      for (var v = -Math.floor(hi / step) * step; v <= hi + 1e-12; v += step) {
-        var zero = Math.abs(v) < 1e-12;
+      var span = hi - lo0;
+      var step = DAMP ? (span > 0.25 ? 0.05 : (span > 0.12 ? 0.02 : 0.01))
+                      : (hi > 0.05 ? 0.02 : (hi > 0.025 ? 0.01 : 0.005));
+      var gv0 = Math.ceil(lo0 / step) * step;
+      for (var v = gv0; v <= hi + 1e-12; v += step) {
+        var ref = DAMP ? Math.abs(v - 1) < 1e-9 : Math.abs(v) < 1e-12;
         g.appendChild(el('line', { x1:WX, x2:WXR, y1:wy(v), y2:wy(v),
-          stroke:zero ? 'var(--ink-faint)' : 'var(--rule)', 'stroke-width':1,
-          opacity:zero ? .85 : .5 }));
-        g.appendChild(txt((v * 100).toFixed(0) + '%', { x:WX - 8, y:wy(v) + 4,
-          'text-anchor':'end', 'font-size':10.5, fill:'var(--ink-faint)',
-          'font-family':'var(--font-mono)' }));
+          stroke:ref ? 'var(--ink-faint)' : 'var(--rule)', 'stroke-width':1,
+          opacity:ref ? .85 : .5 }));
+        g.appendChild(txt(DAMP ? v.toFixed(2) : (v * 100).toFixed(0) + '%',
+          { x:WX - 8, y:wy(v) + 4, 'text-anchor':'end', 'font-size':10.5,
+            fill:'var(--ink-faint)', 'font-family':'var(--font-mono)' }));
+      }
+      // the envelope: the broadband suppression the wiggles are riding on
+      if (DAMP) {
+        var ex = [], ey = [];
+        for (i = 0; i < WNX; i++) {
+          if (ks[i] < WK0 || ks[i] > WK1) continue;
+          ex.push(wxpos(ks[i])); ey.push(wy(env[i]));
+        }
+        g.appendChild(el('path', { d:path(ex, ey), fill:'none', stroke:'var(--ink-faint)',
+          'stroke-width':1.6, 'stroke-dasharray':'6 3' }));
+        g.appendChild(txt('broadband suppression', { x:ex[ex.length - 1] - 4,
+          y:ey[ey.length - 1] - 7, 'text-anchor':'end', 'font-size':10.5,
+          fill:'var(--ink-faint)' }));
       }
 
       // the acoustic maxima, found on the curve, to show they are evenly spaced
       var peaks = [];
       for (i = 2; i < WNX - 2; i++) {
         if (ks[i] < WK0 || ks[i] > WK1) continue;
-        if (ws[i] > ws[i - 1] && ws[i] >= ws[i + 1] && ws[i] > 0.15 * amax) peaks.push(ks[i]);
+        if (wraw[i] > wraw[i - 1] && wraw[i] >= wraw[i + 1] && wraw[i] > 0.15 * amax) peaks.push(ks[i]);
       }
       peaks.forEach(function (kp) {
         g.appendChild(el('line', { x1:wxpos(kp), x2:wxpos(kp), y1:WY0, y2:WY1,
@@ -1197,7 +1249,8 @@
       g.appendChild(txt('wavenumber  k   [h/Mpc]   — linear, so the acoustic peaks are evenly spaced',
         { x:(WX + WXR) / 2, y:WY1 + 36, 'text-anchor':'middle', 'font-size':12.5,
           fill:'var(--ink-soft)' }));
-      g.appendChild(txt('P / P smooth − 1', { x:18, y:(WY0 + WY1) / 2,
+      g.appendChild(txt(DAMP ? 'P / P smooth (Σmᵥ = 0)' : 'P / P smooth − 1',
+        { x:18, y:(WY0 + WY1) / 2,
         'text-anchor':'middle', 'font-size':11, fill:'var(--ink-soft)',
         transform:'rotate(-90 18 ' + ((WY0 + WY1) / 2) + ')' }));
       var note = 'r_d = ' + rdh.toFixed(1) + ' Mpc/h' +
@@ -1208,8 +1261,10 @@
         fill:'var(--ink-soft)', 'font-family':'var(--font-mono)' }));
       // linear growth is scale-free across this band, so the wiggle is the same
       // at every redshift -- which is what makes it a usable standard ruler
-      g.appendChild(txt('the same at every redshift', { x:WXR - 4, y:WY1 - 8,
-        'text-anchor':'end', 'font-size':11, fill:'var(--ink-faint)' }));
+      g.appendChild(txt(DAMP ? 'envelope deepens with time — z = ' + ZS[IZ]
+                            : 'the same at every redshift',
+        { x:WXR - 4, y:WY1 - 8, 'text-anchor':'end', 'font-size':11,
+          fill:'var(--ink-faint)' }));
       wsvg.appendChild(g);
     }
 
@@ -1271,6 +1326,9 @@
     });
     document.getElementById('fixom').addEventListener('change', function (e) {
       FIXOM = e.target.checked; refresh();
+    });
+    document.getElementById('dampwig').addEventListener('change', function (e) {
+      DAMP = e.target.checked; refresh();
     });
     document.getElementById('showwig').addEventListener('change', function (e) {
       document.getElementById('wigwrap').style.display = e.target.checked ? '' : 'none';
