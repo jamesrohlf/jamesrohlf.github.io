@@ -75,6 +75,7 @@
     .topnote p { margin:0; }
     .topnote p + p { margin-top:.45rem; }
     .topnote .src { font-size:.78rem; color:var(--ink-soft); }
+    .src { font-size:.82rem; color:var(--ink-faint); }
 
     .degtab { border-collapse:collapse; font-size:.84rem; margin:1rem 0 1.3rem;
               font-variant-numeric:tabular-nums; }
@@ -243,19 +244,37 @@
     at the same physical scale &mdash; these are two photographs of one sound wave, one taken in
     light and one in matter.</p>
 
-    <p>Now drag &Sigma;m<sub>&nu;</sub> with this panel open, and notice how little happens.
-    Going from massless neutrinos to 0.2&nbsp;eV &mdash; three times what DESI allows &mdash;
-    suppresses the broadband by 13%, but moves the crests by less than half a percent in k and
-    changes their height only from 6.4% to 6.5%. The neutrinos act on the envelope, not on the
-    wave inside it.</p>
+    <p>Now drag &Sigma;m<sub>&nu;</sub> with this panel open. Almost nothing happens &mdash;
+    and it is worth being careful about what that does and does not mean. This panel divides
+    P(k) by <em>its own</em> smooth spectrum, so any suppression acting on the wiggles and the
+    broadband alike cancels out of it exactly, by construction. Neutrino free-streaming is
+    precisely such a suppression. Holding &Omega;<sub>c</sub>h&sup2; fixed and going from
+    massless neutrinos to 0.5&nbsp;eV leaves the relative crest height at 6.5%, while the
+    <em>absolute</em> size of the wiggles falls to 0.82 of what it was &mdash; closely tracking
+    the broadband's own 0.77. The wave is damped very nearly as hard as the envelope carrying
+    it.</p>
 
-    <p>That separation is why DESI reports BAO and full-shape results as different
-    measurements. A BAO analysis deliberately throws the broadband away and fits only where
-    these crests sit, which turns it into a nearly pure measurement of geometry &mdash; robust,
-    because most of what could go wrong with a galaxy survey, and most of what an exotic
-    ingredient might do to the spectrum, lands on the broadband it has just discarded. The full
-    shape keeps the broadband, which is harder to model but is where the neutrino mass lives.
-    The two are reading different parts of the same curve.</p>
+    <p>So what this panel shows is that neutrinos do not change the wiggles' <em>shape</em>:
+    not their spacing, not their phase, not their height relative to the curve they sit on. It
+    does not show, and cannot show, that the wiggles are left alone. They are not.</p>
+
+    <p>Which of the two a survey can actually use is a live question, and the answer is not the
+    obvious one. A BAO analysis deliberately throws the broadband away and fits only where the
+    crests sit, which makes it a nearly pure measurement of geometry. You might then expect the
+    neutrino mass to be the full shape's business, since the full shape is what keeps the
+    suppressed broadband. Noriega and Aviles tested exactly that: they split linear spectra for
+    0 and 0.5&nbsp;eV into broadband and wiggles and glued the pieces back together crosswise
+    &mdash; a Frankenstein experiment, in their words &mdash; then fitted each hybrid. The fits
+    followed the <b>wiggles</b>. A spectrum built from the massless broadband carrying the
+    massive wiggles returned 0.5&nbsp;eV; one with the heavily suppressed broadband but massless
+    wiggles came back consistent with zero. Their conclusion is that a full-shape analysis is
+    largely &ldquo;blind to the suppression of the broadband&rdquo;, because a smooth
+    suppression is degenerate with galaxy bias and the counterterms that get marginalised away,
+    while the wiggles are a sharp feature no smooth nuisance term can imitate. On that reading
+    the mass is measured through how far the acoustic wave has been damped &mdash; which is the
+    very quantity this panel is built to divide out.
+    <span class="src">H.&nbsp;E. Noriega and A. Aviles,
+    <a href="https://arxiv.org/abs/2407.06117">arXiv:2407.06117</a>.</span></p>
 
     <p>The wiggles do care intensely about one thing: baryons. Push
     &Omega;<sub>b</sub>h&sup2; from 0.0210 to 0.0240 and the crests grow from 6.0% to 7.0%,
