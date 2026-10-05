@@ -5,3 +5,4 @@ IMG_*.JPG
 # Full-resolution source images: kept on disk, never published.
 Cosmos_LSST_*.jpeg
 *.tiff
+__pycache__/

@@ -1,0 +1,281 @@
+
+    // ======================================================================
+    // Panels 5 and 6. These run on the matter axis only, at the Planck baryon
+    // density, which is what keeps the payload to a few hundred KB -- so the
+    // baryon slider does not move them, and the panel text says so.
+    // ======================================================================
+    var BX = __BOX__;
+    function i16(b64) {
+      var s = atob(b64), n = s.length, u = new Uint8Array(n), i;
+      for (i = 0; i < n; i++) u[i] = s.charCodeAt(i);
+      return new Int16Array(u.buffer);
+    }
+    var BOMM = BX.omm, BNM = BOMM.length, BNT = BX.nt, BNR = BX.nr, BNKA = BX.nka;
+    var PROF = i16(BX.prof), PROFS = f32(BX.profs);
+    var DGKQ = i16(BX.dgk),  DGKS  = f32(BX.dgks);
+    var BETA = f32(BX.eta),  BZED  = f32(BX.zed), BRSE = f32(BX.rse);
+    var RGRID = BX.rgrid, KAGRID = BX.kgrid;
+    var SPCOL = ['#2a6fb0', 'var(--gold)', 'var(--scarlet)'];
+    var SPNAME = ['dark matter', 'baryons', 'photons'];
+
+    // int16 payloads carry a float32 scale per frame -- the profiles span five
+    // orders of magnitude between the first frame and today, so one global
+    // scale would quantise the early frames to nothing.
+    function profRow(im, it, sp) {
+      var o = ((im*BNT + it)*3 + sp)*BNR, s = PROFS[(im*BNT + it)*3 + sp]/32000;
+      var out = new Float64Array(BNR), i;
+      for (i = 0; i < BNR; i++) out[i] = PROF[o+i]*s;
+      return out;
+    }
+    function dgkRow(im, it) {
+      var o = (im*BNT + it)*BNKA, s = DGKS[im*BNT + it]/32000;
+      var out = new Float64Array(BNKA), i;
+      for (i = 0; i < BNKA; i++) out[i] = DGKQ[o+i]*s;
+      return out;
+    }
+
+    var TT = 0.5;                                  // fractional position on the time grid
+    function bpos(frac, n) {
+      var x = frac*(n-1), i = Math.min(n-2, Math.floor(x));
+      return { i:i, t:x-i };
+    }
+    function bblend(get, n, tf) {                  // bilinear in (matter, time)
+      var pm = bpos(st.m, BNM), pt = bpos(tf === undefined ? TT : tf, BNT),
+          out = new Float64Array(n), i;
+      var a = get(pm.i, pt.i),   b = get(pm.i, pt.i+1),
+          c = get(pm.i+1, pt.i), d = get(pm.i+1, pt.i+1);
+      for (i = 0; i < n; i++)
+        out[i] = (a[i]*(1-pt.t) + b[i]*pt.t)*(1-pm.t) + (c[i]*(1-pt.t) + d[i]*pt.t)*pm.t;
+      return out;
+    }
+    // eta, z and r_s span decades on a log-spaced grid, so they are blended in
+    // the log, not linearly -- linear interpolation between adjacent grid points
+    // would read a couple of percent high.
+    function blog(arr, tf) {
+      var pm = bpos(st.m, BNM), pt = bpos(tf === undefined ? TT : tf, BNT);
+      var g = function (i, j) { return Math.log(Math.max(arr[i*BNT + j], 1e-12)); };
+      return Math.exp((g(pm.i,pt.i)*(1-pt.t) + g(pm.i,pt.i+1)*pt.t)*(1-pm.t) +
+                      (g(pm.i+1,pt.i)*(1-pt.t) + g(pm.i+1,pt.i+1)*pt.t)*pm.t);
+    }
+    function nearModel() { var pm = bpos(st.m, BNM); return pm.t < 0.5 ? pm.i : pm.i+1; }
+    function tFracOf(key) {                        // slider position of a named epoch
+      var im = nearModel(), target = BX.meta[im][key], best = 0, bd = 1e30, j, d;
+      for (j = 0; j < BNT; j++) {
+        d = Math.abs(BETA[im*BNT + j] - target);
+        if (d < bd) { bd = d; best = j; }
+      }
+      return best/(BNT-1);
+    }
+
+    var LBOX = 1000;                               // Mpc of comoving line shown in panel 5a
+    // Panels 5a and 5b stop at last scattering. Past it the photons free-stream
+    // and damp, and normalising each frame to its own maximum would magnify the
+    // remnant into full-scale noise; the pattern the CMB carries is the one
+    // frozen at eta_*, which is what panel 3 plots.
+    function tAcoustic() { return Math.min(TT, tFracOf('eta_st')); }
+    function frozenNow() { return TT > tFracOf('eta_st') + 1e-9; }
+    function drawWaves() {
+      var svg = document.getElementById('p5a'), g = clear(svg);
+      var Y0 = 16, Y1 = 170, NXP = 700, i, k, x;
+      var dg = bblend(dgkRow, BNKA, tAcoustic());
+      var amp = KSHOW.map(function (kk) {          // the three named modes
+        var j = 0;
+        while (j < BNKA-2 && KAGRID[j+1] < kk) j++;
+        var f = (kk - KAGRID[j])/(KAGRID[j+1] - KAGRID[j]);
+        return dg[j] + f*(dg[j+1] - dg[j]);
+      });
+      var cur = [], sum = new Float64Array(NXP), vmax = 1e-30;
+      for (k = 0; k < KSHOW.length; k++) {
+        var y = new Float64Array(NXP);
+        for (i = 0; i < NXP; i++) {
+          x = LBOX*i/(NXP-1);
+          y[i] = amp[k]*Math.cos(KSHOW[k]*x);
+          sum[i] += y[i];
+        }
+        cur.push(y);
+      }
+      for (i = 0; i < NXP; i++) {
+        if (Math.abs(sum[i]) > vmax) vmax = Math.abs(sum[i]);
+        for (k = 0; k < 3; k++) if (Math.abs(cur[k][i]) > vmax) vmax = Math.abs(cur[k][i]);
+      }
+      var fx = function (v) { return X0 + (X1-X0)*v/LBOX; };
+      var fy = function (v) { return (Y0+Y1)/2 - ((Y1-Y0)/2)*(v/vmax)*0.92; };
+      [0,200,400,600,800,1000].forEach(function (v) {
+        g.appendChild(el('line', { x1:fx(v), x2:fx(v), y1:Y1, y2:Y1+4, stroke:'var(--ink-faint)' }));
+        text(g, fx(v), Y1+17, v);
+      });
+      g.appendChild(el('line', { x1:X0, x2:X1, y1:fy(0), y2:fy(0), stroke:'var(--rule)' }));
+      function path(arr) {
+        var s = '', j;
+        for (j = 0; j < NXP; j++)
+          s += (j ? 'L' : 'M') + fx(LBOX*j/(NXP-1)).toFixed(1) + ' ' + fy(arr[j]).toFixed(1) + ' ';
+        return s;
+      }
+      for (k = 0; k < 3; k++)
+        g.appendChild(el('path', { d:path(cur[k]), fill:'none', stroke:SPCOL[0],
+                                   stroke:KCOL[k], 'stroke-width':1.2, opacity:.75 }));
+      g.appendChild(el('path', { d:path(sum), fill:'none', stroke:'var(--ink)',
+                                 'stroke-width':2.2, 'stroke-linejoin':'round' }));
+      frame(g, X0, X1, Y0, Y1);
+      text(g, 20, (Y0+Y1)/2, 'δγ  (normalised)', { rot:1, size:11, fill:'var(--ink-soft)' });
+      text(g, (X0+X1)/2, Y1+34, 'comoving distance  [Mpc]', { size:12, fill:'var(--ink-soft)' });
+      text(g, X1-4, Y0+12, frozenNow() ? 'frozen at last scattering'
+                                        : 'heavy curve: the sum of the three',
+           { anchor:'end', size:10, fill:'var(--ink-faint)' });
+    }
+
+    function drawComb() {
+      var svg = document.getElementById('p5b'), g = clear(svg);
+      var Y0 = 16, Y1 = 212, i, n;
+      var ta = tAcoustic();
+      var dg = bblend(dgkRow, BNKA, ta), v = new Float64Array(BNKA), vmax = 1e-30;
+      for (i = 0; i < BNKA; i++) { v[i] = dg[i]*dg[i]; if (v[i] > vmax) vmax = v[i]; }
+      var k0 = KAGRID[0], k1 = KAGRID[BNKA-1], rs = blog(BRSE, ta);
+      var fx = function (x) { return X0 + (X1-X0)*(x-k0)/(k1-k0); };
+      var fy = function (x) { return Y1 - (Y1-Y0)*(x/vmax)*0.92; };
+      // the ideal ladder: a box of length r_s would put its harmonics here
+      for (n = 1; n <= 12; n++) {
+        var kn = n*Math.PI/rs;
+        if (kn < k0 || kn > k1) continue;
+        g.appendChild(el('line', { x1:fx(kn), x2:fx(kn), y1:Y0, y2:Y1,
+                                   stroke:'var(--ink-faint)', 'stroke-dasharray':'3 5' }));
+        if (n <= 6) text(g, fx(kn), Y0+11, n + 'π/r' + 'ₛ', { size:9.5 });
+      }
+      [0.02,0.04,0.06,0.08,0.10,0.12,0.14].forEach(function (x) {
+        if (x < k0 || x > k1) return;
+        g.appendChild(el('line', { x1:fx(x), x2:fx(x), y1:Y1, y2:Y1+4, stroke:'var(--ink-faint)' }));
+        text(g, fx(x), Y1+17, x.toFixed(2));
+      });
+      var d = 'M' + fx(k0).toFixed(1) + ' ' + fy(0).toFixed(1) + ' ';
+      for (i = 0; i < BNKA; i++) d += 'L' + fx(KAGRID[i]).toFixed(1) + ' ' + fy(v[i]).toFixed(1) + ' ';
+      d += 'L' + fx(k1).toFixed(1) + ' ' + fy(0).toFixed(1) + ' Z';
+      g.appendChild(el('path', { d:d, fill:'var(--scarlet)', opacity:.17 }));
+      g.appendChild(el('path', { d:d, fill:'none', stroke:'var(--scarlet)', 'stroke-width':1.9 }));
+      // the three named modes, as ticks under the axis
+      KSHOW.forEach(function (kk, j) {
+        if (kk < k0 || kk > k1) return;
+        g.appendChild(el('line', { x1:fx(kk), x2:fx(kk), y1:Y1, y2:Y1+9,
+                                   stroke:KCOL[j], 'stroke-width':2.4 }));
+      });
+      frame(g, X0, X1, Y0, Y1);
+      text(g, 20, (Y0+Y1)/2, '(δγ)²  (normalised)', { rot:1, size:11, fill:'var(--ink-soft)' });
+      text(g, (X0+X1)/2, Y1+34, 'wavenumber  k  [Mpc⁻¹]', { size:12, fill:'var(--ink-soft)' });
+      text(g, X1-4, Y0+11, 'r' + 'ₛ' + ' = ' + rs.toFixed(0) + ' Mpc',
+           { anchor:'end', size:11, fill:'var(--ink-soft)', weight:700 });
+    }
+
+    function drawProfile() {
+      var svg = document.getElementById('p6'), g = clear(svg);
+      var Y0 = 16, Y1 = 238, sp, i;
+      var cur = [], vmax = 1e-30;
+      for (sp = 0; sp < 3; sp++) {
+        var y = bblend((function (s) {
+          return function (im, it) { return profRow(im, it, s); };
+        })(sp), BNR);
+        cur.push(y);
+        for (i = 0; i < BNR; i++) if (Math.abs(y[i]) > vmax) vmax = Math.abs(y[i]);
+      }
+      var r1 = RGRID[BNR-1], rs = blog(BRSE), eta = blog(BETA), m = BX.meta[nearModel()];
+      var fx = function (v) { return X0 + (X1-X0)*v/r1; };
+      var fy = function (v) { return (Y0+Y1)/2 - ((Y1-Y0)/2)*(v/vmax)*0.92; };
+      [0,50,100,150,200,250].forEach(function (v) {
+        if (v > r1) return;
+        g.appendChild(el('line', { x1:fx(v), x2:fx(v), y1:Y1, y2:Y1+4, stroke:'var(--ink-faint)' }));
+        text(g, fx(v), Y1+17, v);
+      });
+      g.appendChild(el('line', { x1:X0, x2:X1, y1:fy(0), y2:fy(0), stroke:'var(--rule)' }));
+      // where sound has reached: the shell should be sitting on this line, and
+      // should stop moving once the photons leave
+      g.appendChild(el('line', { x1:fx(rs), x2:fx(rs), y1:Y0, y2:Y1, stroke:'var(--ink)',
+                                 'stroke-width':1.3, 'stroke-dasharray':'5 4', opacity:.75 }));
+      var an = fx(rs) > X1-60 ? 'end' : (fx(rs) < X0+60 ? 'start' : 'middle');
+      text(g, fx(rs) + (an === 'end' ? -4 : an === 'start' ? 4 : 0), Y0+12,
+           'sound horizon  ' + rs.toFixed(0) + ' Mpc', { size:10.5, fill:'var(--ink)', anchor:an });
+      for (sp = 0; sp < 3; sp++) {
+        var d = '', j;
+        for (j = 0; j < BNR; j++)
+          d += (j ? 'L' : 'M') + fx(RGRID[j]).toFixed(1) + ' ' + fy(cur[sp][j]).toFixed(1) + ' ';
+        g.appendChild(el('path', { d:d, fill:'none', stroke:SPCOL[sp], 'stroke-width':2,
+                                   'stroke-linejoin':'round' }));
+      }
+      frame(g, X0, X1, Y0, Y1);
+      text(g, 20, (Y0+Y1)/2, 'r²  ×  overdensity', { rot:1, size:11, fill:'var(--ink-soft)' });
+      text(g, (X0+X1)/2, Y1+34, 'comoving radius from the perturbation  [Mpc]',
+           { size:12, fill:'var(--ink-soft)' });
+      if (eta > m.eta_st*1.004)
+        text(g, X1-4, Y0+12, 'photons have decoupled', { anchor:'end', size:10,
+                                                         fill:'var(--ink-faint)' });
+    }
+
+    // ---- the time control --------------------------------------------------
+    var PLAYING = null;
+    function timeControlHTML() {
+      return '' +
+      '<div class="knobs">' +
+        '<div class="knob">' +
+          '<label for="kt">conformal time &eta; &mdash; panels 5 and 6</label>' +
+          '<output id="ot"></output>' +
+          '<input type="range" id="kt" min="0" max="1" step="0.0025" value="0.5">' +
+          '<span class="hint">the matter slider still applies; the baryon slider does not move ' +
+            'these two panels, which are computed at the Planck baryon density</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bar">' +
+        '<button type="button" data-tact="play" id="playbtn">▶&nbsp; play</button>' +
+        '<button type="button" class="ghost" data-tact="eq">equality</button>' +
+        '<button type="button" class="ghost" data-tact="ls">last scattering</button>' +
+        '<button type="button" class="ghost" data-tact="now">today</button>' +
+      '</div>' +
+      '<p class="readout" id="out-time"></p>';
+    }
+    function renderBox() {
+      drawWaves(); drawComb(); drawProfile();
+      var eta = blog(BETA), z = blog(BZED), rs = blog(BRSE), m = BX.meta[nearModel()];
+      var near = function (a, b2) { return Math.abs(a/b2 - 1) < 0.004; };
+      var era = near(eta, m.eta_eq) ? 'at matter–radiation equality'
+              : near(eta, m.eta_st) ? 'at last scattering'
+              : eta < m.eta_eq ? 'radiation dominated'
+              : eta < m.eta_st ? 'matter dominated, still coupled'
+              : 'after last scattering';
+      document.getElementById('ot').textContent = eta.toFixed(eta < 100 ? 1 : 0) + ' Mpc';
+      document.getElementById('kt').value = TT;
+      document.getElementById('out-time').innerHTML =
+        '<span>&eta; = <b>' + eta.toFixed(eta < 100 ? 1 : 0) + '</b> Mpc</span>' +
+        '<span>z = <b>' + (z > 999 ? Math.round(z) : z.toFixed(2)) + '</b></span>' +
+        '<span>r<sub>s</sub> = <b>' + rs.toFixed(1) + '</b> Mpc</span>' +
+        '<span>first rung &pi;/r<sub>s</sub> = <b>' + (Math.PI/rs).toFixed(4) + '</b> Mpc⁻¹</span>' +
+        '<span style="opacity:.75">' + era + '</span>';
+    }
+    function setT(t) { TT = Math.max(0, Math.min(1, t)); renderBox(); }
+    function stopPlay() {
+      if (PLAYING) { clearInterval(PLAYING); PLAYING = null; }
+      document.getElementById('playbtn').innerHTML = '▶&nbsp; play';
+    }
+    document.getElementById('ctrl-time').innerHTML = timeControlHTML();
+    document.getElementById('kt').addEventListener('input', function () {
+      stopPlay(); setT(+this.value);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('button[data-tact]'), function (b) {
+      b.addEventListener('click', function () {
+        var a = b.getAttribute('data-tact');
+        if (a === 'play') {
+          if (PLAYING) { stopPlay(); return; }
+          b.innerHTML = '‖&nbsp; pause';
+          PLAYING = setInterval(function () {
+            TT += 0.005;
+            if (TT > 1) TT = 0;
+            renderBox();
+          }, 40);
+          return;
+        }
+        stopPlay();
+        setT(a === 'eq' ? tFracOf('eta_eq') : a === 'ls' ? tFracOf('eta_st') : 1);
+      });
+    });
+    document.getElementById('leg5').innerHTML = KSHOW.map(function (k, i) {
+      return '<span style="color:' + KCOL[i] + '"><i></i>k = ' + k.toFixed(4) + ' Mpc⁻¹</span>';
+    }).join('') + '<span style="opacity:.6">the same three modes as panels 1 and 2</span>';
+    document.getElementById('leg6').innerHTML = SPNAME.map(function (n, i) {
+      return '<span style="color:' + SPCOL[i] + '"><i></i>' + n + '</span>';
+    }).join('') + '<span style="opacity:.6">each frame scaled to its own largest value, ' +
+      'so the shape is readable while the amplitudes grow by five orders of magnitude</span>';

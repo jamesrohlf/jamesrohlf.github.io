@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Why Matter Lowers the First CMB Peak — Jim Rohlf</title>
+  <meta property="og:site_name" content="Jim Rohlf — DESI">
+  <meta name="description" content="How the density of matter changes the heights of the CMB acoustic peaks: sound waves in the photon-baryon plasma, the decaying gravitational potential that drives them, and why more dark matter makes the first peak smaller while more baryons make it bigger.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/cmb-peaks.html">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+  <style>
+    .rig { border:1px solid var(--rule); border-radius:10px; padding:.9rem 1rem 1rem;
+           margin:1.4rem 0 1.7rem; background:var(--paper); }
+    .rig svg { display:block; width:100%; height:auto; }
+    .rig h3 { margin:0 0 .4rem; font:700 .78rem var(--font-body); text-transform:uppercase;
+              letter-spacing:.07em; color:var(--ink-soft); }
+    .rig h3 + svg { margin-bottom:.9rem; }
+
+    .knobs { display:grid; grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));
+             gap:.5rem 1.5rem; margin:1rem 0 0; }
+    .knob { display:grid; grid-template-columns:1fr auto; align-items:baseline; gap:.1rem .5rem; }
+    .knob label { font-size:.86rem; font-weight:600; color:var(--ink-soft); }
+    .knob output { font-family:var(--font-mono); font-size:.84rem; color:var(--ink);
+                   font-variant-numeric:tabular-nums; }
+    .knob input[type=range] { grid-column:1/-1; width:100%; accent-color:var(--scarlet); margin:.15rem 0 .2rem; }
+    .knob .hint { grid-column:1/-1; font-size:.73rem; color:var(--ink-faint); margin:-.1rem 0 .1rem; }
+
+    .bar { display:flex; flex-wrap:wrap; gap:.5rem .8rem; align-items:center; margin-top:.9rem; }
+    .bar button { font:700 .85rem var(--font-body); cursor:pointer; padding:.44rem 1rem;
+                  border:1px solid var(--scarlet); border-radius:5px;
+                  background:var(--scarlet); color:#fff;
+                  transition:background var(--ease),border-color var(--ease); }
+    .bar button:hover { background:var(--scarlet-bright); border-color:var(--scarlet-bright); }
+    .bar button.ghost { background:var(--cream); color:var(--ink); border-color:var(--rule); }
+    .bar button.ghost:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
+    .bar label { font-size:.82rem; color:var(--ink-soft); display:flex; align-items:center; gap:.3rem; }
+
+    .readout { display:flex; flex-wrap:wrap; gap:.15rem 1.3rem; margin:.7rem 0 0;
+               font-size:.82rem; font-family:var(--font-mono); color:var(--ink-soft);
+               font-variant-numeric:tabular-nums; }
+    .readout b { color:var(--ink); font-weight:700; }
+    .up { color:var(--scarlet); font-weight:700; } .dn { color:#1a7f37; font-weight:700; }
+
+    .legend { display:flex; flex-wrap:wrap; gap:.2rem 1.1rem; font-size:.78rem;
+              color:var(--ink-faint); margin:.45rem 0 0; }
+    .legend i { display:inline-block; width:1.3rem; height:0; vertical-align:middle;
+                border-top:2.5px solid currentColor; margin-right:.3rem; }
+    .note { font-size:.79rem; color:var(--ink-faint); margin:.9rem 0 0; max-width:var(--measure); }
+    .aside { border-left:3px solid var(--rule); padding:.15rem 0 .15rem .9rem;
+             margin:1.1rem 0 1.3rem; max-width:var(--measure); font-size:.9rem;
+             color:var(--ink-soft); }
+    .warn { border-left:3px solid var(--gold); background:var(--cream); padding:.7rem .9rem;
+            margin:1.2rem 0 1.4rem; border-radius:0 6px 6px 0; max-width:var(--measure); }
+    .warn p { margin:0; } .warn p + p { margin-top:.5rem; }
+    .warn .tag { display:block; font:700 .72rem var(--font-body); text-transform:uppercase;
+                 letter-spacing:.07em; color:var(--ink-soft); margin-bottom:.35rem; }
+    .tbl { width:100%; border-collapse:collapse; font-size:.85rem; margin:1rem 0 1.4rem;
+           font-variant-numeric:tabular-nums; }
+    .tbl th,.tbl td { padding:.22rem .6rem; border-bottom:1px dotted var(--rule); text-align:right; }
+    .tbl th:first-child,.tbl td:first-child { text-align:left; }
+    .tbl thead th { border-bottom:1px solid var(--rule); font:700 .7rem var(--font-body);
+                    text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); }
+    .tbl td { font-family:var(--font-mono); }
+  </style>
+</head>
+<body>
+  <main id="main">
+    <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
+
+    <h1>Why Matter Lowers the First CMB Peak</h1>
+
+    <p class="lede">The peaks in the microwave background are sound waves, caught in the act of
+    ringing. How tall the first one stands is not set by how much gravity pulls &mdash; it is set
+    by how fast gravity was <em>fading</em> while the wave was ringing. That is why adding dark
+    matter makes the first peak smaller, which is the opposite of what most people guess.</p>

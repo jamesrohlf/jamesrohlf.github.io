@@ -1,0 +1,214 @@
+
+    <h2>One oscillator, driven by a fading potential</h2>
+
+    <p>Before the universe became transparent, photons and baryons moved as a single fluid.
+    Gravity pulled that fluid into the dark matter&rsquo;s potential wells; photon pressure
+    pushed it back out. Each Fourier mode of the density therefore behaves as a harmonic
+    oscillator, and it starts oscillating when its wavelength first fits inside the horizon.</p>
+
+    <p>The part that decides the peak heights is what the gravitational potential does
+    <em>while</em> the mode rings. Radiation cannot cluster: its pressure resists collapse, so
+    during radiation domination the potential a mode has just fallen into <b>decays away</b>
+    beneath it. That decay is in step with the oscillation, and it pumps it &mdash; a resonant
+    kick that can nearly double the amplitude. Once matter dominates, the potential stops
+    decaying, the pumping stops, and a mode entering afterwards rings with no help at all.</p>
+
+    <p>So the question for any mode is simply: <em>had matter taken over yet when I entered the
+    horizon?</em> And the answer is set by the matter density, because that is what fixes when
+    matter&ndash;radiation equality happened.</p>
+
+    <p class="aside"><b>What the three curves are.</b> The gravitational potential is a
+    landscape &mdash; a value at every point in space, hills and valleys. What panel 1 plots is
+    not that landscape but its ingredients. Any landscape can be written as a sum of pure
+    ripples of different wavelength, and each curve is the <em>depth of one ripple</em>: a single
+    sinusoidal corrugation of the potential, 336, 154 and 101&nbsp;Mpc from crest to crest. Panel
+    5, further down, draws the same three as actual waves in space if it helps to see them.</p>
+
+    <p class="aside">The reason this is worth doing &mdash; and the reason cosmologists always do
+    it &mdash; is that while the perturbations are small the equations governing them are linear,
+    so the ripples <b>do not interact</b>. Each one rises and falls entirely on its own, ignorant
+    of the others, and the universe becomes a set of independent oscillators that can be followed
+    one at a time. Panel 1 follows three of them.</p>
+
+    <p class="aside">They start at the same depth, because adiabatic initial conditions give every
+    wavelength the same amplitude. What separates them is the horizon: a ripple can do nothing
+    until the horizon has grown to its own scale. Written as k&thinsp;&eta;&nbsp;=&nbsp;1, the
+    usual convention, that puts the short ripple at &eta;&nbsp;&asymp;&nbsp;16&nbsp;Mpc, the
+    middle at 25 and the long at 53. In the computed curves the visible bend comes a little after
+    each &mdash; 24, 39 and 56&nbsp;Mpc at a 5% departure &mdash; because the response is not
+    instantaneous and because the crossing scale is a convention rather than a measurement. The
+    ordering is what matters. The short ripple, entering earliest and deepest into the radiation
+    era, decays the longest and ends with 18% of its depth; the long one keeps 60%. Everything on
+    this page follows from that spread.</p>
+
+    <p class="aside"><b>Reading the time axis.</b> The first two panels run on <i>conformal
+    time</i>, &eta;&nbsp;=&nbsp;&int;&thinsp;d<i>t</i>/<i>a</i>. It is a time coordinate, but
+    with <i>c</i>&nbsp;=&nbsp;1 it carries units of length &mdash; and that length is the
+    comoving distance light has travelled since the Big Bang. So &eta; is the comoving particle
+    horizon: <b>how far you can see</b>, not how big things are. The size of the universe is the
+    scale factor <i>a</i>.</p>
+
+    <p class="aside">That makes &eta; the natural ruler for these two panels. A mode begins to
+    oscillate when k&thinsp;&eta;&nbsp;&asymp;&nbsp;1 &mdash; the moment its wavelength first
+    fits inside the horizon &mdash; and the sound horizon that sets the peak spacing is an
+    integral along this very axis. The two quantities do rise together, so moving right is
+    always later and larger, but not in step: <i>a</i>&nbsp;&prop;&nbsp;&eta; while radiation
+    dominates and <i>a</i>&nbsp;&prop;&nbsp;&eta;&sup2; once matter does. The redshift scale
+    across the top of panel 1 is that conversion, and its ticks halve their spacing as you pass
+    equality for exactly this reason.</p>
+
+    <div class="rig">
+      <div class="ctrl" id="ctrl-top"></div>
+
+      <h3>1 &nbsp;·&nbsp; the driver: the gravitational potential, ripple by ripple</h3>
+      <svg id="p1" viewBox="0 0 900 272" role="img" aria-labelledby="p1t p1d">
+        <title id="p1t">The Weyl gravitational potential against conformal time</title>
+        <desc id="p1d">For three wavenumbers, the gravitational potential stays constant until
+        the mode enters the horizon, then decays during radiation domination and levels off once
+        matter dominates. Moving the matter slider shifts matter-radiation equality earlier,
+        cutting the decay short.</desc>
+      </svg>
+
+      <h3>2 &nbsp;·&nbsp; the oscillator: the photon overdensity</h3>
+      <svg id="p2" viewBox="0 0 900 260" role="img" aria-labelledby="p2t p2d">
+        <title id="p2t">The photon overdensity against conformal time</title>
+        <desc id="p2d">The same three modes oscillating, with the amplitude they reach set by how
+        much of the potential's decay they caught. Everything freezes at last scattering.</desc>
+      </svg>
+
+      <div class="legend" id="leg"></div>
+
+      <h3>3 &nbsp;·&nbsp; frozen at last scattering: the peaks appear, in k</h3>
+      <svg id="p3" viewBox="0 0 900 250" role="img" aria-labelledby="p3t p3d">
+        <title id="p3t">The squared photon overdensity at last scattering against wavenumber</title>
+        <desc id="p3d">Sampling every mode at the moment of last scattering produces a series of
+        maxima, the acoustic peaks, before any projection onto the sky.</desc>
+      </svg>
+
+      <h3>4 &nbsp;·&nbsp; what we observe: the temperature power spectrum</h3>
+      <svg id="p4" viewBox="0 0 900 290" role="img" aria-labelledby="p4t p4d">
+        <title id="p4t">The observed CMB temperature power spectrum</title>
+        <desc id="p4d">The same model's temperature power spectrum against multipole, with the
+        Planck best-fit curve shown faintly for comparison.</desc>
+      </svg>
+
+      <div class="ctrl" id="ctrl-bot"></div>
+    </div>
+
+    <h2>What the four panels are saying</h2>
+
+    <p>Drag the matter slider and watch <b>panel 1</b> first. The vertical line is
+    matter&ndash;radiation equality. More matter moves it left, to earlier times, and the
+    potential curves flatten out sooner &mdash; there is simply less decay left for a mode to
+    catch. At the Planck value the longest mode shown loses about 40% of its potential before
+    last scattering; push the matter up and that falls to about a third.</p>
+
+    <p><b>Panel 2</b> shares panel 1's time axis and is the consequence. The modes still oscillate at the same rate &mdash; the
+    sound speed has not changed &mdash; but they ring less hard, because they were pumped less.
+    Nothing about the <em>timing</em> of the oscillation changes, which is why the peaks will not
+    move sideways.</p>
+
+    <p><b>Panel 3</b> is the step that turns an oscillation into a spectrum. Last scattering
+    happens everywhere at once, so every mode is frozen at whatever phase it had reached. Modes
+    caught at maximum compression or maximum rarefaction have large amplitude; modes caught
+    mid-swing have none. Plotted against wavenumber, that is a series of peaks &mdash; and they
+    sit at k&nbsp;r<sub>s</sub> &asymp; &pi;, 2&pi;, 3&pi;, one for each half-oscillation that
+    fitted into the time available.</p>
+
+    <p><b>Panel 4</b> is what a telescope sees, after that pattern is projected onto the sky at a
+    distance of 13.9&nbsp;billion parsecs. Because &theta;<sub>&lowast;</sub> is being held fixed
+    here, the peaks stay put in &#8467; and only their heights move &mdash; which is the whole
+    point.</p>
+
+    <h2>The two kinds of matter pull in opposite directions</h2>
+
+    <p>This is where intuition usually goes astray, and the second slider is there to show why.
+    Baryons and cold dark matter are both matter, but they act on the oscillation by completely
+    different routes.</p>
+
+    <table class="tbl">
+      <thead><tr><th>moving one slider end to end</th><th>peak 1</th><th>peak 2</th>
+                 <th>peak 1 / peak 2</th></tr></thead>
+      <tbody>
+        <tr><td>&Omega;<sub>b</sub>h&sup2;: 0.019 &rarr; 0.026,
+                <span style="opacity:.7">total matter held</span></td>
+            <td class="up">+14%</td><td>&minus;7%</td><td>2.00 &rarr; 2.45</td></tr>
+        <tr><td>&Omega;<sub>m</sub>h&sup2;: 0.112 &rarr; 0.172,
+                <span style="opacity:.7">baryons held</span></td>
+            <td class="dn">&minus;23%</td><td>&minus;21%</td><td>2.24 &rarr; 2.19</td></tr>
+      </tbody>
+    </table>
+
+    <p class="note">The two rows hold different things fixed, deliberately, because that is what
+    the two sliders do. Moving the baryon slider keeps &Omega;<sub>m</sub>h&sup2; constant and so
+    trades dark matter for baryons &mdash; which is the cleanest way to see the seesaw, since the
+    total gravitating mass does not change and only its composition does. Moving the matter
+    slider keeps &Omega;<sub>b</sub>h&sup2; at the BBN value and lets the dark matter carry the
+    whole change.</p>
+
+    <p><b>Baryons work through the depth of the well.</b> They are heavy, and they add inertia to
+    the photon&ndash;baryon fluid, so gravity drags it further in before pressure can turn it
+    around. That displaces the <em>zero point</em> of the oscillation: compressions get deeper,
+    rarefactions get shallower. Compressions are the odd peaks and rarefactions the even ones, so
+    the first peak rises while the second falls. The ratio of the two is what measures the baryon
+    density &mdash; and it agrees with the deuterium abundance left over from big bang
+    nucleosynthesis, which is an entirely independent argument.</p>
+
+    <p><b>Dark matter works through the timing.</b> It does not interact with the photons at all;
+    it only decides when the universe stopped being radiation-dominated. More of it means an
+    earlier equality, less potential decay, and less of the resonant pumping &mdash; so the whole
+    envelope of the peaks comes down together, and the odd&ndash;even ratio hardly moves.</p>
+
+    <p>That difference is what lets a single photograph of the sky weigh the two separately. If
+    both kinds of matter did the same thing to the peaks, the CMB could only report their sum.</p>
+
+    <div class="warn">
+      <span class="tag">Where the chain is only qualitative</span>
+      <p>Panel 3 is not the observed spectrum with a different label on the axis. The temperature
+      we measure is not the photon overdensity alone: there is also a Doppler contribution from
+      the fluid&rsquo;s velocity, which peaks where the density is passing through zero and so
+      partly fills in the troughs, and there is the integrated Sachs&ndash;Wolfe effect from
+      potentials evolving along the line of sight.</p>
+      <p>The projection is not a simple relabelling either. Taking &#8467;&nbsp;=&nbsp;k&nbsp;D<sub>A</sub>
+      puts the first peak at 259 where it is really observed at 220, an error of fifteen percent,
+      falling to about four percent by the fourth peak. A mode of given wavelength contributes to
+      a range of angular scales, because it can be oriented any way relative to the line of
+      sight, and last scattering has a finite thickness that smooths the result. Panel 3 shows
+      honestly where the peaks come from and what sets their relative sizes; panel 4 is the
+      calculation done properly.</p>
+    </div>
+
+<!--BOX-->
+
+    <h2>How this was computed</h2>
+
+    <p>Every curve on this page is <a href="https://camb.info/">CAMB</a> output, not a model of
+    CAMB. Panels 1 and 2 are the actual Weyl potential and photon overdensity from the Boltzmann
+    hierarchy, panel 3 the same perturbation sampled at last scattering across wavenumber, and
+    panel 4 the computed temperature spectrum. Forty-five models were run across a grid in the
+    two densities and the page interpolates between them, which is why the sliders step in small
+    increments rather than moving continuously.</p>
+
+    <p>Panels 5 and 6 come from a second pass, nine models along the matter axis at the Planck
+    baryon density, carrying the photon overdensity across wavenumber at thirty-six times from
+    &eta;&nbsp;=&nbsp;5&nbsp;Mpc to the present. Panel 6 is a spherical Bessel transform of those
+    same perturbations, after Eisenstein, Seo &amp; White (2007): a point overdensity at early
+    times is decomposed into modes, each evolved by CAMB, and transformed back, with the initial
+    condition normalised to a unit point source and a 4&nbsp;Mpc Gaussian applied to keep the
+    central cusp finite. The time grid carries exact points at equality and at last scattering,
+    so panel 5 at last scattering is the same curve as panel 3.</p>
+
+    <p class="note">&theta;<sub>&lowast;</sub> is held fixed as the densities change, so H&#8320;
+    moves instead &mdash; from about 80 at the low end of the matter slider to about 58 at the
+    high end. That is the right thing to hold fixed here: &theta;<sub>&lowast;</sub> is what the
+    CMB measures best, and fixing it keeps the peaks from sliding sideways so that the change in
+    height is unambiguous. The optical depth and the primordial amplitude and tilt are held at
+    their Planck 2018 values throughout.</p>
+
+    <p class="note">Further afield: <a href="cmb-spectrum.html">the CMB power spectrum</a> with
+    all six parameters on sliders and the Planck data to fit;
+    <a href="sky-to-spectrum.html">from sky map to power spectrum</a> for how the curve is
+    extracted from a photograph of the sky; <a href="lcdm.html">&Lambda;CDM and the six
+    parameters</a>.</p>
+
+  </main>

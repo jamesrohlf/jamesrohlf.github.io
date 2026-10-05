@@ -1,0 +1,340 @@
+  <script>
+  (function () {
+    'use strict';
+    var D = __DATA__;
+
+    function f32(b64) {
+      var s = atob(b64), n = s.length, u = new Uint8Array(n), i;
+      for (i = 0; i < n; i++) u[i] = s.charCodeAt(i);
+      return new Float32Array(u.buffer);
+    }
+    var OMB = D.omb, OMM = D.omm, KSHOW = D.kshow, LN = D.lnodes;
+    var NB = OMB.length, NM = OMM.length, NKS = KSHOW.length,
+        NE = D.neta, NK = D.nk, NL = D.nl;
+    var DGAM = f32(D.dgam), WEYL = f32(D.weyl), ETA = f32(D.eta), AVEC = f32(D.avec),
+        FROZ = f32(D.frozen), CL = f32(D.cl), KG = f32(D.kgrid);
+
+    // ---- indexing into the flattened grids ---------------------------------
+    function evSlice(A, ib, im, ik) {            // (nb, nm, nks, neta)
+      var o = ((ib * NM + im) * NKS + ik) * NE;
+      return A.subarray(o, o + NE);
+    }
+    var row = function (A, ib, im, n) { var o = (ib * NM + im) * n; return A.subarray(o, o + n); };
+
+    // Bilinear in (omega_b, omega_m). The grid is coarse on purpose -- 45 CAMB
+    // runs -- and these quantities vary smoothly, so interpolation is honest.
+    var st = { b:0, m:0 };                        // fractional grid position, 0..1
+    function pos(frac, axis) {
+      var x = frac * (axis.length - 1);
+      var i = Math.min(axis.length - 2, Math.floor(x));
+      return { i:i, t:x - i, v:axis[i] + (axis[i+1] - axis[i]) * (x - i) };
+    }
+    function blend(getter, n) {
+      var pb = pos(st.b, OMB), pm = pos(st.m, OMM), out = new Float64Array(n), i;
+      var a = getter(pb.i,   pm.i),   b = getter(pb.i,   pm.i+1),
+          c = getter(pb.i+1, pm.i),   d2 = getter(pb.i+1, pm.i+1);
+      for (i = 0; i < n; i++)
+        out[i] = (a[i]*(1-pm.t) + b[i]*pm.t)*(1-pb.t) + (c[i]*(1-pm.t) + d2[i]*pm.t)*pb.t;
+      return out;
+    }
+    function meta() {
+      var pb = pos(st.b, OMB), pm = pos(st.m, OMM);
+      var g = function (i, j) { return D.meta[i][j]; }, k;
+      var a = g(pb.i,pm.i), b = g(pb.i,pm.i+1), c = g(pb.i+1,pm.i), d2 = g(pb.i+1,pm.i+1);
+      var o = {};
+      for (k in a) o[k] = (a[k]*(1-pm.t)+b[k]*pm.t)*(1-pb.t) + (c[k]*(1-pm.t)+d2[k]*pm.t)*pb.t;
+      o.omb = pb.v; o.omm = pm.v;
+      return o;
+    }
+
+    // ---- drawing -----------------------------------------------------------
+    var NS = 'http://www.w3.org/2000/svg';
+    function el(n, at) { var e = document.createElementNS(NS, n), k;
+                         for (k in at) e.setAttribute(k, at[k]); return e; }
+    function clear(svg) {
+      var old = svg.querySelector('g[data-body]');
+      if (old) old.parentNode.removeChild(old);
+      var g = el('g', {}); g.setAttribute('data-body', '1'); svg.appendChild(g); return g;
+    }
+    function text(g, x, y, s, o) {
+      o = o || {};
+      var t = el('text', { x:x, y:y, 'text-anchor':o.anchor || 'middle',
+                           'font-size':o.size || 11, fill:o.fill || 'var(--ink-faint)' });
+      if (o.rot) t.setAttribute('transform', 'rotate(-90 ' + x + ' ' + y + ')');
+      if (o.weight) t.setAttribute('font-weight', o.weight);
+      t.textContent = s; g.appendChild(t); return t;
+    }
+    function frame(g, X0, X1, Y0, Y1) {
+      g.appendChild(el('rect', { x:X0, y:Y0, width:X1-X0, height:Y1-Y0,
+                                 fill:'none', stroke:'var(--ink-faint)' }));
+    }
+    var KCOL = ['var(--scarlet)', 'var(--gold)', '#2a6fb0'];
+
+    var X0 = 76, X1 = 884;
+    function drawTime(svgId, which, Y0, Y1, label, signed, topz) {
+      var svg = document.getElementById(svgId), g = clear(svg);
+      var m = meta();
+      var eta = blend(function (i,j) { return row(ETA, i, j, NE); }, NE);
+      var sa  = blend(function (i,j) { return row(AVEC, i, j, NE); }, NE);
+      var cur = [], vmax = 0, i, k;
+      for (k = 0; k < NKS; k++) {
+        var y = blend((function (kk) { return function (i,j) { return evSlice(which, i, j, kk); }; })(k), NE);
+        cur.push(y);
+        for (i = 0; i < NE; i++) if (Math.abs(y[i]) > vmax) vmax = Math.abs(y[i]);
+      }
+      if (!(vmax > 0)) vmax = 1;
+      var e0 = eta[0], e1 = eta[NE-1];
+      var fx = function (v) { return X0 + (X1-X0) * (Math.log(v/e0) / Math.log(e1/e0)); };
+      var fy = signed ? function (v) { return (Y0+Y1)/2 - ((Y1-Y0)/2) * (v/vmax) * 0.94; }
+                      : function (v) { return Y1 - (Y1-Y0) * (v/vmax) * 0.94; };
+      [1, 3, 10, 30, 100, 300].forEach(function (v) {
+        if (v < e0 || v > e1) return;
+        g.appendChild(el('line', { x1:fx(v), x2:fx(v), y1:Y1, y2:Y1+4, stroke:'var(--ink-faint)' }));
+        text(g, fx(v), Y1+17, v);
+      });
+      // A second scale across the top, because "conformal time in Mpc" is not a
+      // quantity anyone has an instinct for. eta is monotonic in the scale factor,
+      // so redshift can be ruled directly onto the same axis -- but not linearly:
+      // a is proportional to eta while radiation dominates and to eta^2 after, so
+      // the tick spacing visibly changes stride near equality. That is the point.
+      if (topz) {
+        var etaOfZ = function (z) {               // invert a(eta), in log-log
+          var at = 1/(1+z), i;
+          if (at <= sa[0] || at >= sa[NE-1]) return null;
+          for (i = 1; i < NE; i++) if (sa[i] >= at) break;
+          var f = (Math.log(at) - Math.log(sa[i-1])) / (Math.log(sa[i]) - Math.log(sa[i-1]));
+          return Math.exp(Math.log(eta[i-1]) + f * (Math.log(eta[i]) - Math.log(eta[i-1])));
+        };
+        // decades while radiation runs the show, then two late ticks: past
+        // equality a grows as eta^2, so the same step in z takes half the room.
+        [[1e6,'10\u2076'], [1e5,'10\u2075'], [1e4,'10\u2074'],
+         [3000,'3000'], [1500,'1500']]
+          .forEach(function (t) {
+            var e = etaOfZ(t[0]); if (e === null) return;
+            g.appendChild(el('line', { x1:fx(e), x2:fx(e), y1:Y0-4, y2:Y0,
+                                       stroke:'var(--ink-faint)' }));
+            text(g, fx(e), Y0-9, t[1], { size:10 });
+          });
+        text(g, X0 - 4, Y0 - 9, 'redshift  z', { anchor:'end', size:11,
+                                                 fill:'var(--ink-soft)' });
+      }
+      if (signed) g.appendChild(el('line', { x1:X0, x2:X1, y1:fy(0), y2:fy(0),
+                                             stroke:'var(--rule)' }));
+      // matter-radiation equality, and last scattering
+      [[m.eta_eq, 'equality', 'var(--ink)'], [m.eta_st, 'last scattering', 'var(--scarlet)']]
+        .forEach(function (mk, idx) {
+          if (mk[0] < e0 || mk[0] > e1) return;
+          var xm = fx(mk[0]);
+          g.appendChild(el('line', { x1:xm, x2:xm, y1:Y0, y2:Y1, stroke:mk[2],
+                                     'stroke-width':1.3, 'stroke-dasharray':'5 4', opacity:.8 }));
+          // last scattering sits exactly on the right-hand frame -- a centred
+          // label there runs off the viewBox, so labels near either edge turn in.
+          var an = xm > X1 - 54 ? 'end' : (xm < X0 + 54 ? 'start' : 'middle');
+          text(g, xm + (an === 'end' ? -4 : an === 'start' ? 4 : 0),
+               Y0 + 12 + idx*13, mk[1], { size:10.5, fill:mk[2], anchor:an });
+        });
+      for (k = 0; k < NKS; k++) {
+        var d = '', y2 = cur[k];
+        for (i = 0; i < NE; i++) d += (i ? 'L' : 'M') + fx(eta[i]).toFixed(1) + ' ' + fy(y2[i]).toFixed(1) + ' ';
+        g.appendChild(el('path', { d:d, fill:'none', stroke:KCOL[k], 'stroke-width':1.8,
+                                   'stroke-linejoin':'round' }));
+      }
+      frame(g, X0, X1, Y0, Y1);
+      text(g, 20, (Y0+Y1)/2, label, { rot:1, size:11, fill:'var(--ink-soft)' });
+      text(g, (X0+X1)/2, Y1+34, 'conformal time  [Mpc]', { size:12, fill:'var(--ink-soft)' });
+      // The gloss goes under the first panel only. Panel 2 is directly beneath and
+      // shares this axis, so repeating 60 characters there reads as a mistake.
+      if (topz)
+        text(g, (X0+X1)/2, Y1+49,
+             '(the comoving distance light has travelled since the Big Bang)',
+             { size:10.5, fill:'var(--ink-faint)' });
+    }
+
+    function drawFrozen() {
+      var svg = document.getElementById('p3'), g = clear(svg);
+      var Y0 = 18, Y1 = 196;
+      var y = blend(function (i,j) { return row(FROZ, i, j, NK); }, NK);
+      var v = new Float64Array(NK), vmax = 0, i;
+      for (i = 0; i < NK; i++) { v[i] = y[i]*y[i]; if (v[i] > vmax) vmax = v[i]; }
+      var k0 = KG[0], k1 = KG[NK-1];
+      var fx = function (x) { return X0 + (X1-X0)*(x-k0)/(k1-k0); };
+      var fy = function (x) { return Y1 - (Y1-Y0)*(x/vmax)*0.94; };
+      [0.02,0.04,0.06,0.08,0.10].forEach(function (x) {
+        if (x < k0 || x > k1) return;
+        g.appendChild(el('line', { x1:fx(x), x2:fx(x), y1:Y1, y2:Y1+4, stroke:'var(--ink-faint)' }));
+        text(g, fx(x), Y1+17, x.toFixed(2));
+      });
+      var d = '';
+      for (i = 0; i < NK; i++) d += (i ? 'L' : 'M') + fx(KG[i]).toFixed(1) + ' ' + fy(v[i]).toFixed(1) + ' ';
+      g.appendChild(el('path', { d:d, fill:'none', stroke:'var(--scarlet)', 'stroke-width':2 }));
+      // mark the three wavenumbers followed in panels 1 and 2
+      for (i = 0; i < NKS; i++) {
+        var x = fx(KSHOW[i]);
+        g.appendChild(el('line', { x1:x, x2:x, y1:Y0, y2:Y1, stroke:KCOL[i],
+                                   'stroke-width':1.2, 'stroke-dasharray':'3 3', opacity:.75 }));
+      }
+      frame(g, X0, X1, Y0, Y1);
+      text(g, 20, (Y0+Y1)/2, '(δγ at last scattering)²', { rot:1, size:11, fill:'var(--ink-soft)' });
+      text(g, (X0+X1)/2, Y1+34, 'wavenumber k  [Mpc⁻¹]', { size:12, fill:'var(--ink-soft)' });
+    }
+
+    var REFCL = null;
+    function drawSpectrum() {
+      var svg = document.getElementById('p4'), g = clear(svg);
+      var Y0 = 18, Y1 = 232;
+      var y = blend(function (i,j) { return row(CL, i, j, NL); }, NL);
+      var vmax = 0, i;
+      for (i = 0; i < NL; i++) if (y[i] > vmax) vmax = y[i];
+      if (SHOWREF && REFCL)
+        for (i = 0; i < NL; i++) if (REFCL[i] > vmax) vmax = REFCL[i];
+      var steps = [4000,6000,8000,10000], YM = steps[steps.length-1];
+      for (i = 0; i < steps.length; i++) if (vmax <= steps[i]*0.97) { YM = steps[i]; break; }
+      var fx = function (l) { return X0 + (X1-X0)*(l-2)/(LN[NL-1]-2); };
+      var fy = function (v) { return Y1 - (Y1-Y0)*(v/YM); };
+      for (i = 0; i <= 4; i++) {
+        var v = YM*i/4;
+        g.appendChild(el('line', { x1:X0, x2:X1, y1:fy(v), y2:fy(v), stroke:'var(--rule)' }));
+        text(g, X0-8, fy(v)+4, Math.round(v), { anchor:'end' });
+      }
+      [2,200,500,1000,1500,2000,2500].forEach(function (l) {
+        if (l > LN[NL-1]) return;
+        g.appendChild(el('line', { x1:fx(l), x2:fx(l), y1:Y1, y2:Y1+4, stroke:'var(--ink-faint)' }));
+        text(g, fx(l), Y1+17, l);
+      });
+      function path(arr) {
+        var s = '', j;
+        for (j = 0; j < NL; j++) s += (j ? 'L' : 'M') + fx(LN[j]).toFixed(1) + ' ' + fy(arr[j]).toFixed(1) + ' ';
+        return s;
+      }
+      if (SHOWREF && REFCL)
+        g.appendChild(el('path', { d:path(REFCL), fill:'none', stroke:'var(--ink-faint)',
+                                   'stroke-width':1.3, 'stroke-dasharray':'5 4' }));
+      g.appendChild(el('path', { d:path(y), fill:'none', stroke:'var(--scarlet)', 'stroke-width':2.1 }));
+      frame(g, X0, X1, Y0, Y1);
+      text(g, 20, (Y0+Y1)/2, 'ℓ(ℓ+1)Cℓ/2π  [μK²]', { rot:1, size:11, fill:'var(--ink-soft)' });
+      text(g, (X0+X1)/2, Y1+34, 'multipole  ℓ', { size:12, fill:'var(--ink-soft)' });
+      return y;
+    }
+
+    // ---- readouts and wiring ----------------------------------------------
+    function peakOf(y, a, b) {
+      var best = -1e30, i;
+      for (i = 0; i < NL; i++) if (LN[i] >= a && LN[i] <= b && y[i] > best) best = y[i];
+      return best;
+    }
+    var REFMETA = null, REFPK = null;
+    function render() {
+      drawTime('p1', WEYL, 46, 204, 'Weyl potential  (Φ+Ψ)/2', true, true);
+      drawTime('p2', DGAM, 18, 206, 'δγ  (photon overdensity)', true, false);
+      drawFrozen();
+      var y = drawSpectrum();
+      renderBox();                               // panels 5 and 6 share the matter slider
+      var m = meta();
+      var p1 = peakOf(y,120,340), p2 = peakOf(y,400,700), p3 = peakOf(y,700,1000);
+      function d(now, was) {
+        var r = (now/was - 1)*100;
+        if (Math.abs(r) < 0.5) return '<span style="opacity:.6">&plusmn;0%</span>';
+        return '<span class="' + (r>0?'up':'dn') + '">' + (r>0?'+':'−') + Math.abs(r).toFixed(0) + '%</span>';
+      }
+      var html =
+        '<span>&Omega;<sub>m</sub>h&sup2; = <b>' + m.omm.toFixed(4) + '</b> ' +
+          '(&Omega;<sub>c</sub>h&sup2; ' + (m.omm - m.omb).toFixed(4) + ')</span>' +
+        '<span>z<sub>eq</sub> = <b>' + Math.round(m.zeq) + '</b></span>' +
+        '<span>H<sub>0</sub> = <b>' + m.H0.toFixed(1) + '</b></span>' +
+        '<span>peak 1 <b>' + Math.round(p1) + '</b> ' + d(p1, REFPK[0]) + '</span>' +
+        '<span>peak 2 <b>' + Math.round(p2) + '</b> ' + d(p2, REFPK[1]) + '</span>' +
+        '<span>peak 3 <b>' + Math.round(p3) + '</b> ' + d(p3, REFPK[2]) + '</span>';
+      COPIES.forEach(function (s) {
+        document.getElementById('out-' + s).innerHTML = html;
+        document.getElementById('om-' + s).textContent = m.omm.toFixed(4);
+        document.getElementById('ob-' + s).textContent = m.omb.toFixed(4);
+      });
+    }
+    // The page is tall: by the time you are looking at panel 1 the controls at
+    // the bottom are off screen. So the same control block is rendered twice,
+    // above and below, and every copy is kept in step with the single state.
+    var COPIES = ['top', 'bot'];
+    function controlHTML(sfx) {
+      return '' +
+      '<div class="knobs">' +
+        '<div class="knob">' +
+          '<label for="km-' + sfx + '">\u03a9<sub>m</sub>h\u00b2 &mdash; total matter</label>' +
+          '<output id="om-' + sfx + '"></output>' +
+          '<input type="range" id="km-' + sfx + '" min="0" max="1" step="0.002" value="0.5">' +
+          '<span class="hint">the dark matter carries the change; baryons stay at the BBN value</span>' +
+        '</div>' +
+        '<div class="knob">' +
+          '<label for="kb-' + sfx + '">\u03a9<sub>b</sub>h\u00b2 &mdash; baryons</label>' +
+          '<output id="ob-' + sfx + '"></output>' +
+          '<input type="range" id="kb-' + sfx + '" min="0" max="1" step="0.002" value="0.5">' +
+          '<span class="hint">the other kind of matter, which does the opposite</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bar">' +
+        '<button type="button" data-act="reset">\u21ba&nbsp; Planck 2018</button>' +
+        '<button type="button" class="ghost" data-act="lo">less matter</button>' +
+        '<button type="button" class="ghost" data-act="hi">more matter</button>' +
+        '<label><input type="checkbox" class="refbox" checked> keep Planck for comparison</label>' +
+      '</div>' +
+      '<p class="readout" id="out-' + sfx + '"></p>';
+    }
+    var SHOWREF = true;
+    function syncInputs() {
+      COPIES.forEach(function (s) {
+        document.getElementById('km-' + s).value = st.m;
+        document.getElementById('kb-' + s).value = st.b;
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('.refbox'), function (c) {
+        c.checked = SHOWREF;
+      });
+    }
+    function setFrac(b, m) {
+      st.b = Math.max(0, Math.min(1, b)); st.m = Math.max(0, Math.min(1, m));
+      syncInputs(); render();
+    }
+    // Planck sits where the grid was centred: omega_b 0.02237 of 0.019..0.026,
+    // omega_m 0.1424 of 0.112..0.172 -- both very close to the midpoint.
+    var PB = (0.02237 - OMB[0])/(OMB[NB-1] - OMB[0]);
+    var PM = (0.14237 - OMM[0])/(OMM[NM-1] - OMM[0]);
+
+    COPIES.forEach(function (s) {
+      document.getElementById('ctrl-' + s).innerHTML = controlHTML(s);
+    });
+    COPIES.forEach(function (s) {
+      document.getElementById('km-' + s).addEventListener('input', function () {
+        st.m = +this.value; syncInputs(); render();
+      });
+      document.getElementById('kb-' + s).addEventListener('input', function () {
+        st.b = +this.value; syncInputs(); render();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.refbox'), function (c) {
+      c.addEventListener('change', function () { SHOWREF = this.checked; syncInputs(); render(); });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('button[data-act]'), function (b) {
+      b.addEventListener('click', function () {
+        var a = b.getAttribute('data-act');
+        if (a === 'reset') setFrac(PB, PM);
+        else if (a === 'lo') setFrac(PB, 0);
+        else setFrac(PB, 1);
+      });
+    });
+
+    document.getElementById('leg').innerHTML = KSHOW.map(function (k, i) {
+      return '<span style="color:' + KCOL[i] + '"><i></i>k = ' + k.toFixed(4) +
+             ' Mpc⁻¹ <span style="opacity:.75">(peak ' + (i+1) + ')</span></span>';
+    }).join('') + '<span style="opacity:.6">the same three modes in panels 1, 2 and 3</span>';
+
+__BOXJS__
+
+    // the Planck reference, captured once
+    st.b = PB; st.m = PM;
+    REFCL = blend(function (i,j) { return row(CL, i, j, NL); }, NL);
+    REFMETA = meta();
+    REFPK = [peakOf(REFCL,120,340), peakOf(REFCL,400,700), peakOf(REFCL,700,1000)];
+    setFrac(PB, PM);
+    setT(tFracOf('eta_st'));                     // open panels 5 and 6 at last scattering
+  })();
+  </script>
+</body>
+</html>
