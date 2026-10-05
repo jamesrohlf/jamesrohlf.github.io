@@ -71,6 +71,72 @@
     var KCOL = ['var(--scarlet)', 'var(--gold)', '#2a6fb0'];
 
     var X0 = 76, X1 = 884;
+    // The orientation figure above panel 1. Panel 1 plots the depth of each
+    // ripple against time, which is only meaningful once you have seen what a
+    // ripple is; this draws the landscape itself, at the first time on the grid
+    // and at last scattering, on one shared vertical scale so the decay is
+    // visible rather than inferred. Relative phases are arbitrary -- a real
+    // field has random ones -- but the depths are the computed potentials.
+    var LSTRIP = 700, PHASE = [0, 1.1, 2.3];
+    function drawLandscape() {
+      var svg = document.getElementById('p0'), g = clear(svg);
+      var Y0 = 32, Y1 = 150, NXP = 420, i, k, s;
+      var amp = [[], []];
+      for (k = 0; k < NKS; k++) {
+        var w = blend((function (kk) {
+          return function (i2, j2) { return evSlice(WEYL, i2, j2, kk); };
+        })(k), NE);
+        amp[0].push(w[0]); amp[1].push(w[NE-1]);
+      }
+      var panes = [[76, 466, 'early  (η = ' + blend(function (i2,j2) {
+                     return row(ETA, i2, j2, NE); }, NE)[0].toFixed(1) + ' Mpc)'],
+                   [494, 884, 'at last scattering  (η = ' + meta().eta_st.toFixed(0) + ' Mpc)']];
+      // one scale for both panes, else the whole point is lost
+      var vmax = 1e-30, cur = [[], []];
+      for (s = 0; s < 2; s++) {
+        var sum = new Float64Array(NXP);
+        for (k = 0; k < NKS; k++) {
+          var y = new Float64Array(NXP);
+          for (i = 0; i < NXP; i++) {
+            y[i] = amp[s][k]*Math.cos(KSHOW[k]*LSTRIP*i/(NXP-1) + PHASE[k]);
+            sum[i] += y[i];
+          }
+          cur[s].push(y);
+        }
+        cur[s].push(sum);
+        for (i = 0; i < NXP; i++)
+          for (k = 0; k < 4; k++)
+            if (Math.abs(cur[s][k][i]) > vmax) vmax = Math.abs(cur[s][k][i]);
+      }
+      for (s = 0; s < 2; s++) {
+        var A = panes[s][0], B = panes[s][1];
+        var fx = function (v) { return A + (B-A)*v/LSTRIP; };
+        var fy = function (v) { return (Y0+Y1)/2 - ((Y1-Y0)/2)*(v/vmax)*0.94; };
+        text(g, (A+B)/2, Y0-11, panes[s][2], { size:11, fill:'var(--ink-soft)', weight:700 });
+        g.appendChild(el('line', { x1:A, x2:B, y1:fy(0), y2:fy(0), stroke:'var(--rule)' }));
+        [0, 350, 700].forEach(function (v) {
+          g.appendChild(el('line', { x1:fx(v), x2:fx(v), y1:Y1, y2:Y1+4, stroke:'var(--ink-faint)' }));
+          text(g, fx(v), Y1+17, v);
+        });
+        (function (pane) {
+          function path(arr) {
+            var d = '', q;
+            for (q = 0; q < NXP; q++)
+              d += (q ? 'L' : 'M') + fx(LSTRIP*q/(NXP-1)).toFixed(1) + ' ' + fy(arr[q]).toFixed(1) + ' ';
+            return d;
+          }
+          for (var kk = 0; kk < NKS; kk++)
+            g.appendChild(el('path', { d:path(pane[kk]), fill:'none', stroke:KCOL[kk],
+                                       'stroke-width':1.2, opacity:.8 }));
+          g.appendChild(el('path', { d:path(pane[NKS]), fill:'none', stroke:'var(--ink)',
+                                     'stroke-width':2.2, 'stroke-linejoin':'round' }));
+        })(cur[s]);
+        g.appendChild(el('rect', { x:A, y:Y0, width:B-A, height:Y1-Y0,
+                                   fill:'none', stroke:'var(--ink-faint)' }));
+      }
+      text(g, 20, (Y0+Y1)/2, 'potential', { rot:1, size:11, fill:'var(--ink-soft)' });
+      text(g, 480, Y1+34, 'comoving distance  [Mpc]', { size:12, fill:'var(--ink-soft)' });
+    }
     function drawTime(svgId, which, Y0, Y1, label, signed, topz) {
       var svg = document.getElementById(svgId), g = clear(svg);
       var m = meta();
@@ -224,6 +290,7 @@
     }
     var REFMETA = null, REFPK = null;
     function render() {
+      drawLandscape();
       drawTime('p1', WEYL, 46, 204, 'Weyl potential  (Φ+Ψ)/2', true, true);
       drawTime('p2', DGAM, 18, 206, 'δγ  (photon overdensity)', true, false);
       drawFrozen();
