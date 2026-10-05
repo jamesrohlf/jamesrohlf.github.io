@@ -1,0 +1,164 @@
+    <h2>Five numbers off a graph</h2>
+
+    <p>The microwave background is usually presented as a triumph of prediction: feed six
+    parameters to a Boltzmann code and out comes a curve that matches the data to a fraction of a
+    percent. True, and not very illuminating &mdash; it tells you the model works without telling
+    you <em>which feature of the data pins down which number</em>.</p>
+
+    <p>So run it the other way. Below is the Planck 2018 temperature measurement and nothing
+    else. Lay a comb of evenly spaced teeth across the peaks and slide it until it fits. From the
+    spacing of that comb and the heights of the first three peaks &mdash; five numbers, read off a
+    graph &mdash; the chain beneath solves for the ordinary matter density, the dark matter
+    density, the size of the sound horizon, the distance to the surface of last scattering, and
+    the present expansion rate of the universe.</p>
+
+    <p>It very nearly works. Where it stops working is the interesting part, and the page does not
+    hide it.</p>
+
+    <div class="rig">
+      <div class="ctrl" id="ctrl"></div>
+
+      <h3>the measurement</h3>
+      <svg id="pm" viewBox="0 0 900 400" role="img" aria-labelledby="pmt pmd">
+        <title id="pmt">The Planck temperature power spectrum with an adjustable comb</title>
+        <desc id="pmd">Planck 2018 binned temperature measurements with error bars, overlaid with
+        a comb of evenly spaced teeth whose spacing and offset the reader adjusts to match the
+        acoustic peaks, and with the model spectrum implied by the current measurement.</desc>
+      </svg>
+
+      <div class="legend" id="leg"></div>
+
+      <h3>the chain</h3>
+      <table class="chain" id="chain"></table>
+
+      <h3>where that puts the expansion rate</h3>
+      <svg id="ph" viewBox="0 0 900 150" role="img" aria-labelledby="pht phd">
+        <title id="pht">The inferred Hubble constant against published values</title>
+        <desc id="phd">A number line showing the Hubble constant derived here, with its
+        uncertainty, against the Planck 2018 value and the local distance-ladder measurement.</desc>
+      </svg>
+    </div>
+
+    <h2>What each number does</h2>
+
+    <p><b>The comb spacing is the acoustic scale.</b> Peaks sit where a sound wave had completed a
+    whole number of half-oscillations when the photons broke free, so they form a harmonic series
+    &mdash; the rungs are &pi;/r<sub>s</sub> in wavenumber, projected onto the sky as
+    &Delta;&#8467;&nbsp;&asymp;&nbsp;&pi;/&theta;<sub>&lowast;</sub>. Across the whole model grid
+    that relation holds to about 2%. Measuring the spacing therefore measures
+    &theta;<sub>&lowast;</sub>, the angle the sound horizon subtends, which is the single
+    best-determined quantity in all of cosmology.</p>
+
+    <p class="aside">Notice that the comb does <em>not</em> line up if you put a tooth at the
+    origin. It needs an offset, and the fitted value is between &minus;0.23 and &minus;0.27 of a tooth spacing. That
+    is the acoustic phase shift &mdash; partly the gravitational driving of the oscillator, partly
+    neutrino free-streaming, partly the fact that projecting a three-dimensional wave onto a
+    two-dimensional sky is not a simple relabelling. A box with walls would land on the rungs
+    exactly. The universe misses them by a fifth of a spacing, every time, which is why the
+    <em>spacing</em> is the thing to measure and the position of the first peak alone is not.</p>
+
+    <p><b>The first-to-second peak ratio is the baryon density.</b> Baryons give the
+    photon&ndash;baryon fluid inertia, and that displaces the oscillation's zero point downward
+    into the gravitational wells: compressions are deepened, rarefactions are not. Odd-numbered
+    peaks are compressions and even-numbered ones rarefactions, so adding baryons raises peaks 1
+    and 3 relative to peak 2. Over the range of this grid the ratio runs
+    monotonically from 1.89 to 2.54, which is enough to invert.</p>
+
+    <p><b>The third-to-second ratio is the total matter density.</b> This is the radiation-driving
+    effect: a mode that enters the horizon while radiation still dominates has its potential well
+    decay underneath it, and that decay pumps the oscillation. More matter brings
+    matter&ndash;radiation equality earlier, cuts the pumping short, and lowers the later peaks
+    relative to the first. The two ratios respond to the two densities almost orthogonally &mdash;
+    the angle between their gradients across the grid is 66 to 90 degrees &mdash; so the pair can
+    be untangled rather than merely constrained.</p>
+
+    <p><b>The sound horizon is computed, not measured.</b> Given the two densities, how far sound
+    travelled before decoupling follows from the expansion rate and the sound speed of the fluid,
+    and the grid returns it: about 145 Mpc. This is the one link in the chain that comes from
+    theory rather than from the graph, and it is worth being conscious of, because everything
+    downstream rests on it.</p>
+
+    <p><b>The rest is geometry.</b> A known length r<sub>s</sub> subtending a measured angle
+    &theta;<sub>&lowast;</sub> gives a distance, D<sub>A</sub>&nbsp;=&nbsp;r<sub>s</sub>/&theta;<sub>&lowast;</sub>,
+    of about 13.9 Gpc. Demanding that a flat universe containing the inferred amount of matter
+    actually put last scattering at that distance fixes the expansion rate. Nothing in that last
+    step needs a Boltzmann code; it is an integral over the expansion history, done in the page.</p>
+
+    <h2>Where the ruler runs out</h2>
+
+    <p>Align the comb carefully by eye and you will land near
+    &Delta;&#8467;&nbsp;=&nbsp;296.4, which gives
+    H&#8320;&nbsp;=&nbsp;72.2&nbsp;&plusmn;&nbsp;1.2 &mdash; four sigma from Planck, and sitting
+    almost exactly on the local distance-ladder value. Press <b>fit the whole curve</b> and the
+    spacing moves to 299.2, the acoustic scale lands on Planck's to four decimal places, and
+    H&#8320; falls to 68.9&nbsp;&plusmn;&nbsp;1.2. Two and a half units of
+    &#8467; &mdash; a hundredth of a tooth spacing &mdash; moved the answer across the entire
+    Hubble tension. That gap is not a bug, and it is the most useful thing on this page.</p>
+
+    <p>H&#8320; is <em>roughly five times more sensitive</em> to the acoustic scale than the
+    acoustic scale is to the data. A one-part-in-three-hundred error in the comb spacing &mdash;
+    a single unit of &#8467;, far less than the width of a tooth &mdash; moves H&#8320; by more
+    than one unit. Reading peak positions off a binned, noisy spectrum is good to about a percent;
+    that is a five percent uncertainty on the expansion rate, which is not enough to say anything
+    about the Hubble tension &mdash; and, worse, it is a five percent <em>bias</em>, because
+    locating peaks on binned data does not scatter symmetrically. Fitting the whole curve instead of five points gets the acoustic
+    scale to better than a tenth of a percent, and only then does the answer become sharp.</p>
+
+    <p class="aside">There is a related trap in the peak-finding itself. The Planck points show a
+    seventh maximum out near &#8467;&nbsp;=&nbsp;2000, but at the data's own resolution the best
+    fitting model has no seventh peak there &mdash; it is noise. Including it drags the fitted
+    spacing by a full percent, which is five percent in H&#8320;. The comb here uses five teeth
+    for that reason. A good deal of practical cosmology consists of this sort of thing.</p>
+
+    <p>The uncertainties in the chain are real ones, propagated from Planck's own error bars on
+    the three peak heights. They are what makes the table readable: the baryon density comes out
+    0.8&sigma; from Planck, the matter density 0.7&sigma;, the sound horizon 0.4&sigma;. Those are
+    agreements, not discrepancies, even though two of them are off by more than a percent. The
+    matter density is the loosest link, because the third-to-second ratio moves only about three
+    percent across an eight percent change in &Omega;<sub>m</sub>h&sup2;, so a one percent reading
+    error becomes three percent in the density.</p>
+
+    <p>So the honest summary is that a ruler gets you the densities to a few percent, the sound
+    horizon to about one percent, and &mdash; once the acoustic scale is taken from the whole
+    curve rather than from five points &mdash; the expansion rate to under two percent. That is
+    enough to see the shape of the answer and not quite enough to settle an argument, which is a
+    fair description of what this measurement was like before the likelihood machinery
+    existed.</p>
+
+    <h2>Why this is the interesting direction</h2>
+
+    <p>Run forwards, the CMB is a consistency check. Run backwards, it is a <em>distance
+    measurement</em> &mdash; and one that never touches a Cepheid or a supernova. The sound
+    horizon is a ruler of known length laid down at z&nbsp;=&nbsp;1090, its angular size is
+    measured, and the expansion rate follows. That is the inverse distance ladder, and it is the
+    reason the CMB has anything to say about the Hubble constant at all.</p>
+
+    <p>It is also why the disagreement with the local distance ladder is hard to dismiss. The two
+    methods share no rungs. If the CMB value is wrong, the error is most likely in
+    r<sub>s</sub> &mdash; the one computed link &mdash; which is why most serious proposals to
+    resolve the tension change the physics <em>before</em> recombination, shrinking the sound
+    horizon rather than touching anything we can see directly.</p>
+
+    <h2>How this was computed</h2>
+
+    <p>Sixty-three CAMB models on a grid in the two densities at fixed
+    &theta;<sub>&lowast;</sub>, with the peak positions and height ratios of each one measured
+    <em>on the Planck binning</em>, by exactly the routine the page applies to the data. That
+    matters: locating peaks on 30-wide bins biases the answer by half a percent, and the bias
+    only cancels if model and measurement are treated alike. The grid is inverted by bilinear
+    interpolation; the distance integral and the root-find for H&#8320; run in the page, with a
+    per-node calibration factor that reconciles the simple flat-&Lambda;CDM integral with CAMB's
+    own distance to better than a tenth of a percent.</p>
+
+    <p class="note">Planck 2018 values quoted for comparison:
+    &Omega;<sub>b</sub>h&sup2;&nbsp;=&nbsp;0.02237, &Omega;<sub>m</sub>h&sup2;&nbsp;=&nbsp;0.1430,
+    100&theta;<sub>&lowast;</sub>&nbsp;=&nbsp;1.04109, r<sub>&lowast;</sub>&nbsp;=&nbsp;144.43&nbsp;Mpc,
+    H&#8320;&nbsp;=&nbsp;67.36&nbsp;&plusmn;&nbsp;0.54. The local distance-ladder value shown is
+    SH0ES, 73.04&nbsp;&plusmn;&nbsp;1.04. Data points are the Planck 2018 binned TT spectrum.</p>
+
+    <p class="note">Further afield: <a href="cmb-peaks.html">what sets the CMB peaks</a>, where
+    the driving and the acoustic ladder come from; <a href="cmb-spectrum.html">the CMB power
+    spectrum</a> with all six parameters on sliders; <a href="sky-to-spectrum.html">from sky map
+    to power spectrum</a>; <a href="hubble-tension.html">the Hubble tension</a>.</p>
+
+  </main>

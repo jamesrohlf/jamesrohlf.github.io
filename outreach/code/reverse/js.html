@@ -1,0 +1,396 @@
+  <script>
+  (function () {
+    'use strict';
+    var D = __DATA__;
+    function f32(b64) {
+      var s = atob(b64), n = s.length, u = new Uint8Array(n), i;
+      for (i = 0; i < n; i++) u[i] = s.charCodeAt(i);
+      return new Float32Array(u.buffer);
+    }
+    var OMB = D.omb, OMM = D.omm, NB = OMB.length, NM = OMM.length;
+    var LN = D.lnodes, NL = D.nl, CL = f32(D.cl), M = D.meta;
+    var PK = D.planck;                                  // [ell, D_l, sig-, sig+]
+    var PL = PK.map(function (r) { return r[0]; }),
+        PD = PK.map(function (r) { return r[1]; }),
+        PE = PK.map(function (r) { return 0.5*(r[2] + r[3]); });
+    var NP = PL.length;
+    var PLANCK = { omb:0.02237, omm:0.1430, theta:0.0104109, rs:144.43, H0:67.36, DA:13.870 };
+    var SHOES = { v:73.04, e:1.04 };
+
+    // ---- grid access -------------------------------------------------------
+    function node(i, j, k) { return M[i][j][k]; }
+    function bilin(k, fi, fj) {
+      var a = Math.min(Math.floor(fi), NB-2), b = Math.min(Math.floor(fj), NM-2);
+      var ta = fi-a, tb = fj-b;
+      return node(a,b,k)*(1-ta)*(1-tb) + node(a+1,b,k)*ta*(1-tb)
+           + node(a,b+1,k)*(1-ta)*tb  + node(a+1,b+1,k)*ta*tb;
+    }
+    function specAt(fi, fj) {                           // interpolated model spectrum
+      var a = Math.min(Math.floor(fi), NB-2), b = Math.min(Math.floor(fj), NM-2);
+      var ta = fi-a, tb = fj-b, o = new Float64Array(NL), i;
+      var p = (a*NM+b)*NL, q = ((a+1)*NM+b)*NL, r = (a*NM+b+1)*NL, s = ((a+1)*NM+b+1)*NL;
+      for (i = 0; i < NL; i++)
+        o[i] = CL[p+i]*(1-ta)*(1-tb) + CL[q+i]*ta*(1-tb)
+             + CL[r+i]*(1-ta)*tb     + CL[s+i]*ta*tb;
+      return o;
+    }
+    function interp(xs, ys, x) {
+      if (x <= xs[0]) return ys[0];
+      var n = xs.length, lo = 0, hi = n-1, mid;
+      if (x >= xs[n-1]) return ys[n-1];
+      while (hi - lo > 1) { mid = (lo+hi) >> 1; if (xs[mid] > x) hi = mid; else lo = mid; }
+      var t = (x - xs[lo])/(xs[hi] - xs[lo]);
+      return ys[lo] + t*(ys[hi] - ys[lo]);
+    }
+
+    // ---- the measurement ---------------------------------------------------
+    // state is the comb: a tooth spacing and an offset, as a fraction of the
+    // spacing. Everything else on the page is derived from these two numbers
+    // plus the data they sit on.
+    var st = { dl:296.5, off:-0.226 };
+    // The data's own acoustic maxima, located once. Peak HEIGHTS are read here
+    // rather than at the comb teeth: where the peaks are is a judgement the
+    // reader makes, how tall they are is not, and letting the comb drag the
+    // height readings corrupted the densities whenever the spacing was adjusted.
+    var DATAPK = (function () {
+      var p = [], i, den, d;
+      for (i = 1; i < NP-1; i++) {
+        if (PL[i] < 120 || PL[i] > 1700) continue;
+        if (PD[i] > PD[i-1] && PD[i] >= PD[i+1]) {
+          den = PD[i-1] - 2*PD[i] + PD[i+1];
+          d = den ? (PD[i-1] - PD[i+1])/(2*den) : 0;
+          p.push({ l:PL[i] + d*(PL[i+1] - PL[i]), h:PD[i] - 0.25*(PD[i-1] - PD[i+1])*d });
+        }
+      }
+      return p.slice(0, 5);
+    })();
+    var R12_DATA = DATAPK[0].h/DATAPK[1].h, R32_DATA = DATAPK[2].h/DATAPK[1].h;
+    // and what Planck's own error bars at those three bins do to the ratios.
+    // This is not a detail: R32 moves only about 3% across an 8% change in the
+    // matter density, so a 1.3% reading error is a 3.5% uncertainty on omega_m.
+    // Without this the chain looks wrong when it is merely imprecise.
+    var SIG = (function () {
+      var h = [], e = [], k, i;
+      for (k = 0; k < 3; k++) {
+        i = 0;
+        while (i < NP-1 && Math.abs(PL[i+1]-DATAPK[k].l) < Math.abs(PL[i]-DATAPK[k].l)) i++;
+        h.push(PD[i]); e.push(PE[i]);
+      }
+      var a = h[0]/h[1], b = h[2]/h[1];
+      return { s12:a*Math.hypot(e[0]/h[0], e[1]/h[1]), s32:b*Math.hypot(e[2]/h[2], e[1]/h[1]) };
+    })();
+    function teeth(n) { var t = [], i; for (i = 1; i <= n; i++) t.push(st.dl*i + st.off*st.dl); return t; }
+
+    function invert(R12, R32) {                         // ratios -> grid position
+      var best = 1e30, bi = 0, bj = 0, N = 240, i, j, fi, fj, c, a, b;
+      for (i = 0; i <= N; i++) {
+        fi = i*(NB-1)/N;
+        for (j = 0; j <= N; j++) {
+          fj = j*(NM-1)/N;
+          a = bilin('R12', fi, fj)/R12 - 1;
+          b = bilin('R32', fi, fj)/R32 - 1;
+          c = a*a + b*b;
+          if (c < best) { best = c; bi = fi; bj = fj; }
+        }
+      }
+      return { fi:bi, fj:bj, resid:Math.sqrt(best) };
+    }
+    // Flat-LCDM comoving distance to last scattering. The same integral the
+    // generator calibrates against, so `cal` makes it agree with CAMB.
+    // Integrated in x = ln(1+z), not in z. Linear sampling piles points where the
+    // integrand is flat and starves the first few units of redshift where it is
+    // not: 1200 linear steps are 1.1% wrong, and 4000 are still 0.1% wrong. Since
+    // H0 responds about five times as hard as the distance does, that is half a
+    // unit of H0 from quadrature alone. In x it is exact by 800. The generator
+    // calibrates against this exact scheme, so the two must stay identical.
+    var OG = 2.47282e-5, ONU = 0.06/93.14, NZ_INT = 800;
+    function DAflat(h, omm, zst) {
+      var Om = (omm + ONU)/(h*h), Or = OG*(1 + 0.2271*2.044)/(h*h), Ol = 1 - Om - Or;
+      var xm = Math.log(1 + zst), sum = 0, i, x, z, E;
+      for (i = 0; i <= NZ_INT; i++) {
+        x = xm*i/NZ_INT; z = Math.exp(x) - 1;
+        E = Math.sqrt(Om*Math.pow(1+z,3) + Or*Math.pow(1+z,4) + Ol);
+        sum += (i === 0 || i === NZ_INT ? 0.5 : 1)*(1+z)/E;
+      }
+      return sum*(xm/NZ_INT)*2997.92458/h;
+    }
+    function solveH0(theta, rs, omm, zst, cal) {
+      var lo = 0.30, hi = 1.30, mid, i;
+      for (i = 0; i < 60; i++) {
+        mid = 0.5*(lo+hi);
+        if (rs/(DAflat(mid, omm, zst)*cal) > theta) hi = mid; else lo = mid;
+      }
+      return 50*(lo+hi);
+    }
+    var INV = null, DEV = null;
+    function measure() {
+      var R12 = R12_DATA, R32 = R32_DATA;
+      if (!INV) {                                // fixed input, so solve it once
+        INV = invert(R12, R32);
+        var a = invert(R12 + SIG.s12, R32), b = invert(R12, R32 + SIG.s32);
+        var ob0 = OMB[0] + INV.fi*(OMB[1]-OMB[0]), om0 = OMM[0] + INV.fj*(OMM[1]-OMM[0]);
+        var dba = OMB[0] + a.fi*(OMB[1]-OMB[0]) - ob0, dma = OMM[0] + a.fj*(OMM[1]-OMM[0]) - om0;
+        var dbb = OMB[0] + b.fi*(OMB[1]-OMB[0]) - ob0, dmb = OMM[0] + b.fj*(OMM[1]-OMM[0]) - om0;
+        DEV = { omb:Math.hypot(dba, dbb), omm:Math.hypot(dma, dmb),
+                fi:Math.hypot(a.fi-INV.fi, b.fi-INV.fi),
+                fj:Math.hypot(a.fj-INV.fj, b.fj-INV.fj) };
+      }
+      var inv = INV, h = [DATAPK[0].h, DATAPK[1].h, DATAPK[2].h];
+      var omb = OMB[0] + inv.fi*(OMB[1]-OMB[0]), omm = OMM[0] + inv.fj*(OMM[1]-OMM[0]);
+      var dlg = bilin('dl', inv.fi, inv.fj);
+      var theta = D.theta_grid*dlg/st.dl;
+      var rs = bilin('rs', inv.fi, inv.fj), zst = bilin('zstar', inv.fi, inv.fj),
+          cal = bilin('cal', inv.fi, inv.fj);
+      var DA = rs/theta;
+      var H0 = solveH0(theta, rs, omm, zst, cal);
+      // how much a one-unit slip in the comb spacing costs, which is the point
+      var Hp = solveH0(D.theta_grid*dlg/(st.dl+1), rs, omm, zst, cal);
+      // and the uncertainty the peak-height reading alone puts on H0
+      var fiu = Math.min(Math.max(inv.fi + DEV.fi, 0), NB-1),
+          fju = Math.min(Math.max(inv.fj + DEV.fj, 0), NM-1);
+      var eH = Math.abs(solveH0(D.theta_grid*bilin('dl', fiu, fju)/st.dl,
+                                bilin('rs', fiu, fju), OMM[0] + fju*(OMM[1]-OMM[0]),
+                                bilin('zstar', fiu, fju), bilin('cal', fiu, fju)) - H0);
+      var eRS = Math.abs(bilin('rs', fiu, fju) - rs);
+      return { R12:R12, R32:R32, h:h, fi:inv.fi, fj:inv.fj, resid:inv.resid,
+               omb:omb, omm:omm, theta:theta, rs:rs, DA:DA, H0:H0,
+               dH:Math.abs(H0-Hp), dlg:dlg, eomb:DEV.omb, eomm:DEV.omm, eH:eH, eRS:eRS };
+    }
+
+    // chi-squared of the model, stretched in ell, against the data, with the
+    // amplitude free -- the overall normalisation is A_s exp(-2 tau) and this
+    // page must not need it.
+    function chi2(fi, fj, s) {
+      var y = specAt(fi, fj), i, l, m, num = 0, den = 0, c = 0, mm = [], kk = [];
+      for (i = 0; i < NP; i++) {
+        l = PL[i];
+        if (l < 100 || l > 2000) continue;
+        m = interp(LN, y, l/s);
+        mm.push(m); kk.push(i);
+        num += m*PD[i]/(PE[i]*PE[i]); den += m*m/(PE[i]*PE[i]);
+      }
+      var A = num/den;
+      for (i = 0; i < mm.length; i++) {
+        var r = (PD[kk[i]] - A*mm[i])/PE[kk[i]];
+        c += r*r;
+      }
+      return { c2:c, A:A, n:mm.length };
+    }
+    // Only the stretch is fitted. The densities were measured from the peak
+    // heights and are left alone, so this isolates exactly one thing: what the
+    // whole curve says the acoustic scale is, against what the eye said.
+    function refine(fi, fj) {
+      var best = null, k, s, r;
+      for (k = -60; k <= 60; k++) {
+        s = 1 + k*0.0004;
+        r = chi2(fi, fj, s);
+        if (!best || r.c2 < best.c2) best = { c2:r.c2, s:s, n:r.n };
+      }
+      return best;
+    }
+
+    // ---- drawing -----------------------------------------------------------
+    var NS = 'http://www.w3.org/2000/svg';
+    function el(n, at) { var e = document.createElementNS(NS, n), k;
+                         for (k in at) e.setAttribute(k, at[k]); return e; }
+    function clear(svg) {
+      var old = svg.querySelector('g[data-body]');
+      if (old) old.parentNode.removeChild(old);
+      var g = el('g', {}); g.setAttribute('data-body','1'); svg.appendChild(g); return g;
+    }
+    function text(g, x, y, s, o) {
+      o = o || {};
+      var t = el('text', { x:x, y:y, 'text-anchor':o.anchor||'middle', 'font-size':o.size||11,
+                           fill:o.fill||'var(--ink-faint)' });
+      if (o.rot) t.setAttribute('transform','rotate(-90 '+x+' '+y+')');
+      if (o.weight) t.setAttribute('font-weight', o.weight);
+      t.textContent = s; g.appendChild(t); return t;
+    }
+    var X0 = 78, X1 = 884, LMAXP = 2500;
+    function drawMeasure(m) {
+      var svg = document.getElementById('pm'), g = clear(svg);
+      var Y0 = 18, Y1 = 338, i, YM = 6800;
+      var fx = function (l) { return X0 + (X1-X0)*l/LMAXP; };
+      var fy = function (v) { return Y1 - (Y1-Y0)*v/YM; };
+      for (i = 0; i <= 6; i++) {
+        var v = YM*i/6;
+        g.appendChild(el('line', { x1:X0, x2:X1, y1:fy(v), y2:fy(v), stroke:'var(--rule)' }));
+        text(g, X0-8, fy(v)+4, Math.round(v), { anchor:'end' });
+      }
+      [0,500,1000,1500,2000,2500].forEach(function (l) {
+        g.appendChild(el('line', { x1:fx(l), x2:fx(l), y1:Y1, y2:Y1+4, stroke:'var(--ink-faint)' }));
+        text(g, fx(l), Y1+17, l);
+      });
+      // the comb
+      teeth(5).forEach(function (t, k) {
+        if (t < 0 || t > LMAXP) return;
+        g.appendChild(el('line', { x1:fx(t), x2:fx(t), y1:Y0, y2:Y1, stroke:'var(--gold)',
+                                   'stroke-width':1.6, opacity:.85 }));
+        text(g, fx(t), Y0+12, k+1, { size:10, fill:'var(--gold)', weight:700 });
+      });
+      // the model the current measurement implies
+      var y = specAt(m.fi, m.fj), s = D.theta_grid/m.theta, d = '', first = true;
+      for (i = 0; i < NL; i++) {
+        var l = LN[i]*s;
+        if (l > LMAXP) break;
+        d += (first ? 'M' : 'L') + fx(l).toFixed(1) + ' ' + fy(y[i]*m.amp).toFixed(1) + ' ';
+        first = false;
+      }
+      g.appendChild(el('path', { d:d, fill:'none', stroke:'var(--scarlet)', 'stroke-width':1.8,
+                                 opacity:.9 }));
+      // Planck points
+      for (i = 0; i < NP; i++) {
+        if (PL[i] > LMAXP) continue;
+        var x = fx(PL[i]);
+        g.appendChild(el('line', { x1:x, x2:x, y1:fy(PD[i]-PE[i]), y2:fy(PD[i]+PE[i]),
+                                   stroke:'var(--ink-soft)', 'stroke-width':1 }));
+        g.appendChild(el('circle', { cx:x, cy:fy(PD[i]), r:1.9, fill:'var(--ink)' }));
+      }
+      g.appendChild(el('rect', { x:X0, y:Y0, width:X1-X0, height:Y1-Y0,
+                                 fill:'none', stroke:'var(--ink-faint)' }));
+      text(g, 20, (Y0+Y1)/2, 'ℓ(ℓ+1)Cℓ/2π  [μK²]', { rot:1, size:11, fill:'var(--ink-soft)' });
+      text(g, (X0+X1)/2, Y1+34, 'multipole  ℓ', { size:12, fill:'var(--ink-soft)' });
+    }
+    function drawH0(m) {
+      var svg = document.getElementById('ph'), g = clear(svg);
+      var A = 100, B = 870, LO = 60, HI = 80, Y = 74;
+      var fx = function (v) { return A + (B-A)*(v-LO)/(HI-LO); };
+      g.appendChild(el('line', { x1:A, x2:B, y1:Y, y2:Y, stroke:'var(--ink-faint)' }));
+      for (var v = LO; v <= HI; v += 2) {
+        g.appendChild(el('line', { x1:fx(v), x2:fx(v), y1:Y, y2:Y+5, stroke:'var(--ink-faint)' }));
+        text(g, fx(v), Y+19, v);
+      }
+      text(g, (A+B)/2, Y+38, 'H₀   [km s⁻¹ Mpc⁻¹]', { size:12, fill:'var(--ink-soft)' });
+      function band(v, e, col, lab, dy) {
+        g.appendChild(el('rect', { x:fx(v-e), y:Y-10+dy, width:fx(v+e)-fx(v-e), height:20,
+                                   fill:col, opacity:.18 }));
+        g.appendChild(el('line', { x1:fx(v), x2:fx(v), y1:Y-12+dy, y2:Y+12+dy,
+                                   stroke:col, 'stroke-width':2.2 }));
+        text(g, fx(v), Y-17+dy, lab, { size:10.5, fill:col, weight:700 });
+      }
+      band(PLANCK.H0, 0.54, '#2a6fb0', 'Planck ' + PLANCK.H0.toFixed(2), -26);
+      band(SHOES.v, SHOES.e, 'var(--gold)', 'local ladder ' + SHOES.v.toFixed(2), -26);
+      band(m.H0, m.dH, 'var(--scarlet)', 'this page ' + m.H0.toFixed(1) + ' ± ' + m.dH.toFixed(1), 26);
+    }
+    function row(n, what, val, ref, off, hl) {
+      return '<tr' + (hl ? ' class="hl"' : '') + '><td class="n">' + n + '</td><td>' + what +
+             '</td><td class="v"><b>' + val + '</b></td><td class="r">' + ref + '</td>' +
+             '<td class="r">' + off + '</td></tr>';
+    }
+    // against Planck, in units of this page's own uncertainty -- a 2% offset
+    // that is half a sigma is agreement, and saying "+2%" alone implies otherwise
+    function sig(a, b, e) {
+      if (!(e > 0)) return '';
+      var n = Math.abs(a-b)/e;
+      return '<span class="off ' + (n < 2 ? 'good' : 'bad') + '">' + n.toFixed(1) + 'σ</span>';
+    }
+    function pct(a, b) {
+      var r = 100*(a/b - 1);
+      return '<span class="off ' + (Math.abs(r) < 1 ? 'good' : 'bad') + '">' +
+             (r >= 0 ? '+' : '−') + Math.abs(r).toFixed(2) + '%</span>';
+    }
+    function render() {
+      var m = measure();
+      var c = chi2(m.fi, m.fj, D.theta_grid/m.theta);
+      m.amp = c.A;
+      drawMeasure(m); drawH0(m);
+      document.getElementById('chain').innerHTML =
+        '<tr><td class="n"></td><td style="color:var(--ink-faint)">measured, or derived from it</td>' +
+          '<td class="v" style="color:var(--ink-faint)">value</td>' +
+          '<td class="r">Planck 2018</td><td class="r">offset</td></tr>' +
+        row(1, 'comb spacing &nbsp;&Delta;&#8467;', m.dlg.toFixed(1) + ' → ' + st.dl.toFixed(1), '—', '') +
+        row(2, 'acoustic scale &nbsp;100&thinsp;&theta;<sub>&lowast;</sub>',
+             (100*m.theta).toFixed(4), (100*PLANCK.theta).toFixed(4), pct(m.theta, PLANCK.theta), 1) +
+        row(3, 'peak 1 / peak 2 &nbsp;→&nbsp; &Omega;<sub>b</sub>h&sup2;',
+             m.R12.toFixed(3) + ' → ' + m.omb.toFixed(5) + ' ± ' + m.eomb.toFixed(5),
+             PLANCK.omb.toFixed(5), sig(m.omb, PLANCK.omb, m.eomb), 1) +
+        row(4, 'peak 3 / peak 2 &nbsp;→&nbsp; &Omega;<sub>m</sub>h&sup2;',
+             m.R32.toFixed(3) + ' → ' + m.omm.toFixed(4) + ' ± ' + m.eomm.toFixed(4),
+             PLANCK.omm.toFixed(4), sig(m.omm, PLANCK.omm, m.eomm), 1) +
+        row(5, 'sound horizon &nbsp;r<sub>&lowast;</sub>&nbsp; <i>(computed)</i>',
+             m.rs.toFixed(2) + ' ± ' + m.eRS.toFixed(2) + ' Mpc', PLANCK.rs.toFixed(2),
+             sig(m.rs, PLANCK.rs, m.eRS)) +
+        row(6, 'distance &nbsp;D<sub>A</sub> = r<sub>&lowast;</sub>/&theta;<sub>&lowast;</sub>',
+             (m.DA/1000).toFixed(3) + ' Gpc', PLANCK.DA.toFixed(3), pct(m.DA/1000, PLANCK.DA)) +
+        row(7, '<b>expansion rate &nbsp;H<sub>0</sub></b>',
+             m.H0.toFixed(1) + ' ± ' + m.eH.toFixed(1), PLANCK.H0.toFixed(2),
+             sig(m.H0, PLANCK.H0, m.eH), 1) +
+        '<tr><td class="n"></td><td style="color:var(--ink-faint)">&chi;&sup2;/N of the implied ' +
+          'model against the data, amplitude free</td><td class="v">' + (c.c2/c.n).toFixed(2) +
+          '</td><td class="r">N = ' + c.n + '</td><td class="r"></td></tr>';
+      document.getElementById('odl').textContent = st.dl.toFixed(1);
+      document.getElementById('ooff').textContent = st.off.toFixed(3);
+      document.getElementById('kdl').value = st.dl;
+      document.getElementById('koff').value = st.off;
+      document.getElementById('hint').innerHTML =
+        'one unit of &Delta;&#8467; is worth <b>' + m.dH.toFixed(1) +
+        '</b> in H<sub>0</sub> — that is the whole difficulty';
+    }
+
+    // ---- controls ----------------------------------------------------------
+    document.getElementById('ctrl').innerHTML =
+      '<div class="knobs">' +
+        '<div class="knob">' +
+          '<label for="kdl">comb spacing &nbsp;&Delta;&#8467;</label><output id="odl"></output>' +
+          '<input type="range" id="kdl" min="260" max="330" step="0.1" value="296.5">' +
+          '<span class="hint">slide until the teeth sit on the peaks</span>' +
+        '</div>' +
+        '<div class="knob">' +
+          '<label for="koff">comb offset &nbsp;<i>(in tooth spacings)</i></label>' +
+          '<output id="ooff"></output>' +
+          '<input type="range" id="koff" min="-0.45" max="0.25" step="0.002" value="-0.226">' +
+          '<span class="hint">the teeth are not at &#8467; = 0, &Delta;&#8467;, 2&Delta;&#8467; …</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bar">' +
+        '<button type="button" data-act="snap">↻&nbsp; best comb fit</button>' +
+        '<button type="button" class="ghost" data-act="refine">fit the whole curve</button>' +
+        '<button type="button" class="ghost" data-act="rough">put it back by eye</button>' +
+        '<span class="hint" id="hint" style="margin-left:.4rem"></span>' +
+      '</div>';
+    document.getElementById('kdl').addEventListener('input', function () {
+      st.dl = +this.value; render();
+    });
+    document.getElementById('koff').addEventListener('input', function () {
+      st.off = +this.value; render();
+    });
+    // peak-locating fit to the data: what a careful eye gets
+    function snapToPeaks() {
+      var p = [], i, den, d;
+      for (i = 1; i < NP-1; i++) {
+        if (PL[i] < 120 || PL[i] > 1700) continue;
+        if (PD[i] > PD[i-1] && PD[i] >= PD[i+1]) {
+          den = PD[i-1] - 2*PD[i] + PD[i+1];
+          d = den ? (PD[i-1] - PD[i+1])/(2*den) : 0;
+          p.push(PL[i] + d*(PL[i+1] - PL[i]));
+        }
+      }
+      p = p.slice(0, 5);
+      var n = p.length, sx = 0, sy = 0, sxx = 0, sxy = 0;
+      for (i = 0; i < n; i++) { sx += i+1; sy += p[i]; sxx += (i+1)*(i+1); sxy += (i+1)*p[i]; }
+      var A = (n*sxy - sx*sy)/(n*sxx - sx*sx), B = (sy - A*sx)/n;
+      st.dl = A; st.off = B/A;
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('button[data-act]'), function (b) {
+      b.addEventListener('click', function () {
+        var a = b.getAttribute('data-act');
+        if (a === 'snap') snapToPeaks();
+        else if (a === 'rough') { st.dl = 296.5; st.off = -0.226; }
+        else {
+          var m0 = measure(), r = refine(m0.fi, m0.fj);
+          st.dl = r.s*m0.dlg;
+          st.off = bilin('off', m0.fi, m0.fj)/m0.dlg;
+        }
+        render();
+      });
+    });
+    document.getElementById('leg').innerHTML =
+      '<span style="color:var(--ink)"><i></i>Planck 2018 TT</span>' +
+      '<span style="color:var(--scarlet)"><i></i>the model your measurement implies</span>' +
+      '<span style="color:var(--gold)"><i></i>your comb</span>';
+    snapToPeaks();
+    render();
+  })();
+  </script>
+</body>
+</html>
