@@ -689,8 +689,35 @@
 
     <div class="eq">\[ G_{\mu\nu} = \frac{8\pi G}{c^4}\,T_{\mu\nu} . \]</div>
 
-    <p>The left side, the Einstein tensor, is built from the metric and its first and second
-    derivatives. Einstein's cosmological constant adds a term \(\Lambda g_{\mu\nu}\) to the left.
+    <p>The left side, the Einstein tensor, is built from the metric in three steps. Each has a
+    Newtonian counterpart, because for weak gravity \(g_{00} \approx -(1 + 2\Phi/c^2)\): the
+    metric plays the part of the potential \(\Phi\).</p>
+    <ul>
+      <li><b>First derivatives: the force.</b> The Christoffel symbols say how the coordinate
+      grid stretches and turns from point to point,
+      <div class="eq">\[ \begin{aligned} \Gamma^\lambda_{\mu\nu} = \tfrac12\, g^{\lambda\sigma}\big(&amp;\partial_\mu g_{\sigma\nu}
+        + \partial_\nu g_{\sigma\mu} \\ &amp; - \partial_\sigma g_{\mu\nu}\big) . \end{aligned} \]</div>
+      A freely falling body follows them, and for weak gravity \(\Gamma^i_{00} \approx
+      \partial_i\Phi/c^2\), which is Newton's gravitational acceleration.</li>
+      <li><b>Second derivatives: the tides.</b> Differentiating once more gives the curvature,
+      <div class="eq">\[ \begin{aligned} R_{\mu\nu} = {} &amp; \partial_\lambda\Gamma^\lambda_{\mu\nu}
+        - \partial_\nu\Gamma^\lambda_{\mu\lambda} \\
+        &amp; + \Gamma^\lambda_{\lambda\sigma}\Gamma^\sigma_{\mu\nu}
+        - \Gamma^\lambda_{\nu\sigma}\Gamma^\sigma_{\mu\lambda} . \end{aligned} \]</div>
+      This Ricci tensor measures how a small ball of free particles is squeezed or stretched,
+      and for weak gravity \(R_{00} \approx \nabla^2\Phi/c^2\), the Newtonian tidal field.</li>
+      <li><b>A correction for conservation.</b> Finally
+      <div class="eq">\[ \begin{aligned} G_{\mu\nu} &amp;= R_{\mu\nu} - \tfrac12\,R\,g_{\mu\nu}, \\ R &amp;= g^{\mu\nu}R_{\mu\nu} . \end{aligned} \]</div>
+      The extra term makes \(\nabla^\mu G_{\mu\nu} = 0\) hold automatically, so Einstein's
+      equations can only be satisfied by contents that conserve energy and momentum.</li>
+    </ul>
+    <p>So Einstein's equations are the relativistic version of \(\nabla^2\Phi = 4\pi G\rho\):
+    second derivatives of the metric on the left, the contents on the right. For the expanding
+    universe the only thing that varies is \(a(t)\), so the first derivatives bring in
+    \(\dot a/a\) and the second bring in \(\ddot a/a\). That is why \(H\) and the acceleration
+    are what come out.</p>
+
+    <p>Einstein's cosmological constant adds a term \(\Lambda g_{\mu\nu}\) to the left.
     Moved to the right, it acts like a fluid with
     \(\rho_\Lambda = \Lambda c^2/8\pi G\) and \(P_\Lambda = -\rho_\Lambda c^2\), that is, vacuum
     energy with \(w = -1\). So it can be counted as one more ingredient in \(\rho\).</p>
