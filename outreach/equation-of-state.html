@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Equation of State of the Universe — Jim Rohlf</title>
+  <meta property="og:site_name" content="Jim Rohlf — DESI">
+  <meta name="description" content="Derive the Friedmann equation from Newton's law of gravity, add the first law of thermodynamics, and see why pressure gravitates: the equation of state w decides whether the expansion slows or speeds up, from radiation to dust to dark energy and DESI's evolving w0wa.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/equation-of-state.html">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+  <style>
+    .rig { border:1px solid var(--rule); border-radius:10px; padding:.9rem 1rem 1rem;
+           margin:1.4rem 0 1.6rem; background:var(--paper); }
+    .rig__plot svg { display:block; width:100%; height:auto; }
+
+    .knobs { display:grid; grid-template-columns:repeat(auto-fit, minmax(15.5rem, 1fr));
+             gap:.5rem 1.4rem; margin:.9rem 0 0; }
+    .knob { display:grid; grid-template-columns:1fr auto; align-items:baseline; gap:.1rem .5rem; }
+    .knob label { font-size:.84rem; font-weight:600; color:var(--ink-soft); }
+    .knob output { font-family:var(--font-mono); font-size:.82rem; color:var(--ink);
+                   font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .knob input[type=range] { grid-column:1 / -1; width:100%; accent-color:var(--scarlet);
+                              margin:.1rem 0 .25rem; }
+    .knob .hint { grid-column:1 / -1; font-size:.72rem; color:var(--ink-faint);
+                  margin:-.15rem 0 .1rem; }
+    .knob .sig  { grid-column:1 / -1; font-size:.72rem; color:var(--ink-faint);
+                  font-family:var(--font-mono); margin:0 0 .15rem;
+                  display:flex; justify-content:space-between; gap:.6rem; }
+    .knob .sig b { font-weight:700; }
+    /* the neutrino-mass knob is the point of the page: give it the accent rail */
+    .knob--star input[type=range] { accent-color:var(--gold); }
+    .knob--star label { color:var(--ink); }
+    .dev--on  { color:#1a7f37; }
+    .dev--few { color:var(--gold); }
+    .dev--far { color:var(--scarlet); }
+
+    .bar { display:flex; flex-wrap:wrap; gap:.5rem .7rem; align-items:center; margin-top:.9rem; }
+    .bar button { font:700 .85rem var(--font-body); cursor:pointer; padding:.44rem 1rem;
+                  border:1px solid var(--scarlet); border-radius:5px;
+                  background:var(--scarlet); color:#fff;
+                  transition:background var(--ease), border-color var(--ease); }
+    .bar button:hover { background:var(--scarlet-bright); border-color:var(--scarlet-bright); }
+    .bar button:active { transform:translateY(1px); }
+    .bar button.demo { background:var(--cream); color:var(--ink); border-color:var(--rule); }
+    .bar button.demo:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
+    .bar label { font-size:.82rem; color:var(--ink-soft); display:flex; align-items:center; gap:.3rem; }
+    .bar select { font:inherit; font-size:.82rem; padding:.15rem .3rem; border-radius:4px;
+                  border:1px solid var(--rule); background:var(--paper); color:var(--ink); }
+
+    .zpick { display:inline-flex; align-items:center; gap:.45rem; font-size:.82rem;
+             color:var(--ink-soft); padding-left:.6rem; border-left:1px solid var(--rule); }
+
+    .derived { display:flex; flex-wrap:wrap; gap:.15rem 1.3rem; margin:.7rem 0 0;
+               font-size:.82rem; font-family:var(--font-mono); color:var(--ink-soft);
+               font-variant-numeric:tabular-nums; }
+    .derived b { font-weight:700; color:var(--ink); }
+    .verdict { margin:.55rem 0 0; font-size:.84rem; font-family:var(--font-mono);
+               font-variant-numeric:tabular-nums; }
+    .verdict .ok  { color:#1a7f37; font-weight:700; }
+    .verdict .mid { color:var(--gold);    font-weight:700; }
+    .verdict .no  { color:var(--scarlet); font-weight:700; }
+
+    .legend { display:flex; flex-wrap:wrap; gap:.2rem 1.1rem; font-size:.78rem;
+              color:var(--ink-faint); margin:.5rem 0 0; }
+    .legend i { display:inline-block; width:1.4rem; height:0; vertical-align:middle;
+                border-top:2px solid currentColor; margin-right:.3rem; }
+    .swatch-model { color:var(--scarlet); } .swatch-ref { color:var(--ink-faint); }
+    .swatch-mark  { color:var(--gold); }
+
+    .topnote { border-left:3px solid var(--scarlet); background:var(--cream);
+               padding:.6rem .85rem; margin:1.1rem 0 1.3rem; font-size:.86rem;
+               border-radius:0 6px 6px 0; max-width:var(--measure); }
+    .topnote p { margin:0; }
+    .topnote p + p { margin-top:.45rem; }
+    .topnote .src { font-size:.78rem; color:var(--ink-soft); }
+
+    .degtab { border-collapse:collapse; font-size:.84rem; margin:1rem 0 1.3rem;
+              font-variant-numeric:tabular-nums; }
+    .degtab th, .degtab td { padding:.2rem .7rem; border-bottom:1px dotted var(--rule);
+                             text-align:right; }
+    .degtab th:first-child, .degtab td:first-child { text-align:left; }
+    .degtab thead th { border-bottom:1px solid var(--rule); font:700 .7rem var(--font-body);
+                       text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); }
+    .degtab td { font-family:var(--font-mono); }
+    .degtab .big { color:var(--scarlet); font-weight:700; }
+
+    .postlead { font-size:.84rem; color:var(--ink-soft); margin:1.1rem 0 .1rem;
+                display:flex; flex-wrap:wrap; align-items:center; gap:.4rem;
+                border-top:1px solid var(--rule); padding-top:.9rem; }
+    .postlead select { font:inherit; font-size:.8rem; padding:.15rem .3rem; border-radius:4px;
+                       border:1px solid var(--rule); background:var(--paper); color:var(--ink);
+                       max-width:100%; }
+    #post { display:block; width:100%; height:auto; }
+
+    .note { font-size:.78rem; color:var(--ink-faint); margin:.9rem 0 0; max-width:var(--measure); }
+  
+
+    /* --- equation-of-state page ------------------------------------------ */
+    .eq { overflow-x:auto; overflow-y:hidden; margin:1.1rem 0 1.3rem; padding-block:.1rem;
+          max-width:var(--measure); }
+    mjx-container { color:var(--ink); }
+    mjx-container[display="true"] { margin:.3em 0 !important; }
+    .prose li { color:var(--ink-soft); }
+    .aside b { color:var(--ink-soft); }
+    .aside { border-left:3px solid var(--rule); padding:.15rem 0 .15rem .9rem; margin:1.1rem 0 1.3rem; }
+    .feature p { color:var(--ink-soft); }
+    .feature p:last-child { margin-bottom:0; }
+    .degtab td.t { font-family:var(--font-body); text-align:left; }
+    .degtab td.c, .degtab th.c { text-align:left; }
+    .degtab .sw { display:inline-block; width:1.2rem; height:0; border-top:2px solid currentColor;
+                  vertical-align:middle; margin-right:.4rem; }
+    .tblwrap { overflow-x:auto; max-width:100%; }
+    .diagram { margin:1.4rem 0 1.6rem; }
+    .diagram svg { display:block; width:100%; max-width:440px; height:auto; margin:0 auto;
+                   background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-sm); }
+    .chart { position:relative; width:100%; }
+    .chart svg { display:block; width:100%; overflow:visible; }
+    .chart + .chart { margin-top:.5rem; }
+    .swatch-rad { color:var(--gold); } .swatch-mat { color:var(--ink-soft); }
+    .swatch-de  { color:var(--scarlet); }
+    .legend i.dash { border-top-style:dashed; }
+    .legend i.dot  { border-top-style:dotted; border-top-width:3px; }
+    .bar button[aria-pressed="false"] { background:var(--cream); color:var(--ink); border-color:var(--rule); }
+    .bar button[aria-pressed="false"]:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
+    .verdict .acc { color:var(--scarlet); font-weight:700; }
+    .verdict .dec { color:var(--ink); font-weight:700; }
+  </style>
+</head>
+<body>
+<main id="main">
+    <p class="breadcrumb"><a href="https://jamesrohlf.github.io/outreach/index.html">&larr; Outreach</a></p>
+
+    <h1>The Equation of State of the Universe</h1>
+    <p class="subtitle">From Newton's apple to an accelerating cosmos, in one number</p>
+
+    <p class="lede">Every ingredient of the universe has its own ratio of pressure to energy
+    density, called <i>w</i>. That one number fixes how fast the ingredient thins out as space
+    expands, and whether its gravity pulls the expansion back or pushes it forward. Most of the
+    machinery needed to see this is Newton's law of gravity plus the first law of
+    thermodynamics. The part Newton could not supply is the reason the universe is
+    accelerating today.</p>
+
+    <div class="topnote">
+      <p><b>How the page runs.</b> The first half derives the three equations that govern the
+      expansion, starting from a ball of dust and nothing more than
+      F&nbsp;=&nbsp;GMm/r&sup2;. The second half puts the equation of state into them. There
+      are two interactive panels. One lets you dial <i>w</i> for a universe containing a
+      single ingredient. The other shows the real mixture, with a switch between a cosmological
+      constant and the evolving dark energy that DESI's data lean toward.</p>
+      <p class="src">Parameters: Planck Collaboration, <i>Planck 2018 results VI</i>, A&amp;A
+      641, A6 (2020): H<sub>0</sub>&nbsp;=&nbsp;67.4&nbsp;km&nbsp;s<sup>&minus;1</sup>&nbsp;Mpc<sup>&minus;1</sup>,
+      &Omega;<sub>m</sub>&nbsp;=&nbsp;0.315. Dark energy: DESI Collaboration, <i>DESI DR2
+      results II</i>, <a href="https://arxiv.org/abs/2503.14738">arXiv:2503.14738</a>.</p>
+    </div>
+
+    <div class="prose">
+
+    <h2 id="newton">A ball of dust</h2>
+
+    <p>Fill space with a uniform, pressureless &ldquo;dust&rdquo; of density &rho;(t), and let
+    it expand uniformly, which means every distance grows by the same factor. Write the
+    physical distance of a particle from any chosen centre as</p>
+
+    <div class="eq">\[ R(t) = a(t)\, x , \tag{1} \]</div>
+
+    <p>where x is a fixed label for that particle, its <i>comoving</i> distance, and a(t) is
+    the <i>scale factor</i>, normalised to a&nbsp;=&nbsp;1 today. The expansion rate is the
+    Hubble parameter, H&nbsp;&equiv;&nbsp;&#7841;/a.</p>
+
+    <p>Pick any point as the centre and draw a sphere through a test particle of mass m at
+    radius R. Newton's shell theorem says a uniform spherical shell exerts no net force on
+    anything inside it, so all the mass outside the sphere drops out. Only the mass inside
+    pulls:</p>
+
+    <div class="eq">\[ M = \tfrac{4\pi}{3}\,\rho\,R^3 . \tag{2} \]</div>
+
+    <p>No dust crosses the surface, because everything moves with the flow, so M stays
+    constant even as &rho; falls and R grows.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 440 250" role="img" aria-labelledby="sphT">
+        <title id="sphT">A uniform sphere of radius R with a test mass m on its surface. Outer shells exert no net force; gravity pulls m toward the centre while the sphere expands.</title>
+        <circle cx="170" cy="125" r="112" fill="none" stroke="var(--ink-faint)" stroke-dasharray="4 5"/>
+        <circle cx="170" cy="125" r="100" fill="none" stroke="var(--ink-faint)" stroke-dasharray="2 6"/>
+        <circle cx="170" cy="125" r="78" fill="var(--cream)" stroke="var(--ink)" stroke-width="1.5"/>
+        <circle cx="170" cy="125" r="3" fill="var(--ink)"/>
+        <line x1="170" y1="125" x2="225" y2="70" stroke="var(--ink)" stroke-width="1.2"/>
+        <text x="183" y="92" fill="var(--ink)" font-family="Georgia, serif" font-style="italic" font-size="16">R</text>
+        <circle cx="225" cy="70" r="6" fill="var(--scarlet)"/>
+        <text x="234" y="64" fill="var(--ink)" font-family="Georgia, serif" font-style="italic" font-size="16">m</text>
+        <line x1="221" y1="74" x2="203" y2="92" stroke="var(--scarlet)" stroke-width="2"/>
+        <path d="M200,95 l8,-1 l-5,-6 z" fill="var(--scarlet)"/>
+        <line x1="232" y1="63" x2="256" y2="39" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <path d="M259,36 l-8,1 l5,6 z" fill="var(--ink)"/>
+        <text x="143" y="150" fill="var(--ink)" font-family="Georgia, serif" font-style="italic" font-size="16">M, &#961;</text>
+        <text x="300" y="118" fill="var(--ink-faint)" font-family="ui-monospace, Menlo, monospace" font-size="11">outer shells:</text>
+        <text x="300" y="133" fill="var(--ink-faint)" font-family="ui-monospace, Menlo, monospace" font-size="11">no net force</text>
+        <line x1="296" y1="122" x2="279" y2="122" stroke="var(--ink-faint)"/>
+        <text x="262" y="30" fill="var(--ink-faint)" font-family="ui-monospace, Menlo, monospace" font-size="11">expansion &#7768;</text>
+        <text x="196" y="112" fill="var(--scarlet)" font-family="ui-monospace, Menlo, monospace" font-size="11">&#8722;GM/R&#178;</text>
+      </svg>
+      <figcaption>The sphere can be centred anywhere. Because the density is the same
+      everywhere, every observer runs the same argument and gets the same a(t).</figcaption>
+    </figure>
+
+    <p>Newton's second law for the test particle is</p>
+
+    <div class="eq">\[ \ddot R = -\frac{GM}{R^2}. \tag{3} \]</div>
+
+    <p>Multiply both sides by &#7768; and integrate once. The left side becomes the time
+    derivative of &frac12;&#7768;&sup2; and the right side the time derivative of GM/R, so
+    what comes out is energy conservation per unit mass:</p>
+
+    <div class="eq">\[ \tfrac12 \dot R^2 - \frac{GM}{R} = U = \text{constant}. \tag{4} \]</div>
+
+    <p>Now substitute R&nbsp;=&nbsp;ax and M&nbsp;=&nbsp;&#8308;&#8260;&#8323;&pi;&rho;a&sup3;x&sup3;,
+    and divide through by &frac12;a&sup2;x&sup2;:</p>
+
+    <div class="eq">\[ \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho + \frac{2U}{a^2 x^2}. \]</div>
+
+    <p>The left side and the first term on the right are the same for every particle in the
+    universe. For the expansion to stay uniform, U/x&sup2; has to be the same for every
+    particle too. Call that constant &minus;kc&sup2;/2, and the result is the
+    <b>Friedmann equation</b>:</p>
+
+    <div class="eq">\[ H^2 = \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho - \frac{k c^2}{a^2} . \tag{5} \]</div>
+
+    <p>This is exactly the equation general relativity gives for a homogeneous, isotropic
+    universe. Friedmann found it in 1922 by solving Einstein's equations. Milne and McCrea
+    showed in 1934 that Newton gets there too. What relativity changes is not the equation
+    but what the symbols mean.</p>
+
+    <p class="aside"><b>Why the sphere is allowed.</b> The shell theorem is cleanly true for a
+    finite ball, and slightly ambiguous for infinite space, where the &ldquo;mass outside&rdquo;
+    is infinite. The rigorous version is Birkhoff's theorem in general relativity, which says
+    the same thing: a spherically symmetric distribution of mass outside a sphere has no
+    effect inside it. That is what really licenses the argument.</p>
+
+    <h2 id="k">What the constant k is</h2>
+
+    <p>To Newton, k is just the sign of the energy U, and its meaning is the familiar one for a
+    ball thrown upward. In relativity the same constant is the curvature of space. The fates
+    agree, at least for dust.</p>
+
+    <div class="tblwrap"><table class="degtab">
+      <thead><tr><th>k</th><th class="c">Energy U</th><th class="c">Newtonian fate</th><th class="c">Geometry in GR</th></tr></thead>
+      <tbody>
+        <tr><td>+1</td><td class="t">negative: bound</td><td class="t">expands, stops, recollapses</td><td class="t">closed (spherical)</td></tr>
+        <tr><td>0</td><td class="t">zero: exactly escape speed</td><td class="t">expands forever, &#7841;&nbsp;&rarr;&nbsp;0</td><td class="t">flat</td></tr>
+        <tr><td>&minus;1</td><td class="t">positive: unbound</td><td class="t">expands forever, &#7841;&nbsp;&rarr;&nbsp;constant</td><td class="t">open (hyperbolic)</td></tr>
+      </tbody>
+    </table></div>
+
+    <p>Setting k&nbsp;=&nbsp;0 defines the <i>critical density</i>,
+    &rho;<sub>c</sub>&nbsp;=&nbsp;3H&sup2;/8&pi;G. With H<sub>0</sub>&nbsp;=&nbsp;67.4 it is
+    8.5&nbsp;&times;&nbsp;10<sup>&minus;27</sup>&nbsp;kg&nbsp;m<sup>&minus;3</sup>, about five
+    hydrogen atoms per cubic metre. Dividing (5) by H&sup2; and writing each density as a
+    fraction &Omega;&nbsp;=&nbsp;&rho;/&rho;<sub>c</sub> turns the Friedmann equation into a
+    budget: the &Omega;s plus a curvature term add up to one. The curvature term is measured to
+    be below about 0.002 today, so from here on the universe is flat and k&nbsp;=&nbsp;0.</p>
+
+    <h2 id="fluid">Adding thermodynamics</h2>
+
+    <p>The Friedmann equation gives H once you know &rho;, but says nothing about how &rho;
+    changes. For dust it is easy: the mass in a comoving sphere is fixed, so
+    &rho;&nbsp;&prop;&nbsp;a<sup>&minus;3</sup>. For anything with pressure, the first law of
+    thermodynamics is needed.</p>
+
+    <p>Take a comoving sphere of volume V&nbsp;&prop;&nbsp;a&sup3; holding energy
+    E&nbsp;=&nbsp;&rho;c&sup2;V. In a uniform universe there is nowhere for heat to flow, so
+    the expansion is adiabatic and</p>
+
+    <div class="eq">\[ dE = -P\,dV . \tag{6} \]</div>
+
+    <p>Write this as a rate, using &#7814;/V&nbsp;=&nbsp;3&#7841;/a:</p>
+
+    <div class="eq">\[ \dot\rho + 3\,\frac{\dot a}{a}\left(\rho + \frac{P}{c^2}\right) = 0 . \tag{7} \]</div>
+
+    <p>This is the <b>fluid equation</b>. A gas with positive pressure does work on its
+    surroundings as it expands, so its energy density falls faster than its volume grows. The
+    P term is that work and nothing more.</p>
+
+    <p class="aside"><b>Mass quietly becomes energy.</b> In this step &rho; changes meaning. It
+    is now the total energy density divided by c&sup2;, including heat and radiation, not just
+    the rest mass of the dust. Newton has no reason to do this, but relativity insists on it,
+    because all energy gravitates.</p>
+
+    <h2 id="accel">Pressure gravitates</h2>
+
+    <p>Newton's law (3) on its own gives</p>
+
+    <div class="eq">\[ \frac{\ddot a}{a} = -\frac{4\pi G}{3}\,\rho \qquad(\text{dust only}), \]</div>
+
+    <p>so gravity always slows the expansion. Now differentiate the Friedmann equation (5) with
+    respect to time, use the fluid equation (7) to replace &rho;&#775;, and use (5) once more to
+    tidy up. The k term cancels, and the result is the <b>acceleration equation</b>:</p>
+
+    <div class="eq">\[ \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3P}{c^2}\right) . \tag{8} \]</div>
+
+    <div class="feature">
+      <p class="feature__kicker">The key result</p>
+      <p>Pressure is a source of gravity, and it counts three times over. Ordinary pressure
+      makes gravity stronger, not weaker. If something has a pressure more negative than
+      &minus;&#8531;&rho;c&sup2;, the bracket in (8) changes sign and the expansion speeds up.
+      Newtonian gravity has no way to produce this. Yet putting Newton's Friedmann equation
+      together with the first law of thermodynamics gets it automatically. In general
+      relativity the reason is that the source of gravity is &rho;&nbsp;+&nbsp;3P/c&sup2;,
+      not &rho; alone.</p>
+    </div>
+
+    <p>Only two of (5), (7) and (8) are independent: any two give the third. That is why this
+    derivation worked.</p>
+
+    <h2 id="w">The equation of state</h2>
+
+    <p>One more relation is needed to close the system, between pressure and density. For
+    every ingredient that matters in cosmology it is a straight proportion,</p>
+
+    <div class="eq">\[ P = w\,\rho c^2 , \tag{9} \]</div>
+
+    <p>and the dimensionless number <i>w</i> is the <b>equation of state</b>. Put it into the
+    fluid equation (7) and integrate:</p>
+
+    <div class="eq">\[ \rho \propto a^{-3(1+w)} . \tag{10} \]</div>
+
+    <p>Put that into the flat Friedmann equation and integrate again:</p>
+
+    <div class="eq">\[ a(t) \propto t^{\,2/[3(1+w)]} \quad (w > -1), \qquad a(t) \propto e^{Ht} \quad (w = -1). \tag{11} \]</div>
+
+    <p>And the acceleration equation (8) becomes
+    &auml;/a&nbsp;=&nbsp;&minus;&#8308;&#8260;&#8323;&pi;G&rho;&thinsp;(1&nbsp;+&nbsp;3w).
+    The expansion accelerates exactly when w&nbsp;&lt;&nbsp;&minus;&#8531;.</p>
+
+    <div class="tblwrap"><table class="degtab">
+      <thead><tr><th class="c">Ingredient</th><th>w</th><th>&rho;(a)</th><th>a(t) if it dominates</th><th class="c">Expansion</th></tr></thead>
+      <tbody>
+        <tr><td class="t"><span class="sw" style="color:var(--gold)"></span>radiation, neutrinos while fast</td><td>+1/3</td><td>a<sup>&minus;4</sup></td><td>t<sup>1/2</sup></td><td class="t">slows</td></tr>
+        <tr><td class="t"><span class="sw" style="color:var(--ink-soft)"></span>matter: atoms, dark matter</td><td>0</td><td>a<sup>&minus;3</sup></td><td>t<sup>2/3</sup></td><td class="t">slows</td></tr>
+        <tr><td class="t"><span class="sw" style="color:var(--ink-faint)"></span>curvature, as an effective fluid</td><td>&minus;1/3</td><td>a<sup>&minus;2</sup></td><td>t</td><td class="t">coasts</td></tr>
+        <tr><td class="t"><span class="sw" style="color:var(--scarlet)"></span>cosmological constant &Lambda;</td><td class="big">&minus;1</td><td>constant</td><td>e<sup>Ht</sup></td><td class="t">speeds up</td></tr>
+      </tbody>
+    </table></div>
+
+    <p>Radiation's 1/3 comes straight from kinetic theory. A photon carries momentum
+    p&nbsp;=&nbsp;E/c, and an isotropic gas of particles exerts pressure
+    &#8531;&thinsp;n&thinsp;p&thinsp;v, so P&nbsp;=&nbsp;&#8531;&rho;c&sup2;. It checks out
+    independently: the number of photons dilutes as a<sup>&minus;3</sup> and each one's energy
+    is redshifted as a<sup>&minus;1</sup>, giving a<sup>&minus;4</sup>, just as (10) says.</p>
+
+    <p>A cosmological constant is the opposite extreme. Its density does not dilute at all, so
+    the fluid equation forces &rho;&nbsp;+&nbsp;P/c&sup2;&nbsp;=&nbsp;0, and w&nbsp;=&nbsp;&minus;1.
+    That is a negative pressure, a tension. Stretching a box of it <i>creates</i> energy, at
+    exactly the rate &minus;P&thinsp;dV supplies.</p>
+
+    </div>
+
+    <div class="rig" id="rig-w">
+      <div class="chart" id="chart-w"></div>
+      <div class="legend">
+        <span class="swatch-model"><i></i>your w</span>
+        <span class="swatch-ref"><i class="dash"></i>radiation, dust, &Lambda;</span>
+        <span class="swatch-mark"><i class="dot"></i>today</span>
+      </div>
+      <div class="knobs">
+        <div class="knob knob--star">
+          <label for="w-slider">equation of state w</label><output id="w-out">0.00</output>
+          <input id="w-slider" type="range" min="-1" max="1" step="0.01" value="0">
+          <p class="hint">&minus;1 is a cosmological constant, 0 is dust, +1/3 is radiation</p>
+        </div>
+      </div>
+      <div class="bar">
+        <button type="button" data-w="0.3333" aria-pressed="false">radiation</button>
+        <button type="button" data-w="0" aria-pressed="true">dust</button>
+        <button type="button" data-w="-0.3333" aria-pressed="false">coasting</button>
+        <button type="button" data-w="-1" aria-pressed="false">&Lambda;</button>
+      </div>
+      <p class="derived" id="w-derived"></p>
+      <p class="verdict" id="w-verdict"></p>
+    </div>
+
+    <div class="prose">
+    <p>Every curve passes through a&nbsp;=&nbsp;1 today with the same slope, because they share
+    today's H<sub>0</sub>. They differ in the past. The more negative <i>w</i> is, the more
+    slowly the universe has been slowing down, and the further back the big bang sits:
+    2/3(1+w) Hubble times ago. At w&nbsp;=&nbsp;&minus;1 there is no big bang at all, and the
+    curve runs back forever.</p>
+
+    <h2 id="weff">The universe's own w</h2>
+
+    <p>The real universe is a mixture, and each ingredient dilutes at its own rate (10).
+    Whichever has the most negative <i>w</i> wins in the end. The equation of state of the
+    whole universe is the energy-weighted average, and it sets the deceleration parameter
+    q&nbsp;&equiv;&nbsp;&minus;&auml;a/&#7841;&sup2;:</p>
+
+    <div class="eq">\[ w_{\rm eff}(a) = \frac{\sum_i w_i\,\rho_i(a)}{\sum_i \rho_i(a)}, \qquad q = \tfrac12\,(1 + 3\,w_{\rm eff}) . \tag{12} \]</div>
+
+    <p>Today's budget is &Omega;<sub>m</sub>&nbsp;=&nbsp;0.315 in matter,
+    &Omega;<sub>r</sub>&nbsp;&asymp;&nbsp;9.2&nbsp;&times;&nbsp;10<sup>&minus;5</sup> in
+    photons and neutrinos, and the rest, about 0.685, in dark energy. The Friedmann equation
+    becomes</p>
+
+    <div class="eq">\[ \frac{H^2(a)}{H_0^2} = \Omega_r\,a^{-4} + \Omega_m\,a^{-3} + \Omega_{\rm DE}\,f_{\rm DE}(a) , \tag{13} \]</div>
+
+    <p>with f<sub>DE</sub>&nbsp;=&nbsp;1 for a cosmological constant. If dark energy is not a
+    constant, the standard way to let it evolve is
+    w(a)&nbsp;=&nbsp;w<sub>0</sub>&nbsp;+&nbsp;w<sub>a</sub>(1&nbsp;&minus;&nbsp;a). Putting
+    that into the fluid equation and integrating gives</p>
+
+    <div class="eq">\[ f_{\rm DE}(a) = a^{-3(1+w_0+w_a)}\, e^{-3w_a(1-a)} . \]</div>
+
+    <p>That is the model DESI fits. Combined with the microwave background and supernovae,
+    DESI's second data release prefers w<sub>0</sub>&nbsp;&gt;&nbsp;&minus;1 and
+    w<sub>a</sub>&nbsp;&lt;&nbsp;0 over a cosmological constant, at between about 2.8 and
+    4.2&sigma; depending on which supernova sample is used. The panel below has both.</p>
+    </div>
+
+    <div class="rig" id="rig-u">
+      <div class="chart" id="chart-frac"></div>
+      <div class="chart" id="chart-weff"></div>
+      <div class="legend">
+        <span class="swatch-rad"><i></i>radiation</span>
+        <span class="swatch-mat"><i class="dot"></i>matter</span>
+        <span class="swatch-de"><i class="dash"></i>dark energy</span>
+        <span class="swatch-de"><i></i>w<sub>eff</sub></span>
+      </div>
+      <div class="knobs">
+        <div class="knob knob--star">
+          <label for="w0">w<sub>0</sub>, dark energy today</label><output id="w0-out">&minus;1.00</output>
+          <input id="w0" type="range" min="-1.5" max="-0.3" step="0.01" value="-1">
+        </div>
+        <div class="knob knob--star">
+          <label for="wa">w<sub>a</sub>, how fast it changes</label><output id="wa-out">0.00</output>
+          <input id="wa" type="range" min="-2" max="1" step="0.01" value="0">
+        </div>
+      </div>
+      <div class="bar">
+        <button type="button" id="p-lcdm" aria-pressed="true">&#8634;&nbsp; &Lambda;CDM</button>
+        <button type="button" id="p-desi" aria-pressed="false">DESI DR2 + CMB + DESY5</button>
+      </div>
+      <p class="derived" id="u-derived"></p>
+      <p class="verdict" id="u-verdict"></p>
+
+      <p class="postlead">Turning points for these parameters</p>
+      <div class="tblwrap"><table class="degtab" style="margin-bottom:0">
+        <thead><tr><th>Event</th><th>redshift z</th><th>scale factor a</th><th>cosmic time</th></tr></thead>
+        <tbody id="epochs"></tbody>
+      </table></div>
+    </div>
+
+    <div class="prose">
+    <p>Read the lower panel from left to right. The universe began radiation-dominated, with
+    w<sub>eff</sub>&nbsp;=&nbsp;&#8531;. Matter overtook radiation at a redshift of about 3400,
+    some fifty thousand years in, and w<sub>eff</sub> sank to nearly zero, where it stayed for
+    most of cosmic history while galaxies formed. Only about six billion years ago did it
+    cross &minus;&#8531;, and the expansion began to speed up. With a cosmological constant it
+    now heads steadily toward &minus;1 and exponential expansion.</p>
+
+    <p>Press the DESI button and the history changes in an interesting way. The dark energy is
+    phantom in the past, with w&nbsp;&lt;&nbsp;&minus;1, and has drifted above &minus;1 in the
+    last few billion years. It is less dense early on and more important late, which is what
+    shifts the measured distances. The far right of the panel is the formula extrapolated well
+    past the data, so take the future it shows as illustration rather than prediction.</p>
+
+    <h2 id="limits">What Newton got right, and what he could not</h2>
+
+    <div class="tblwrap"><table class="degtab">
+      <thead><tr><th class="c">Ingredient</th><th class="c">Newton</th><th class="c">Needs relativity</th></tr></thead>
+      <tbody>
+        <tr><td class="t">Friedmann equation (5)</td><td class="t">exact, for dust</td><td class="t">&rho; as total energy density</td></tr>
+        <tr><td class="t">the constant k</td><td class="t">sign of the energy</td><td class="t">curvature of space</td></tr>
+        <tr><td class="t">fluid equation (7)</td><td class="t">first law, dE&nbsp;=&nbsp;&minus;P&thinsp;dV</td><td class="t">E&nbsp;=&nbsp;&rho;c&sup2;V counts all energy</td></tr>
+        <tr><td class="t">acceleration (8)</td><td class="t">only &minus;&#8308;&#8260;&#8323;&pi;G&rho;</td><td class="t">pressure gravitates: &rho;&nbsp;+&nbsp;3P/c&sup2;</td></tr>
+        <tr><td class="t">cosmological constant</td><td class="t">an extra force &#8531;&Lambda;c&sup2;R</td><td class="t">vacuum energy, w&nbsp;=&nbsp;&minus;1</td></tr>
+        <tr><td class="t">why the sphere works</td><td class="t">shell theorem</td><td class="t">Birkhoff's theorem</td></tr>
+      </tbody>
+    </table></div>
+
+    <p>The Newtonian derivation shows that the expansion law is ordinary physics: a
+    self-gravitating ball, thrown outward. The equation of state is where Newton runs out.
+    Once pressure is a source of gravity, a negative enough pressure makes gravity push, and
+    that is the simplest way to see why an accelerating universe needs something with
+    w&nbsp;&lt;&nbsp;&minus;&#8531;. Whether that something is a constant, as Einstein's
+    &Lambda; would be, or slowly changing, as the DESI data hint, is now a measurement.</p>
+
+    <p class="note">Sources: E.&nbsp;A.&nbsp;Milne, <i>Q. J. Math.</i> 5, 64 (1934), and
+    W.&nbsp;H.&nbsp;McCrea &amp; E.&nbsp;A.&nbsp;Milne, <i>Q. J. Math.</i> 5, 73 (1934), for
+    the Newtonian derivation; Planck 2018 VI for the parameters; DESI DR2 results II,
+    <a href="https://arxiv.org/abs/2503.14738">arXiv:2503.14738</a>, for w<sub>0</sub> and
+    w<sub>a</sub>. The DESI preset uses w<sub>0</sub>&nbsp;=&nbsp;&minus;0.75,
+    w<sub>a</sub>&nbsp;=&nbsp;&minus;0.86 but keeps the Planck &Omega;<sub>m</sub>, so it
+    shows the shape of the effect rather than the exact best fit. The radiation density
+    assumes three massless neutrino species. Cosmic times come from integrating (13)
+    numerically.</p>
+
+    <p class="note">Further afield: <a href="https://jamesrohlf.github.io/outreach/expansion.html">the expansion</a>
+    for what a(t) looks like in the data; <a href="https://jamesrohlf.github.io/outreach/lcdm.html">&Lambda;CDM and the six parameters</a>
+    for the standard model this page assumes; <a href="https://jamesrohlf.github.io/outreach/w0wa.html">the evolving dark energy calculator</a>
+    to set w<sub>0</sub> and w<sub>a</sub> yourself and see what moves.</p>
+    </div>
+
+  </main>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  options: { enableMenu: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" defer></script>
+<script>
+(function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function txt(parent, s, attrs) {
+    var t = el('text', Object.assign({ 'font-family': 'var(--font-mono)', 'font-size': 11, fill: 'var(--ink-faint)' }, attrs), parent);
+    t.textContent = s;
+    return t;
+  }
+  var neg = function (s) { return String(s).replace(/-/g, '−'); };
+  var fmt = function (x, d) { return neg(x.toFixed(d == null ? 2 : d)); };
+
+  /* ---------- a small line-chart frame, redrawn at the container's width ---------- */
+  function makeChart(host, cfg) {
+    var st = { hx: null, pts: null, setCross: null };
+    function render() {
+      var W = Math.max(300, host.clientWidth), H = cfg.height;
+      var pad = Object.assign({ l: 46, r: 14, t: 12, b: 32 }, cfg.pad || {});
+      host.innerHTML = '';
+      var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, height: H, role: 'img', 'aria-label': cfg.label }, host);
+      var sx = function (v) { return pad.l + (v - cfg.x[0]) / (cfg.x[1] - cfg.x[0]) * (W - pad.l - pad.r); };
+      var sy = function (v) { return pad.t + (1 - (v - cfg.y[0]) / (cfg.y[1] - cfg.y[0])) * (H - pad.t - pad.b); };
+      var ix = function (px) { return cfg.x[0] + (px - pad.l) / (W - pad.l - pad.r) * (cfg.x[1] - cfg.x[0]); };
+      cfg.yticks.forEach(function (t) {
+        el('line', { x1: pad.l, x2: W - pad.r, y1: sy(t), y2: sy(t), stroke: 'var(--rule)', 'stroke-width': 1 }, svg);
+        txt(svg, cfg.yfmt(t), { x: pad.l - 7, y: sy(t) + 4, 'text-anchor': 'end' });
+      });
+      var every = W < 480 ? 2 : 1;
+      cfg.xticks.forEach(function (t, i) {
+        el('line', { x1: sx(t), x2: sx(t), y1: H - pad.b, y2: H - pad.b + 4, stroke: 'var(--ink-faint)', 'stroke-width': 1 }, svg);
+        if (i % every === 0) txt(svg, cfg.xfmt(t), { x: sx(t), y: H - pad.b + 17, 'text-anchor': 'middle' });
+      });
+      el('line', { x1: pad.l, x2: W - pad.r, y1: H - pad.b, y2: H - pad.b, stroke: 'var(--ink-faint)', 'stroke-width': 1 }, svg);
+      var cid = 'c' + Math.random().toString(36).slice(2);
+      el('rect', { x: pad.l, y: pad.t - 2, width: W - pad.l - pad.r, height: H - pad.t - pad.b + 4 }, el('clipPath', { id: cid }, el('defs', {}, svg)));
+      var g = el('g', { 'clip-path': 'url(#' + cid + ')' }, svg);
+      var over = el('g', {}, svg);
+      cfg.draw({ g: g, over: over, sx: sx, sy: sy, W: W, H: H, pad: pad });
+      var cross = el('line', { y1: pad.t, y2: H - pad.b, stroke: 'var(--ink-faint)', 'stroke-width': 1, 'stroke-dasharray': '2 3', visibility: 'hidden' }, svg);
+      var dots = el('g', {}, svg);
+      var hit = el('rect', { x: pad.l, y: 0, width: W - pad.l - pad.r, height: H, fill: 'transparent', style: 'cursor:crosshair;touch-action:pan-y' }, svg);
+      function move(ev) {
+        var r = svg.getBoundingClientRect();
+        var xv = Math.min(cfg.x[1], Math.max(cfg.x[0], ix((ev.clientX - r.left) * W / r.width)));
+        cfg.onHover(xv);
+      }
+      hit.addEventListener('pointermove', move);
+      hit.addEventListener('pointerdown', move);
+      hit.addEventListener('pointerleave', function () { cfg.onHover(null); });
+      st.setCross = function (xv, pts) {
+        dots.innerHTML = '';
+        if (xv == null) { cross.setAttribute('visibility', 'hidden'); return; }
+        cross.setAttribute('visibility', 'visible');
+        cross.setAttribute('x1', sx(xv)); cross.setAttribute('x2', sx(xv));
+        (pts || []).forEach(function (p) {
+          if (!isFinite(p.y) || p.y < cfg.y[0] || p.y > cfg.y[1]) return;
+          el('circle', { cx: sx(xv), cy: sy(p.y), r: 4.5, fill: p.color, stroke: 'var(--paper)', 'stroke-width': 2 }, dots);
+        });
+      };
+      if (st.hx != null) st.setCross(st.hx, st.pts);
+    }
+    if (window.ResizeObserver) new ResizeObserver(render).observe(host);
+    else window.addEventListener('resize', render);
+    return {
+      render: render,
+      cross: function (xv, pts) { st.hx = xv; st.pts = pts; if (st.setCross) st.setCross(xv, pts); }
+    };
+  }
+  function path(pts, sx, sy) {
+    var d = '', pen = false;
+    pts.forEach(function (p) {
+      if (!isFinite(p[1])) { pen = false; return; }
+      d += (pen ? 'L' : 'M') + sx(p[0]).toFixed(1) + ',' + sy(p[1]).toFixed(1);
+      pen = true;
+    });
+    return d;
+  }
+
+  var h = 0.674, HUBBLE_TIME = 9.7779 / h;   // 1/H0 in Gyr
+  function fmtT(gyr) {
+    var yr = gyr * 1e9;
+    if (yr < 1e3) return Math.round(yr) + ' yr';
+    if (yr < 1e6) return (yr / 1e3).toPrecision(3) + ' thousand yr';
+    if (yr < 1e9) return (yr / 1e6).toPrecision(3) + ' million yr';
+    return (yr / 1e9).toFixed(2) + ' Gyr';
+  }
+
+  /* ---------- panel 1: a universe with one ingredient ---------- */
+  var wS = document.getElementById('w-slider');
+  var wBtns = Array.prototype.slice.call(document.querySelectorAll('#rig-w .bar button'));
+  var TAU = [-2.2, 1.5];
+  function aOf(w, tau) {
+    var e = 1 + w;
+    if (Math.abs(e) < 1e-6) return Math.exp(tau);
+    var b = 1 + 1.5 * e * tau;
+    return b > 0 ? Math.pow(b, 2 / (3 * e)) : 0;
+  }
+  function sample(w) {
+    var pts = [], e = 1 + w, tb = Math.abs(e) < 1e-6 ? -Infinity : -2 / (3 * e);
+    if (isFinite(tb) && tb >= TAU[0]) pts.push([tb, 0]);
+    for (var i = 0; i <= 400; i++) {
+      var t = TAU[0] + (TAU[1] - TAU[0]) * i / 400;
+      if (t > tb) pts.push([t, aOf(w, t)]);
+    }
+    return pts;
+  }
+  var REFS = [{ w: 1 / 3, name: 'radiation' }, { w: 0, name: 'dust' }, { w: -1, name: 'Λ' }];
+  var curW = 0;
+  var chartW = makeChart(document.getElementById('chart-w'), {
+    height: 290, x: TAU, y: [0, 3.2], xticks: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5], yticks: [0, 1, 2, 3],
+    xfmt: function (t) { return t === 0 ? 'today' : neg(t); }, yfmt: String, pad: { b: 40 },
+    label: 'Scale factor against time for a flat universe with a single ingredient',
+    draw: function (c) {
+      REFS.forEach(function (r) {
+        el('path', { d: path(sample(r.w), c.sx, c.sy), fill: 'none', stroke: 'var(--ink-faint)', 'stroke-width': 1.6, 'stroke-dasharray': '5 3', opacity: 0.9 }, c.g);
+        var y = Math.min(aOf(r.w, TAU[1]), 3.1);
+        txt(c.over, r.name, { x: c.W - c.pad.r - 4, y: c.sy(y) + (r.w === -1 ? -6 : 14), 'text-anchor': 'end' });
+      });
+      el('path', { d: path(sample(curW), c.sx, c.sy), fill: 'none', stroke: 'var(--scarlet)', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, c.g);
+      el('circle', { cx: c.sx(0), cy: c.sy(1), r: 4.5, fill: 'var(--gold)' }, c.over);
+      txt(c.over, 'H₀ (t − t₀), in Hubble times', { x: c.sx(-0.35), y: c.H - 4, 'text-anchor': 'middle', fill: 'var(--ink-soft)', 'font-family': 'var(--font-body)', 'font-size': 12.5 });
+      txt(c.over, 'scale factor a', { x: c.pad.l + 8, y: c.pad.t + 11, fill: 'var(--ink-soft)', 'font-family': 'var(--font-body)', 'font-size': 12.5 });
+    },
+    onHover: function (xv) {
+      if (xv == null) { chartW.cross(null); return; }
+      chartW.cross(xv, [{ y: aOf(curW, xv), color: 'var(--scarlet)' }]);
+    }
+  });
+  function updateW() {
+    curW = parseFloat(wS.value);
+    document.getElementById('w-out').textContent = fmt(curW);
+    var e = 1 + curW, n = -3 * e, lam = Math.abs(e) < 1e-6;
+    var rho = Math.abs(n) < 1e-9 ? 'constant' : 'a<sup>' + fmt(n) + '</sup>';
+    var at = lam ? 'e<sup>Ht</sup>' : 't<sup>' + fmt(2 / (3 * e), 3) + '</sup>';
+    var age = lam ? 'infinite (no big bang)' : fmt(2 / (3 * e), 3) + '/H<sub>0</sub> = ' + (2 / (3 * e) * HUBBLE_TIME).toFixed(2) + ' Gyr';
+    document.getElementById('w-derived').innerHTML =
+      '<span>&rho; &prop; <b>' + rho + '</b></span><span>a(t) &prop; <b>' + at + '</b></span><span>age <b>' + age + '</b></span>';
+    var q = 0.5 * (1 + 3 * curW), v = document.getElementById('w-verdict');
+    if (Math.abs(curW + 1 / 3) < 0.005) v.innerHTML = '<span class="dec">coasting</span> &mdash; q = 0: gravity and pressure exactly cancel';
+    else if (curW < -1 / 3) v.innerHTML = '<span class="acc">accelerating</span> &mdash; q = ' + fmt(q) + ', since w &lt; &minus;1/3';
+    else v.innerHTML = '<span class="dec">decelerating</span> &mdash; q = ' + fmt(q) + ', since w &gt; &minus;1/3';
+    wBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(Math.abs(parseFloat(b.dataset.w) - curW) < 0.006)); });
+  }
+  wS.addEventListener('input', function () { updateW(); chartW.render(); });
+  wBtns.forEach(function (b) {
+    b.addEventListener('click', function () { wS.value = b.dataset.w; updateW(); chartW.render(); });
+  });
+  updateW(); chartW.render();
+
+  /* ---------- panel 2: the real mixture ---------- */
+  var Om = 0.315, Or = 4.18e-5 / (h * h), Ode = 1 - Om - Or;
+  var H0 = 1 / HUBBLE_TIME;   // per Gyr
+  var w0 = -1, wa = 0;
+  function fDE(a) { return Math.pow(a, -3 * (1 + w0 + wa)) * Math.exp(-3 * wa * (1 - a)); }
+  function parts(a) {
+    var r = Or * Math.pow(a, -4), m = Om * Math.pow(a, -3), d = Ode * fDE(a);
+    return { r: r, m: m, d: d, E2: r + m + d };
+  }
+  function weff(a) { var p = parts(a); return (p.r / 3 + p.d * (w0 + wa * (1 - a))) / p.E2; }
+
+  var LA0 = Math.log(1e-9), LA1 = Math.log(12), NT = 4000, tGrid;
+  function buildTime() {
+    tGrid = new Float64Array(NT + 1);
+    var dl = (LA1 - LA0) / NT;
+    var invH = function (la) { return 1 / (H0 * Math.sqrt(parts(Math.exp(la)).E2)); };
+    tGrid[0] = 0.5 * invH(LA0);                   // radiation era: t = 1/(2H)
+    for (var i = 1; i <= NT; i++) {
+      var la = LA0 + i * dl;
+      tGrid[i] = tGrid[i - 1] + 0.5 * dl * (invH(la - dl) + invH(la));
+    }
+  }
+  function tOf(a) {
+    var f = (Math.log(a) - LA0) / (LA1 - LA0) * NT;
+    var i = Math.max(0, Math.min(NT - 1, Math.floor(f))), u = f - i;
+    return tGrid[i] * (1 - u) + tGrid[i + 1] * u;
+  }
+  function fmtZ(z) { return z >= 100 ? Math.round(z).toLocaleString('en-US') : neg(z.toFixed(2)); }
+  function fmtA(a) { return a < 0.01 ? neg(a.toExponential(2)) : a.toFixed(3); }
+
+  var XR = [-6, 1], XT = [-6, -5, -4, -3, -2, -1, 0, 1];
+  var SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+  function pow10(t) {
+    if (t === 0) return '1';
+    if (t === 1) return '10';
+    return '10' + (t < 0 ? '⁻' : '') + String(Math.abs(t)).replace(/\d/g, function (d) { return SUP[d]; });
+  }
+  var S;
+  function series() {
+    var o = { r: [], m: [], d: [], w: [] };
+    for (var i = 0; i <= 500; i++) {
+      var la = XR[0] + (XR[1] - XR[0]) * i / 500, a = Math.pow(10, la), p = parts(a);
+      o.r.push([la, p.r / p.E2]); o.m.push([la, p.m / p.E2]); o.d.push([la, p.d / p.E2]); o.w.push([la, weff(a)]);
+    }
+    return o;
+  }
+  function today(c) {
+    el('line', { x1: c.sx(0), x2: c.sx(0), y1: c.pad.t, y2: c.H - c.pad.b, stroke: 'var(--gold)', 'stroke-width': 1.4, 'stroke-dasharray': '3 3' }, c.g);
+    txt(c.over, 'today', { x: c.sx(0) - 5, y: c.pad.t + 11, 'text-anchor': 'end', fill: 'var(--gold)' });
+  }
+  var chartF = makeChart(document.getElementById('chart-frac'), {
+    height: 220, x: XR, y: [0, 1], xticks: XT, yticks: [0, 0.5, 1], xfmt: pow10, yfmt: String,
+    label: 'Share of the energy density in radiation, matter and dark energy, against scale factor',
+    draw: function (c) {
+      today(c);
+      el('path', { d: path(S.r, c.sx, c.sy), fill: 'none', stroke: 'var(--gold)', 'stroke-width': 2.2 }, c.g);
+      el('path', { d: path(S.m, c.sx, c.sy), fill: 'none', stroke: 'var(--ink-soft)', 'stroke-width': 2.4, 'stroke-dasharray': '1 3', 'stroke-linecap': 'round' }, c.g);
+      el('path', { d: path(S.d, c.sx, c.sy), fill: 'none', stroke: 'var(--scarlet)', 'stroke-width': 2, 'stroke-dasharray': '6 3' }, c.g);
+      txt(c.over, 'radiation', { x: c.sx(-5.85), y: c.sy(1) + 16, fill: 'var(--ink-soft)' });
+      txt(c.over, 'matter', { x: c.sx(-2.3), y: c.sy(1) + 16, fill: 'var(--ink-soft)' });
+      txt(c.over, 'dark energy', { x: c.sx(0.95), y: c.sy(1) + 30, 'text-anchor': 'end', fill: 'var(--ink-soft)' });
+      txt(c.over, 'share of energy, Ω(a)', { x: c.pad.l + 8, y: c.sy(0.5) - 6, fill: 'var(--ink-faint)', 'font-family': 'var(--font-body)', 'font-size': 12 });
+    },
+    onHover: hoverU
+  });
+  var chartE = makeChart(document.getElementById('chart-weff'), {
+    height: 220, x: XR, y: [-1.3, 0.45], xticks: XT, yticks: [-1, -1 / 3, 0, 1 / 3], pad: { b: 40 },
+    xfmt: pow10, yfmt: function (t) { return t === -1 ? '−1' : t === 0 ? '0' : t > 0 ? '+1/3' : '−1/3'; },
+    label: 'Effective equation of state of the universe against scale factor',
+    draw: function (c) {
+      today(c);
+      el('line', { x1: c.pad.l, x2: c.W - c.pad.r, y1: c.sy(-1 / 3), y2: c.sy(-1 / 3), stroke: 'var(--ink-faint)', 'stroke-width': 1.2, 'stroke-dasharray': '5 3' }, c.g);
+      txt(c.over, 'accelerating below this line', { x: c.pad.l + 8, y: c.sy(-1 / 3) + 15 });
+      el('path', { d: path(S.w, c.sx, c.sy), fill: 'none', stroke: 'var(--scarlet)', 'stroke-width': 2.2 }, c.g);
+      txt(c.over, 'w_eff', { x: c.pad.l + 8, y: c.pad.t + 11, fill: 'var(--ink-soft)', 'font-family': 'var(--font-body)', 'font-size': 12.5 });
+      txt(c.over, 'scale factor a  (today = 1)', { x: (c.sx(XR[0]) + c.sx(XR[1])) / 2, y: c.H - 4, 'text-anchor': 'middle', fill: 'var(--ink-soft)', 'font-family': 'var(--font-body)', 'font-size': 12.5 });
+    },
+    onHover: hoverU
+  });
+
+  function describe(la) {
+    var a = Math.pow(10, la), p = parts(a), w = weff(a), q = 0.5 * (1 + 3 * w);
+    var at = la === 0 ? 'today' : 'at a = ' + fmtA(a) + ', z = ' + fmtZ(1 / a - 1);
+    document.getElementById('u-derived').innerHTML =
+      '<span><b>' + at + '</b></span>' +
+      '<span>t = <b>' + fmtT(tOf(a)) + '</b></span>' +
+      '<span>&Omega;<sub>r</sub> <b>' + (p.r / p.E2).toFixed(2) + '</b></span>' +
+      '<span>&Omega;<sub>m</sub> <b>' + (p.m / p.E2).toFixed(2) + '</b></span>' +
+      '<span>&Omega;<sub>DE</sub> <b>' + (p.d / p.E2).toFixed(2) + '</b></span>';
+    document.getElementById('u-verdict').innerHTML =
+      'w<sub>eff</sub> = ' + fmt(w) + ', q = ' + fmt(q) + ' &mdash; ' +
+      (q < 0 ? '<span class="acc">accelerating</span>' : '<span class="dec">decelerating</span>');
+    return { p: p, w: w };
+  }
+  function hoverU(la) {
+    if (la == null) { chartF.cross(null); chartE.cross(null); describe(0); return; }
+    var r = describe(la), p = r.p;
+    chartF.cross(la, [{ y: p.r / p.E2, color: 'var(--gold)' }, { y: p.m / p.E2, color: 'var(--ink-soft)' }, { y: p.d / p.E2, color: 'var(--scarlet)' }]);
+    chartE.cross(la, [{ y: r.w, color: 'var(--scarlet)' }]);
+  }
+
+  function firstCross(f, lo, hi) {
+    var n = 600, prev = f(lo), x0 = lo;
+    for (var i = 1; i <= n; i++) {
+      var x = lo + (hi - lo) * i / n, v = f(x);
+      if ((v > 0) !== (prev > 0)) {
+        var a = x0, b = x, fa = prev;
+        for (var k = 0; k < 60; k++) {
+          var m = 0.5 * (a + b), fm = f(m);
+          if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m;
+        }
+        return 0.5 * (a + b);
+      }
+      prev = v; x0 = x;
+    }
+    return null;
+  }
+  function epochs() {
+    var P = function (l) { return parts(Math.pow(10, l)); };
+    var rows = [
+      ['Matter overtakes radiation', firstCross(function (l) { var p = P(l); return p.r - p.m; }, -7, 1)],
+      ['Expansion starts to accelerate', firstCross(function (l) { return 1 + 3 * weff(Math.pow(10, l)); }, -2, 1)],
+      ['Dark energy overtakes matter', firstCross(function (l) { var p = P(l); return p.m - p.d; }, -2, 1)],
+      ['Today', 0]
+    ];
+    document.getElementById('epochs').innerHTML = rows.map(function (r) {
+      if (r[1] == null) return '<tr><td>' + r[0] + '</td><td colspan="3">not in range</td></tr>';
+      var a = Math.pow(10, r[1]);
+      return '<tr><td>' + r[0] + '</td><td>' + fmtZ(1 / a - 1) + '</td><td>' + fmtA(a) + '</td><td>' + fmtT(tOf(a)) + '</td></tr>';
+    }).join('');
+  }
+
+  var w0S = document.getElementById('w0'), waS = document.getElementById('wa');
+  var pL = document.getElementById('p-lcdm'), pD = document.getElementById('p-desi');
+  function updateU() {
+    w0 = parseFloat(w0S.value); wa = parseFloat(waS.value);
+    document.getElementById('w0-out').textContent = fmt(w0);
+    document.getElementById('wa-out').textContent = fmt(wa);
+    pL.setAttribute('aria-pressed', String(w0 === -1 && wa === 0));
+    pD.setAttribute('aria-pressed', String(w0 === -0.75 && wa === -0.86));
+    buildTime(); S = series();
+    chartF.render(); chartE.render(); describe(0); epochs();
+  }
+  function preset(a, b) { w0S.value = a; waS.value = b; updateU(); }
+  pL.addEventListener('click', function () { preset(-1, 0); });
+  pD.addEventListener('click', function () { preset(-0.75, -0.86); });
+  w0S.addEventListener('input', updateU);
+  waS.addEventListener('input', updateU);
+  updateU();
+})();
+</script>
+</body>
+</html>
