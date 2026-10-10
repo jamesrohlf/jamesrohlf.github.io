@@ -86,11 +86,11 @@
     <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
 
     <h1>Cosmology Calculator with BAO Scale</h1>
-    <p class="subtitle">Distances, ages and the angular <a href="bao.html">BAO</a> scale at any redshift, for flat <a href="lcdm.html">&Lambda;CDM</a> — dark energy and cold dark matter, the standard model of cosmology</p>
+    <p class="subtitle">Distances, ages and the angular <a href="bao.html">BAO</a> scale at any redshift, for flat <a href="lcdm.html">\(\Lambda\)CDM</a> — dark energy and cold dark matter, the standard model of cosmology</p>
 
 
 
-    <p class="eb-lead">Era boundaries are drawn for &Lambda;CDM.</p>
+    <p class="eb-lead">Era boundaries are drawn for \(\Lambda\)CDM.</p>
 
     <div class="eb"><svg id="erabar" viewBox="0 0 1000 104" role="img" aria-labelledby="ebT ebD" preserveAspectRatio="xMidYMid meet">
 <title id="ebT">Cosmic timeline with the current redshift marked</title>
@@ -133,7 +133,7 @@
 <text x="571" y="26" class="eb-note">linear</text>
 <g id="eb-marker" transform="translate(980.0,0)"><line x1="0" y1="30" x2="0" y2="76" class="eb-mark"/><polygon points="0,30 -5,21 5,21" class="eb-markhead"/></g>
 </svg></div>
-    <p class="eb-cap">At <em>z</em> = <strong id="eb-z">0</strong> the universe is
+    <p class="eb-cap">At \(z\) = <strong id="eb-z">0</strong> the universe is
       <strong id="eb-t">13.791 Gyr</strong> old, in the
       <strong id="eb-era">dark-energy</strong> era.
       <span class="eb-cap__note" id="eb-landmark"></span></p>
@@ -152,37 +152,37 @@
 
     <div class="calc" id="calc">
       <div class="calc__in">
-        <div class="calc__f"><label for="c-h0"><em>H</em>&#8320; [km/s/Mpc]</label>
+        <div class="calc__f"><label for="c-h0">\(H_0\) [km/s/Mpc]</label>
           <input id="c-h0" type="number" autocomplete="off" value="67.4" step="0.1" min="60" max="80"></div>
-        <div class="calc__f"><label for="c-om">&Omega;<sub>m</sub></label>
+        <div class="calc__f"><label for="c-om">\(\Omega_\mathrm{m}\)</label>
           <input id="c-om" type="number" autocomplete="off" value="0.315" step="0.001" min="0.25" max="0.35"></div>
-        <div class="calc__f"><label for="c-rd"><em>r</em><sub>d</sub> [Mpc]</label>
+        <div class="calc__f"><label for="c-rd">\(r_\mathrm{d}\) [Mpc]</label>
           <input id="c-rd" type="number" autocomplete="off" value="147.1" step="0.1" min="100" max="200"></div>
-        <div class="calc__f"><label for="c-z">redshift <em>z</em></label>
+        <div class="calc__f"><label for="c-z">redshift \(z\)</label>
           <input id="c-z" type="number" autocomplete="off" value="0" step="0.1" min="0" max="10000000"></div>
         <div class="calc__f calc__f--act"><label aria-hidden="true">&nbsp;</label>
           <button type="button" id="c-reset" class="calc__reset">Reset to Planck 2018</button></div>
       </div>
       <p class="calc__title">Derived Quantities</p>
       <div class="calc__out">
-        <div class="calc__row calc__row--head"><span></span><span>&Omega;<sub>r</sub></span><span>&Omega;<sub>m</sub></span><span>&Omega;<sub>&Lambda;</sub></span></div>
-        <div class="calc__row"><span>densities at <em>z</em></span><output id="o-or">9.21e-5</output><output id="o-omz">0.3150</output><output id="o-ol">0.6849</output></div>
-        <div class="calc__row calc__row--1"><span>scale factor <em>a</em></span><output id="o-a">1.0000</output></div>
-        <div class="calc__row calc__row--1"><span><em>H</em>(<em>z</em>) [km/s/Mpc]</span><output id="o-hz">67.40</output></div>
+        <div class="calc__row calc__row--head"><span></span><span>\(\Omega_\mathrm{r}\)</span><span>\(\Omega_\mathrm{m}\)</span><span>\(\Omega_\Lambda\)</span></div>
+        <div class="calc__row"><span>densities at \(z\)</span><output id="o-or">9.21e-5</output><output id="o-omz">0.3150</output><output id="o-ol">0.6849</output></div>
+        <div class="calc__row calc__row--1"><span>scale factor \(a\)</span><output id="o-a">1.0000</output></div>
+        <div class="calc__row calc__row--1"><span>\(H(z)\) [km/s/Mpc]</span><output id="o-hz">67.40</output></div>
         <div class="calc__row calc__row--head calc__row--2"><span></span><span>age</span><span>lookback</span></div>
         <div class="calc__row calc__row--2"><span>time [Gyr]</span><output id="o-tz">13.791</output><output id="o-lb" class="calc__c3">0.000</output></div>
-        <div class="calc__row calc__row--head calc__row--2"><span></span><span>Mpc</span><span>&divide;&thinsp;<em>r</em><sub>d</sub></span></div>
-        <div class="calc__row calc__row--2"><span><em>D</em><sub>M</sub> comoving</span><output id="o-dm">0.0</output><output id="o-dmr" class="calc__r2">0.00</output></div>
-        <div class="calc__row calc__row--2"><span><em>D</em><sub>H</sub> = <em>c</em>/<em>H</em>(<em>z</em>)</span><output id="o-dh">4448.0</output><output id="o-dhr" class="calc__r2">30.24</output></div>
-        <div class="calc__row calc__hi"><span><em>&theta;</em><sub>BAO</sub> [deg]</span><output id="o-th">—</output></div>
+        <div class="calc__row calc__row--head calc__row--2"><span></span><span>Mpc</span><span>\(\div\,r_\mathrm{d}\)</span></div>
+        <div class="calc__row calc__row--2"><span>\(D_\mathrm{M}\) comoving</span><output id="o-dm">0.0</output><output id="o-dmr" class="calc__r2">0.00</output></div>
+        <div class="calc__row calc__row--2"><span>\(D_\mathrm{H} = c/H(z)\)</span><output id="o-dh">4448.0</output><output id="o-dhr" class="calc__r2">30.24</output></div>
+        <div class="calc__row calc__hi"><span>\(\theta_\mathrm{BAO}\) [deg]</span><output id="o-th">—</output></div>
       </div>
     </div>
 
     <p class="prose">
-      &theta;<sub>BAO</sub> is the angle the 147.1&nbsp;Mpc ruler subtends at that
+      \(\theta_\mathrm{BAO}\) is the angle the 147.1&nbsp;Mpc ruler subtends at that
       redshift — <a href="bao.html#angular-scale">the curve plotted on the BAO page</a>
-      against the 3.2° tile of the Dark Energy Spectroscopic Instrument. Sweep <em>z</em> upward
-      and watch it fall through 3.2° at about <em>z</em>&nbsp;=&nbsp;0.72, which is where
+      against the 3.2° tile of the Dark Energy Spectroscopic Instrument. Sweep \(z\) upward
+      and watch it fall through 3.2° at about \(z = 0.72\), which is where
       a BAO-sized patch of sky stops spanning many pointings and starts fitting inside
       one.
     </p>
@@ -195,15 +195,15 @@
       Four numbers go in: the Hubble constant, the matter density, the sound horizon at
       the drag epoch, and a redshift. The defaults are the Planck 2018 values. Everything
       else follows from the Friedmann equation for a flat universe,
-      <em>E</em>(<em>z</em>)&nbsp;=&nbsp;&radic;(&Omega;<sub>r</sub>(1+<em>z</em>)<sup>4</sup>
-      + &Omega;<sub>m</sub>(1+<em>z</em>)<sup>3</sup> + &Omega;<sub>&Lambda;</sub>), with
-      &Omega;<sub>&Lambda;</sub>&nbsp;=&nbsp;1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub> and
-      radiation included, and &Omega;<sub>&Lambda;</sub> fixed by closure at
-      1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub>&nbsp;&minus;&nbsp;&Omega;<sub>r</sub>.
+      \(E(z) = \sqrt{\Omega_\mathrm{r}(1+z)^4
+      + \Omega_\mathrm{m}(1+z)^3 + \Omega_\Lambda}\), with
+      \(\Omega_\Lambda = 1 - \Omega_\mathrm{m}\) and
+      radiation included, and \(\Omega_\Lambda\) fixed by closure at
+      \(1 - \Omega_\mathrm{m} - \Omega_\mathrm{r}\).
     </p>
 
     <p class="prose">
-      The sound horizon <em>r</em><sub>d</sub> is the comoving distance a pressure wave
+      The sound horizon \(r_\mathrm{d}\) is the comoving distance a pressure wave
       crossed between the Big Bang and the drag epoch, just after the cosmic background
       radiation was set free at recombination. That radiation is the cosmic microwave
       background — the CMB — and Planck's map of it fixes the Hubble constant, matter
@@ -213,28 +213,28 @@
     </p>
 
     <p class="prose">
-      &Omega;<sub>r</sub> looks negligible at 9.2&times;10<sup>&minus;5</sup> and is, today.
-      It is not negligible early: radiation scales as (1+<em>z</em>)<sup>4</sup> against
-      matter's (1+<em>z</em>)<sup>3</sup>, so it overtakes matter above
-      <em>z</em>&nbsp;&asymp;&nbsp;3400 and dominates everything before that. Leaving it
-      out of the closure — writing &Omega;<sub>&Lambda;</sub>&nbsp;=&nbsp;1&nbsp;&minus;&nbsp;&Omega;<sub>m</sub>
+      \(\Omega_\mathrm{r}\) looks negligible at \(9.2\times10^{-5}\) and is, today.
+      It is not negligible early: radiation scales as \((1+z)^4\) against
+      matter's \((1+z)^3\), so it overtakes matter above
+      \(z \approx 3400\) and dominates everything before that. Leaving it
+      out of the closure — writing \(\Omega_\Lambda = 1 - \Omega_\mathrm{m}\)
       — makes the model sum to 1.000092 rather than 1, which is a curved universe by
       accident. The value quoted is photons plus three species of massless neutrino.
     </p>
 
     <p class="prose">
       The distances are given both in megaparsecs and divided by
-      <em>r</em><sub>d</sub>. That second column is DESI's convention: BAO measures a
+      \(r_\mathrm{d}\). That second column is DESI's convention: BAO measures a
       ratio of distance to the standard ruler, not a distance, so
-      <em>D</em><sub>M</sub>/<em>r</em><sub>d</sub> and
-      <em>D</em><sub>H</sub>/<em>r</em><sub>d</sub> are what the papers quote. Set
-      <em>z</em>&nbsp;=&nbsp;0.7 and you get 17.6 and 20.2, against the 17.35 and 19.6
+      \(D_\mathrm{M}/r_\mathrm{d}\) and
+      \(D_\mathrm{H}/r_\mathrm{d}\) are what the papers quote. Set
+      \(z = 0.7\) and you get 17.6 and 20.2, against the 17.35 and 19.6
       DESI measured for its LRG2 sample — the gap between prediction and measurement,
       readable in one line.
     </p>
 
     <p class="prose muted">
-      Age integrals use the substitution <em>a</em>&nbsp;=&nbsp;1/(1+<em>z</em>), which
+      Age integrals use the substitution \(a = 1/(1+z)\), which
       removes the infinite upper limit; integration is Simpson's rule. The method follows
       <a href="https://github.com/jamesrohlf/jamesrohlf.github.io/blob/main/outreach/code/cosmic_timeline.py">cosmic_timeline.py</a>,
       against which every displayed digit was checked.
@@ -251,14 +251,14 @@
     <h2 class="section-title">Elsewhere on this site</h2>
 
     <ul class="link-list">
-      <li><a href="lcdm.html">&Lambda;CDM
+      <li><a href="lcdm.html">\(\Lambda\)CDM
         <span class="sub">the standard model of cosmology — the six parameters, and the cosmic timeline</span></a></li>
       <li><a href="w0wa.html">Evolving dark energy calculator
-        <span class="sub">the same quantities with <em>w</em><sub>0</sub> and <em>w</em><sub>a</sub>, against &Lambda;CDM</span></a></li>
+        <span class="sub">the same quantities with \(w_0\) and \(w_a\), against \(\Lambda\)CDM</span></a></li>
       <li><a href="bao.html">Baryon acoustic oscillations
         <span class="sub">where the 147&nbsp;Mpc ruler comes from</span></a></li>
       <li><a href="hubble-tension.html">The Hubble tension
-        <span class="sub">why H&#8320; is contested</span></a></li>
+        <span class="sub">why \(H_0\) is contested</span></a></li>
     </ul>
   </main>
   <script>

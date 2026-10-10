@@ -122,7 +122,7 @@
       parameters, against the identical model with massless neutrinos. The middle one is their
       ratio, and the entire neutrino signal lives there &mdash; it is a few percent deep, which
       is why it needs its own panel. The bottom one is the measurement: the posterior on
-      &Sigma;m<sub>&nu;</sub> from DESI DR2, with a marker showing where you have put the
+      \(\sum m_\nu\) from DESI DR2, with a marker showing where you have put the
       slider.</p>
       <p class="src">Constraint: DESI Collaboration, <i>DESI DR2 results II: measurements of
       baryon acoustic oscillations and cosmological constraints</i>,
@@ -145,7 +145,7 @@
       </div>
 
       <div id="wigwrap" style="display:none">
-        <p class="postlead">The acoustic wiggles on their own, on a linear k axis
+        <p class="postlead">The acoustic wiggles on their own, on a linear \(k\) axis
           <label style="font-weight:400"><input type="checkbox" id="dampwig">
             ride them on the neutrino suppression</label></p>
         <svg id="wig" viewBox="0 0 900 208" role="img" aria-labelledby="wigT wigD">
@@ -159,7 +159,7 @@
 
       <div class="legend">
         <span class="swatch-model"><i></i>your model</span>
-        <span class="swatch-ref"><i></i>same model, &Sigma;m<sub>&nu;</sub> = 0
+        <span class="swatch-ref"><i></i>same model, \(\sum m_\nu = 0\)
           <span id="refnote"></span></span>
         <span class="swatch-mark"><i></i>half-suppression scale</span>
       </div>
@@ -169,9 +169,9 @@
       <div class="bar">
         <button type="button" id="reset">&#8634;&nbsp; Reset to DESI DR2 + CMB</button>
         <button type="button" class="demo" id="minmass">minimum mass</button>
-        <label><input type="checkbox" id="matchs8"> compare at fixed &sigma;<sub>8</sub></label>
-        <label><input type="checkbox" id="fixom" checked> hold &Omega;<sub>m</sub> fixed</label>
-        <label><input type="checkbox" id="showref" checked> show &Sigma;m<sub>&nu;</sub>&nbsp;=&nbsp;0</label>
+        <label><input type="checkbox" id="matchs8"> compare at fixed \(\sigma_8\)</label>
+        <label><input type="checkbox" id="fixom" checked> hold \(\Omega_\mathrm{m}\) fixed</label>
+        <label><input type="checkbox" id="showref" checked> show \(\sum m_\nu = 0\)</label>
         <label><input type="checkbox" id="showratio" checked> ratio panel</label>
         <label><input type="checkbox" id="showwig"> BAO wiggles</label>
         <label><input type="checkbox" id="showpost" checked> DESI posterior</label>
@@ -201,22 +201,22 @@
 
     <p>Take the density of matter everywhere in the universe, divide by the mean, subtract one.
     That gives a field of over- and under-densities. Decompose it into waves, and
-    P(k) is the mean square amplitude of the wave with wavenumber k. Large k is small
-    scales. The units are volume &mdash; cubic megaparsecs &mdash; because P(k) is a variance
-    per unit volume in k-space, and the convention is to measure distance in Mpc/h so that the
+    \(P(k)\) is the mean square amplitude of the wave with wavenumber \(k\). Large \(k\) is small
+    scales. The units are volume &mdash; cubic megaparsecs &mdash; because \(P(k)\) is a variance
+    per unit volume in \(k\)-space, and the convention is to measure distance in \(h^{-1}\,\mathrm{Mpc}\) so that the
     answer does not depend on the Hubble constant you assume to convert redshifts into
     distances.</p>
 
-    <p>The curve has a peak, at about k&nbsp;=&nbsp;0.016&nbsp;h/Mpc, and the peak is not
+    <p>The curve has a peak, at about \(k = 0.016\,h\,\mathrm{Mpc}^{-1}\), and the peak is not
     primordial. Inflation handed over a spectrum that is very nearly a featureless power law,
-    P&nbsp;&prop;&nbsp;k<sup>n<sub>s</sub></sup>, rising to the right. What bent it is the
+    \(P \propto k^{n_s}\), rising to the right. What bent it is the
     radiation era: a mode that came inside the horizon while radiation still dominated found its
     growth almost stopped, because the radiation was smooth and would not clump with it. Modes
     that came in later grew freely. So the turnover marks the horizon at matter&ndash;radiation
     equality, and everything to the right of it &mdash; the entire small-scale half of the plot
     &mdash; is suppressed relative to what inflation produced, by an amount that depends on how
     long radiation ran the universe. That is why the peak position measures
-    &Omega;<sub>m</sub>h&sup2;, and why it moves when you drag &Omega;<sub>m</sub>.</p>
+    \(\Omega_\mathrm{m}h^2\), and why it moves when you drag \(\Omega_\mathrm{m}\).</p>
 
     <p>The small wiggles past the peak are baryon acoustic oscillations &mdash; the same standing
     sound waves that make the peaks in
@@ -229,34 +229,34 @@
 
     <p>Tick <b>BAO wiggles</b> and a panel appears with the broadband divided out. What is left
     is the acoustic oscillation by itself &mdash; a damped wave of a few percent, largest at its
-    first crest near k&nbsp;=&nbsp;0.07&nbsp;h/Mpc and gone by about
-    k&nbsp;=&nbsp;0.6&nbsp;h/Mpc. On the curve above it is a texture you can barely see; here it
+    first crest near \(k = 0.07\,h\,\mathrm{Mpc}^{-1}\) and gone by about
+    \(k = 0.6\,h\,\mathrm{Mpc}^{-1}\). On the curve above it is a texture you can barely see; here it
     is the whole plot.</p>
 
     <p>Two things are worth reading off it. The first is that the crests are <em>evenly
-    spaced</em>, which is why that panel uses a linear k axis instead of the logarithmic one
-    above. A standard ruler of length r<sub>d</sub> in real space is a pure sinusoid of period
-    &Delta;k&nbsp;=&nbsp;2&pi;/r<sub>d</sub> in Fourier space, and even spacing is exactly what
-    one sharp scale looks like in this picture. The readout gives r<sub>d</sub>, the spacing that
+    spaced</em>, which is why that panel uses a linear \(k\) axis instead of the logarithmic one
+    above. A standard ruler of length \(r_\mathrm{d}\) in real space is a pure sinusoid of period
+    \(\Delta k = 2\pi/r_\mathrm{d}\) in Fourier space, and even spacing is exactly what
+    one sharp scale looks like in this picture. The readout gives \(r_\mathrm{d}\), the spacing that
     predicts, and the spacing measured off the curve itself; drag
-    &Omega;<sub>b</sub>h&sup2; or &Omega;<sub>m</sub> and watch all three move together. This is
+    \(\Omega_\mathrm{b}h^2\) or \(\Omega_\mathrm{m}\) and watch all three move together. This is
     the ruler DESI reads, and reading it is the whole of a BAO measurement.</p>
 
     <p>The second is the damping. Each crest is smaller than the last, and past
-    k&nbsp;&asymp;&nbsp;0.6 there is nothing left at all. That is Silk damping: in the last
+    \(k \approx 0.6\) there is nothing left at all. That is Silk damping: in the last
     stretch before recombination the photons random-walk a finite distance, and on wavelengths
     shorter than that walk they carry their pressure out of the compressions and smooth the
     oscillation away. Only waves longer than the diffusion length survive. The same envelope
-    closes down the high-&#8467; end of
+    closes down the high-\(\ell\) end of
     <a href="cmb-spectrum.html">the microwave background spectrum</a>, for the same reason and
     at the same physical scale &mdash; these are two photographs of one sound wave, one taken in
     light and one in matter.</p>
 
-    <p>Now drag &Sigma;m<sub>&nu;</sub> with this panel open. Almost nothing happens &mdash;
+    <p>Now drag \(\sum m_\nu\) with this panel open. Almost nothing happens &mdash;
     and it is worth being careful about what that does and does not mean. This panel divides
-    P(k) by <em>its own</em> smooth spectrum, so any suppression acting on the wiggles and the
+    \(P(k)\) by <em>its own</em> smooth spectrum, so any suppression acting on the wiggles and the
     broadband alike cancels out of it exactly, by construction. Neutrino free-streaming is
-    precisely such a suppression. Holding &Omega;<sub>c</sub>h&sup2; fixed and going from
+    precisely such a suppression. Holding \(\Omega_\mathrm{c}h^2\) fixed and going from
     massless neutrinos to 0.5&nbsp;eV leaves the relative crest height at 6.5%, while the
     <em>absolute</em> size of the wiggles falls to 0.82 of what it was &mdash; closely tracking
     the broadband's own 0.77. The wave is damped very nearly as hard as the envelope carrying
@@ -296,12 +296,12 @@
     <a href="https://arxiv.org/abs/2407.06117">arXiv:2407.06117</a>.</span></p>
 
     <p>The wiggles do care intensely about one thing: baryons. Push
-    &Omega;<sub>b</sub>h&sup2; from 0.0210 to 0.0240 and the crests grow from 6.0% to 7.0%,
+    \(\Omega_\mathrm{b}h^2\) from 0.0210 to 0.0240 and the crests grow from 6.0% to 7.0%,
     because baryons are the inertia in the photon&ndash;baryon fluid and a heavier fluid rings
     harder. It is the same parameter that sets the odd&ndash;even peak alternation in
     <a href="cmb-spectrum.html">the CMB spectrum</a>, doing the same job. Raising
-    &Omega;<sub>m</sub> instead shrinks the ruler &mdash; r<sub>d</sub> falls from 103.8 to
-    97.1&nbsp;Mpc/h between &Omega;<sub>m</sub> = 0.27 and 0.35, because more matter means an
+    \(\Omega_\mathrm{m}\) instead shrinks the ruler &mdash; \(r_\mathrm{d}\) falls from 103.8 to
+    \(97.1\,h^{-1}\,\mathrm{Mpc}\) between \(\Omega_\mathrm{m} = 0.27\) and 0.35, because more matter means an
     earlier equality and less time for sound to travel &mdash; and the crest spacing widens to
     match.</p>
 
@@ -312,7 +312,7 @@
     pieces are smooth, so their sum is a legitimate smooth spectrum; the split between
     &ldquo;broadband&rdquo; and &ldquo;wiggle&rdquo; near the very ends of the band is the part
     that is convention rather than physics, which is why the panel stops at
-    k&nbsp;=&nbsp;0.03 rather than running into the turnover.</p>
+    \(k = 0.03\) rather than running into the turnover.</p>
 
     <h2>Why a neutrino shows up on this plot</h2>
 
@@ -327,75 +327,74 @@
 
     <div class="eq">\[ \Omega_\nu h^2 = \frac{\sum m_\nu}{93.14\ \mathrm{eV}} \]</div>
 
-    <p>At the smallest mass the oscillation experiments allow, &Sigma;m<sub>&nu;</sub> =
-    0.059&nbsp;eV, that is &Omega;<sub>&nu;</sub>h&sup2; = 0.00063: about 0.45% of the matter
+    <p>At the smallest mass the oscillation experiments allow, \(\sum m_\nu = 0.059\ \mathrm{eV}\), that is \(\Omega_\nu h^2 = 0.00063\): about 0.45% of the matter
     in the universe, or some 3% of what all the baryons weigh, carried by particles that
     outnumber those baryons a billion to one. Half a percent is not nothing, but a half-percent
-    change in &Omega;<sub>m</sub> would be hopeless to detect on its own. Neutrinos are
+    change in \(\Omega_\mathrm{m}\) would be hopeless to detect on its own. Neutrinos are
     detectable because they do something no other half-percent of the matter does.</p>
 
     <h3>Free streaming</h3>
 
-    <p>A neutrino of mass m stops being relativistic when its typical momentum drops below its
-    mass, at a redshift 1&nbsp;+&nbsp;z<sub>nr</sub> &asymp; 1890&nbsp;(m/1&nbsp;eV). For one
+    <p>A neutrino of mass \(m\) stops being relativistic when its typical momentum drops below its
+    mass, at a redshift \(1 + z_\mathrm{nr} \approx 1890\,(m/1\ \mathrm{eV})\). For one
     species of 0.02&nbsp;eV &mdash; a third of the minimum sum &mdash; that is
-    z&nbsp;&asymp;&nbsp;37. So these particles spent essentially the whole history of structure
+    \(z \approx 37\). So these particles spent essentially the whole history of structure
     formation moving at very nearly the speed of light.</p>
 
     <p>A particle moving that fast does not stay in a gravitational well smaller than the distance
     it crosses in a Hubble time. It streams straight through. The consequence is a scale: above
-    a wavenumber k<sub>fs</sub>, neutrino perturbations are erased as fast as they form, and the
+    a wavenumber \(k_\mathrm{fs}\), neutrino perturbations are erased as fast as they form, and the
     neutrinos contribute their mass to the expansion but nothing to the clumping. Below it, they
     are slow enough to be caught, and they behave like any other cold matter. The step you can
     see in the ratio panel is that boundary, smeared out because the neutrinos have a thermal
-    spread of speeds and because k<sub>fs</sub> itself moves as the universe expands. The marker
+    spread of speeds and because \(k_\mathrm{fs}\) itself moves as the universe expands. The marker
     on the plot is where the suppression reaches half its final depth, computed from the curve
     rather than from a formula.</p>
 
     <h3>Two effects, and the second one is bigger</h3>
 
-    <p>The obvious effect is that a fraction f<sub>&nu;</sub> =
-    &Omega;<sub>&nu;</sub>/&Omega;<sub>m</sub> of the matter simply fails to clump, which removes
-    2f<sub>&nu;</sub> from the power on small scales. That is not the main term. The larger
+    <p>The obvious effect is that a fraction \(f_\nu =
+    \Omega_\nu/\Omega_\mathrm{m}\) of the matter simply fails to clump, which removes
+    \(2f_\nu\) from the power on small scales. That is not the main term. The larger
     effect is that the neutrinos slow down the growth of everything else: cold dark matter and
     baryons falling together feel the neutrinos' gravity in the smooth background but get no help
-    from their clustering, so instead of growing in proportion to the scale factor a, the
-    surviving perturbations grow as a<sup>1&minus;3f<sub>&nu;</sub>/5</sup>.</p>
+    from their clustering, so instead of growing in proportion to the scale factor \(a\), the
+    surviving perturbations grow as \(a^{1-3f_\nu/5}\).</p>
 
     <p>That exponent looks harmless. It is not, because growth is an exponential in
-    ln&nbsp;a and the deficit compounds for as long as the neutrinos are non-relativistic and
+    \(\ln a\) and the deficit compounds for as long as the neutrinos are non-relativistic and
     matter is running the universe. A small change in a growth rate, integrated over many
-    e-folds, is a large change in what comes out. Add the 2f<sub>&nu;</sub> the neutrinos fail
+    e-folds, is a large change in what comes out. Add the \(2f_\nu\) the neutrinos fail
     to contribute themselves, and the standard result for the small-scale plateau is</p>
 
     <div class="eq">\[ \frac{\Delta P}{P} \approx -8\, f_\nu \]</div>
 
     <p>Eight, not two. The neutrinos suppress structure about four times more effectively
     than their share of the mass would suggest, and that factor is the entire reason a
-    0.06&nbsp;eV particle is measurable at all. At the minimum mass f<sub>&nu;</sub> = 0.0045,
-    so eight times it is a suppression of 3.6% &mdash; small, but nothing else in &Lambda;CDM
+    0.06&nbsp;eV particle is measurable at all. At the minimum mass \(f_\nu = 0.0045\),
+    so eight times it is a suppression of 3.6% &mdash; small, but nothing else in \(\Lambda\)CDM
     produces a step of that shape at that scale.</p>
 
     <p>The coefficient is not exactly eight, and this page will tell you what it actually is:
     the <b>coefficient</b> readout under the sliders is the measured depth divided by
-    f<sub>&nu;</sub>, and it moves as you drag. At the minimum mass it is about
+    \(f_\nu\), and it moves as you drag. At the minimum mass it is about
     <b>&minus;7.9</b>, a little short of eight, because a light neutrino turns non-relativistic
-    late &mdash; each species is still relativistic until z&nbsp;&asymp;&nbsp;37 &mdash; which
+    late &mdash; each species is still relativistic until \(z \approx 37\) &mdash; which
     leaves fewer e-folds in which to do the damage. Raise the mass and it climbs <em>past</em>
     eight, to about &minus;8.8 near 0.3&nbsp;eV, because a heavier neutrino slows down sooner
     and suppresses growth for longer. Push further still and it eases back &mdash; &minus;8.6 by
     0.5&nbsp;eV &mdash; because the suppression is an exponential and exponentials saturate.
     Eight is a good number to carry in your head and a poor one to quote to three figures.</p>
 
-    <h2>Fixed &Omega;<sub>m</sub>, or fixed cold dark matter?</h2>
+    <h2>Fixed \(\Omega_\mathrm{m}\), or fixed cold dark matter?</h2>
 
-    <p>The &minus;8f<sub>&nu;</sub> result carries a condition that is easy to miss: it is the
+    <p>The \(-8f_\nu\) result carries a condition that is easy to miss: it is the
     answer when you <em>trade</em> cold dark matter for neutrinos, holding the total
-    &Omega;<sub>m</sub> fixed. That is the comparison in which nothing but the neutrinos has
+    \(\Omega_\mathrm{m}\) fixed. That is the comparison in which nothing but the neutrinos has
     changed, and it isolates the free-streaming physics.</p>
 
-    <p>Untick <i>hold &Omega;<sub>m</sub> fixed</i> and the page instead keeps
-    &Omega;<sub>c</sub>h&sup2; fixed and lets the neutrinos add to the total. Now two things are
+    <p>Untick <i>hold \(\Omega_\mathrm{m}\) fixed</i> and the page instead keeps
+    \(\Omega_\mathrm{c}h^2\) fixed and lets the neutrinos add to the total. Now two things are
     happening at once: the free-streaming suppression, and a genuine increase in the matter
     density, which moves matter&ndash;radiation equality earlier and lifts the small-scale power
     back up. The two partly cancel, and the measured suppression is roughly a third smaller. The
@@ -406,36 +405,36 @@
     to matter. A fit to real data does neither, of course &mdash; it lets every parameter move
     at once, which is what the posterior in the bottom panel represents.</p>
 
-    <h2>The &sigma;<sub>8</sub> trap</h2>
+    <h2>The \(\sigma_8\) trap</h2>
 
-    <p>Neutrino mass reduces &sigma;<sub>8</sub>, the amplitude of matter fluctuations in spheres
-    of 8&nbsp;Mpc/h. So does simply lowering the primordial amplitude A<sub>s</sub>. If the only
-    thing you measured were &sigma;<sub>8</sub>, the two would be indistinguishable, and you
-    could buy off any neutrino mass you liked by turning A<sub>s</sub> up.</p>
+    <p>Neutrino mass reduces \(\sigma_8\), the amplitude of matter fluctuations in spheres
+    of \(8\,h^{-1}\,\mathrm{Mpc}\). So does simply lowering the primordial amplitude \(A_s\). If the only
+    thing you measured were \(\sigma_8\), the two would be indistinguishable, and you
+    could buy off any neutrino mass you liked by turning \(A_s\) up.</p>
 
     <p>Worse, you cannot expose the difference by moving these sliders. Raising
-    A<sub>s</sub> multiplies the model and its massless reference by exactly the same number,
-    so it cancels out of the ratio panel completely &mdash; drag A<sub>s</sub> and that panel
-    does not move by one part in 10<sup>15</sup>. The compensation has to be done to the
+    \(A_s\) multiplies the model and its massless reference by exactly the same number,
+    so it cancels out of the ratio panel completely &mdash; drag \(A_s\) and that panel
+    does not move by one part in \(10^{15}\). The compensation has to be done to the
     <em>comparison</em> instead.</p>
 
-    <p>That is what <b>compare at fixed &sigma;<sub>8</sub></b> does. It leaves your model alone
-    and gives the &Sigma;m<sub>&nu;</sub>&nbsp;=&nbsp;0 reference curve the value of A<sub>s</sub>
-    that makes its &sigma;<sub>8</sub> equal to yours &mdash; exactly, because
-    &sigma;<sub>8</sub>&sup2; is strictly proportional to A<sub>s</sub>, so the rescaling is
+    <p>That is what <b>compare at fixed \(\sigma_8\)</b> does. It leaves your model alone
+    and gives the \(\sum m_\nu = 0\) reference curve the value of \(A_s\)
+    that makes its \(\sigma_8\) equal to yours &mdash; exactly, because
+    \(\sigma_8^2\) is strictly proportional to \(A_s\), so the rescaling is
     closed form and not a search. The readout reports the factor. The question the ratio panel
     answers then changes from &ldquo;how much power did the neutrinos remove?&rdquo; to
-    &ldquo;given two universes that are equally clumpy on 8&nbsp;Mpc/h scales, how do they
+    &ldquo;given two universes that are equally clumpy on \(8\,h^{-1}\,\mathrm{Mpc}\) scales, how do they
     differ?&rdquo;</p>
 
     <p>Turn it on with the mass up around 0.2&nbsp;eV and watch the step become a <b>tilt</b>.
     The curve now sits above one on large scales and below one on small scales, crossing at
-    k&nbsp;&asymp;&nbsp;0.14&nbsp;h/Mpc &mdash; and staying there, within a percent, whatever
-    mass you choose, because that is where the 8&nbsp;Mpc/h sphere does its weighting. No
+    \(k \approx 0.14\,h\,\mathrm{Mpc}^{-1}\) &mdash; and staying there, within a percent, whatever
+    mass you choose, because that is where the \(8\,h^{-1}\,\mathrm{Mpc}\) sphere does its weighting. No
     power has been removed on average; it has been <em>moved</em>, from small scales to large.
-    That tilt is what A<sub>s</sub> cannot imitate, because A<sub>s</sub> has no scale
-    dependence whatsoever. Neither can n<sub>s</sub>, which tilts but as a pure power law with
-    no characteristic scale &mdash; drag n<sub>s</sub> and the curve pivots smoothly across five
+    That tilt is what \(A_s\) cannot imitate, because \(A_s\) has no scale
+    dependence whatsoever. Neither can \(n_s\), which tilts but as a pure power law with
+    no characteristic scale &mdash; drag \(n_s\) and the curve pivots smoothly across five
     decades, with no step and no knee. The neutrinos put a knee at a particular wavenumber, and
     the wavenumber is set by the mass.</p>
 
@@ -443,21 +442,21 @@
     much structure there is. It is a measurement of the <em>shape</em>: of a feature at a
     particular wavenumber, set by how far a particle of a particular mass could travel. That is
     why the constraint comes from surveys that map a wide range of scales, and why the number
-    quoted from &sigma;<sub>8</sub> alone would be worth very little.</p>
+    quoted from \(\sigma_8\) alone would be worth very little.</p>
 
     <h2>What DESI actually does</h2>
 
     <p>DESI does not measure the curve in the top panel. It measures the positions of tens of
     millions of galaxies and quasars, from which it extracts two things: the BAO scale, which is
-    a ruler, and the full shape of the clustering, which is closer to P(k) but is seen through
+    a ruler, and the full shape of the clustering, which is closer to \(P(k)\) but is seen through
     galaxy bias and redshift-space distortions. Neither is the linear matter power spectrum, and
     the step from one to the other is most of the work in a cosmology analysis.</p>
 
     <p>The neutrino limit comes from combining that with the microwave background, and the
     logic is a subtraction. The CMB fixes the amplitude of the fluctuations at
-    z&nbsp;=&nbsp;1100, when the neutrinos were still relativistic and had not yet suppressed
+    \(z = 1100\), when the neutrinos were still relativistic and had not yet suppressed
     anything, and it fixes the matter density and the expansion history very tightly. Given
-    those, &Lambda;CDM predicts how much structure there should be today. A neutrino mass makes
+    those, \(\Lambda\)CDM predicts how much structure there should be today. A neutrino mass makes
     the prediction come out lower than it otherwise would, and it also changes the
     distance&ndash;redshift relation, which BAO measures directly. The limit is how far you can
     push the mass before one or the other breaks.</p>
@@ -477,8 +476,8 @@
 
     <p>Oscillation experiments measure differences of squared masses and are blind to the
     absolute scale. Two splittings are known:
-    &Delta;m&sup2;<sub>21</sub>&nbsp;=&nbsp;7.5&times;10<sup>&minus;5</sup>&nbsp;eV&sup2; and
-    |&Delta;m&sup2;<sub>32</sub>|&nbsp;=&nbsp;2.45&times;10<sup>&minus;3</sup>&nbsp;eV&sup2;. Two
+    \(\Delta m^2_{21} = 7.5\times10^{-5}\ \mathrm{eV}^2\) and
+    \(|\Delta m^2_{32}| = 2.45\times10^{-3}\ \mathrm{eV}^2\). Two
     orderings fit them. In the <b>normal</b> ordering the lone state is the heavy one, and
     setting the lightest mass to zero gives a minimum sum of 0.059&nbsp;eV. In the
     <b>inverted</b> ordering it is the light one, two states sit at the top, and the minimum sum
@@ -491,16 +490,16 @@
     at where the marker falls on the posterior. That is the whole of the remaining space.</p>
 
     <table class="degtab">
-      <thead><tr><th>&Sigma;m<sub>&nu;</sub></th><th>f<sub>&nu;</sub></th>
-                 <th>8f<sub>&nu;</sub></th><th>suppression</th><th>coefficient</th>
+      <thead><tr><th>\(\sum m_\nu\)</th><th>\(f_\nu\)</th>
+                 <th>\(8f_\nu\)</th><th>suppression</th><th>coefficient</th>
                  <th>status</th></tr></thead>
       <tbody id="squeeze"></tbody>
     </table>
 
     <p>Two caveats keep this from being a discovery. The first is that the limit is a
-    <em>&Lambda;CDM</em> limit. Let the dark energy evolve &mdash; the w<sub>0</sub>w<sub>a</sub>
+    <em>\(\Lambda\)CDM</em> limit. Let the dark energy evolve &mdash; the \(w_0w_a\)
     model that <a href="w0wa.html">DESI's own data prefers</a> &mdash; and the same combination
-    gives &Sigma;m<sub>&nu;</sub>&nbsp;&lt;&nbsp;0.16&nbsp;eV instead of 0.064, a factor of two
+    gives \(\sum m_\nu &lt; 0.16\ \mathrm{eV}\) instead of 0.064, a factor of two
     and a half, because a changing dark energy density can undo some of what the neutrinos did.
     A tight neutrino limit and an evolving dark energy cannot both be quoted from the same fit;
     they trade against each other.</p>
@@ -517,20 +516,20 @@
 
     <p>A Boltzmann code cannot run in a browser, so the spectra come from an emulator trained
     offline on <a href="https://camb.info/">CAMB</a>. This one is unusually small, for a reason
-    worth stating: the linear transfer function does not depend on A<sub>s</sub> or
-    n<sub>s</sub> at all. Those two enter only through the primordial spectrum, as a
+    worth stating: the linear transfer function does not depend on \(A_s\) or
+    \(n_s\) at all. Those two enter only through the primordial spectrum, as a
     multiplication and a power law, so they are applied in closed form in the browser and never
-    emulated. That leaves four parameters &mdash; &Omega;<sub>b</sub>h&sup2;,
-    &Omega;<sub>m</sub>, H&#8320; and &Sigma;m<sub>&nu;</sub> &mdash; where a naive emulator
+    emulated. That leaves four parameters &mdash; \(\Omega_\mathrm{b}h^2\),
+    \(\Omega_\mathrm{m}\), \(H_0\) and \(\sum m_\nu\) &mdash; where a naive emulator
     would have needed six, and four smooth dimensions can be fitted far more accurately than
     six.</p>
 
     <p>The suppression is emulated as its own quantity rather than being read off as a ratio of
     two fits. Each training model was run twice, once at its neutrino mass and once with the
     same parameters and massless neutrinos, and what is stored is
-    log[P/P&#8320;]&nbsp;/&nbsp;f<sub>&nu;</sub>, a smooth function of order &minus;8 that goes
+    \(\log[P/P_0]\,/\,f_\nu\), a smooth function of order &minus;8 that goes
     to a finite limit as the mass goes to zero. The page rebuilds
-    P&nbsp;=&nbsp;P&#8320;&nbsp;exp(f<sub>&nu;</sub>S). Had the ratio been formed by dividing two
+    \(P = P_0 \exp(f_\nu S)\). Had the ratio been formed by dividing two
     independent emulator outputs, each accurate to a tenth of a percent, the errors would not
     have cancelled and the noise would have been a substantial fraction of a three-percent
     signal. This way the ratio panel is the thing that was fitted, and it is exact at zero mass
@@ -540,60 +539,60 @@
     polynomial rather than a neural network because in four smooth dimensions it is both more
     accurate and much smaller to ship. Against <b id="acc-n">&mdash;</b> held-out CAMB models
     never used in the fit and lying inside the range the sliders can reach, the emulator
-    reproduces P(k,z) to a median of <b id="acc-med">&mdash;</b> and a worst case of
+    reproduces \(P(k,z)\) to a median of <b id="acc-med">&mdash;</b> and a worst case of
     <b id="acc-max">&mdash;</b>. The suppression ratio &mdash; the quantity the middle panel
     plots &mdash; is good to a worst case of <b id="acc-rat">&mdash;</b>, which is
     <b id="acc-frac">&mdash;</b> of the suppression being measured in the typical case and
     <b id="acc-fracmax">&mdash;</b> of it at the very worst, that worst case falling at the
     smallest masses where the suppression is itself barely there.
-    &sigma;<sub>8</sub> is not emulated at all; it is integrated from the reconstructed
+    \(\sigma_8\) is not emulated at all; it is integrated from the reconstructed
     spectrum in the browser on every slider move, and agrees with CAMB's own value to
     <b id="acc-s8">&mdash;</b>.</p>
 
-    <p>One deliberate limitation. Below &Sigma;m<sub>&nu;</sub> = 0.02&nbsp;eV the training
-    quantity log[P/P&#8320;]/f<sub>&nu;</sub> is a small number divided by a small number, and
+    <p>One deliberate limitation. Below \(\sum m_\nu = 0.02\ \mathrm{eV}\) the training
+    quantity \(\log[P/P_0]/f_\nu\) is a small number divided by a small number, and
     CAMB's own numerical noise swamps it &mdash; at 0.001&nbsp;eV the scatter is comparable to
     the whole value. Fitting through that strip corrupts the answer everywhere, so the
     suppression emulator is trained only above 0.02&nbsp;eV and the page holds its input there
-    for smaller masses. Because f<sub>&nu;</sub> still multiplies the result, zero mass remains
+    for smaller masses. Because \(f_\nu\) still multiplies the result, zero mass remains
     exactly zero suppression; the cost is a fraction of a percent of an effect that is under one
     percent in that strip, and oscillation data excludes the whole of it anyway.</p>
 
     <p>The wiggle panel is a <em>second, independent</em> emulator, and it had to be, because
-    the main one cannot see what it plots. That grid samples k logarithmically, about thirty-two
-    points per decade, while the acoustic oscillation has a period that is constant in k
-    &mdash; 2&pi;/r<sub>d</sub>, about 0.062&nbsp;h/Mpc. A log grid therefore thins out exactly
+    the main one cannot see what it plots. That grid samples \(k\) logarithmically, about thirty-two
+    points per decade, while the acoustic oscillation has a period that is constant in \(k\)
+    &mdash; \(2\pi/r_\mathrm{d}\), about \(0.062\,h\,\mathrm{Mpc}^{-1}\). A log grid therefore thins out exactly
     where the wiggles keep going: it gives nine samples per oscillation at
-    k&nbsp;=&nbsp;0.1, four at 0.2, and barely one by k&nbsp;=&nbsp;1, so past
-    k&nbsp;&asymp;&nbsp;0.3 the main curve carries an aliased ghost of the oscillation rather
+    \(k = 0.1\), four at 0.2, and barely one by \(k = 1\), so past
+    \(k \approx 0.3\) the main curve carries an aliased ghost of the oscillation rather
     than the oscillation. Dividing out a smooth spectrum would have magnified precisely that.
-    The wiggle emulator is trained on its own grid, uniform in k with about fifteen points per
-    period, and is fitted against x&nbsp;=&nbsp;k&nbsp;r<sub>d</sub>, the variable the
-    oscillation is genuinely periodic in. The crests then sit at essentially fixed x whatever
-    the cosmology, and where they land in k is handed to r<sub>d</sub>, which is emulated
+    The wiggle emulator is trained on its own grid, uniform in \(k\) with about fifteen points per
+    period, and is fitted against \(x = k\,r_\mathrm{d}\), the variable the
+    oscillation is genuinely periodic in. The crests then sit at essentially fixed \(x\) whatever
+    the cosmology, and where they land in \(k\) is handed to \(r_\mathrm{d}\), which is emulated
     separately as a small polynomial accurate to <b id="wacc-rd">&mdash;</b>, rather than left
     to the reconstruction. What the fit still has to learn is the <em>envelope</em>, and that
-    does move: between &Omega;<sub>m</sub>&nbsp;=&nbsp;0.27 and 0.35 the crests drop from 7.9%
-    to 4.8% while staying put in x.</p>
+    does move: between \(\Omega_\mathrm{m} = 0.27\) and 0.35 the crests drop from 7.9%
+    to 4.8% while staying put in \(x\).</p>
 
-    <p class="note">An honest footnote on that choice. The obvious argument for fitting in x
-    &mdash; that against k the whole train would slide and need many more components &mdash;
-    turns out not to survive a check: r<sub>d</sub> varies by only about &plusmn;15% across the
-    trained box, the crests never move far in k, and a decomposition in k compresses just as
-    well (seven components for 99.99% of the variance against thirteen in x). The reason to
-    prefer x is the structural one above, not compactness. Against
+    <p class="note">An honest footnote on that choice. The obvious argument for fitting in \(x\)
+    &mdash; that against \(k\) the whole train would slide and need many more components &mdash;
+    turns out not to survive a check: \(r_\mathrm{d}\) varies by only about &plusmn;15% across the
+    trained box, the crests never move far in \(k\), and a decomposition in \(k\) compresses just as
+    well (seven components for 99.99% of the variance against thirteen in \(x\)). The reason to
+    prefer \(x\) is the structural one above, not compactness. Against
     <b id="wacc-n">&mdash;</b> held-out models the wiggle is reproduced to
     <b id="wacc-frac">&mdash;</b> of its own amplitude at worst, and against fresh CAMB runs the
-    shipped page reproduces r<sub>d</sub> to four parts in a million and the wiggle to about one
+    shipped page reproduces \(r_\mathrm{d}\) to four parts in a million and the wiggle to about one
     percent of its amplitude.</p>
 
     <p class="note">Everything here is <b>linear</b> theory. Above
-    k&nbsp;&asymp;&nbsp;0.1&nbsp;h/Mpc at z&nbsp;=&nbsp;0 the real universe has gone nonlinear
+    \(k \approx 0.1\,h\,\mathrm{Mpc}^{-1}\) at \(z = 0\) the real universe has gone nonlinear
     and the true spectrum rises well above these curves; the neutrino suppression deepens there
     too, by a few tenths of a percent more than linear theory gives, before turning back
     &mdash; the &ldquo;spoon&rdquo; feature. A survey analysis has to model that, along with
     galaxy bias and redshift-space distortions, none of which is on this page. The curves are
-    drawn to k&nbsp;=&nbsp;10&nbsp;h/Mpc because the free-streaming step is only fully developed
+    drawn to \(k = 10\,h\,\mathrm{Mpc}^{-1}\) because the free-streaming step is only fully developed
     there, not because linear theory is valid there. The emulator assumes a flat universe with
     three degenerate massive neutrinos and the helium fraction set by big bang nucleosynthesis.
     Redshifts other than zero are exact nodes of the training set, not interpolations.</p>
@@ -601,7 +600,7 @@
     <p class="note">Further afield: <a href="cmb-spectrum.html">the CMB power spectrum</a> for
     the same six parameters seen in light rather than matter;
     <a href="sky-to-spectrum.html">from sky map to power spectrum</a> for how either is
-    measured; <a href="lcdm.html">&Lambda;CDM and the six parameters</a> for what the model is;
+    measured; <a href="lcdm.html">\(\Lambda\)CDM and the six parameters</a> for what the model is;
     <a href="w0wa.html">evolving dark energy</a> for the extension that loosens the limit above.</p>
 
   </main>

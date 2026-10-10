@@ -38,5 +38,4 @@ computed in the browser.
 - Display equations are MathJax: `<div class="eq">\[ ... \tag{n} \]</div>`.
   `assets/js/chrome.js` loads MathJax on any page whose `<main>` contains TeX,
   and `.eq` is styled in `site.css`. Don't add a MathJax `<script>` here.
-- Time derivatives are combining dots: ȧ is `&#551;`, ρ̇ and V̇ are the letter
-  plus `&#775;`. `&#7841;` looks similar but is a with a dot *below*.
+- Inline math is MathJax too: time derivatives are `\dot a`, `\ddot a`, `\dot\rho`, never HTML entities.

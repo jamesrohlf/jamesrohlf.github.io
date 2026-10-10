@@ -5,7 +5,7 @@
     <p class="subtitle">From Newton's apple to an accelerating cosmos, in one number</p>
 
     <p class="lede">Every ingredient of the universe has its own ratio of pressure to energy
-    density, called <i>w</i>. That one number fixes how fast the ingredient thins out as space
+    density, called \(w\). That one number fixes how fast the ingredient thins out as space
     expands, and whether its gravity pulls the expansion back or pushes it forward. Most of the
     machinery needed to see this is Newton's law of gravity plus the first law of
     thermodynamics. The part Newton could not supply is the reason the universe is
@@ -14,13 +14,13 @@
     <div class="topnote">
       <p><b>How the page runs.</b> The first half derives the three equations that govern the
       expansion, starting from a ball of dust and nothing more than
-      F&nbsp;=&nbsp;GMm/r&sup2;. The second half puts the equation of state into them. There
-      are two interactive panels. One lets you dial <i>w</i> for a universe containing a
+      \(F = GMm/r^2\). The second half puts the equation of state into them. There
+      are two interactive panels. One lets you dial \(w\) for a universe containing a
       single ingredient. The other shows the real mixture, with a switch between a cosmological
       constant and the evolving dark energy that DESI's data lean toward.</p>
       <p class="src">Parameters: Planck Collaboration, <i>Planck 2018 results VI</i>, A&amp;A
-      641, A6 (2020): H<sub>0</sub>&nbsp;=&nbsp;67.4&nbsp;km&nbsp;s<sup>&minus;1</sup>&nbsp;Mpc<sup>&minus;1</sup>,
-      &Omega;<sub>m</sub>&nbsp;=&nbsp;0.315. Dark energy: DESI Collaboration, <i>DESI DR2
+      641, A6 (2020): \(H_0 = 67.4\ \mathrm{km\,s^{-1}\,Mpc^{-1}}\),
+      \(\Omega_\mathrm{m} = 0.315\). Dark energy: DESI Collaboration, <i>DESI DR2
       results II</i>, <a href="https://arxiv.org/abs/2503.14738">arXiv:2503.14738</a>.</p>
     </div>
 
@@ -28,25 +28,25 @@
 
     <h2 id="newton">A ball of dust</h2>
 
-    <p>Fill space with a uniform, pressureless &ldquo;dust&rdquo; of density &rho;(t), and let
+    <p>Fill space with a uniform, pressureless &ldquo;dust&rdquo; of density \(\rho(t)\), and let
     it expand uniformly, which means every distance grows by the same factor. Write the
     physical distance of a particle from any chosen centre as</p>
 
     <div class="eq">\[ R(t) = a(t)\, x , \tag{1} \]</div>
 
-    <p>where x is a fixed label for that particle, its <i>comoving</i> distance, and a(t) is
-    the <i>scale factor</i>, normalised to a&nbsp;=&nbsp;1 today. The expansion rate is the
-    Hubble parameter, H&nbsp;&equiv;&nbsp;&#551;/a.</p>
+    <p>where \(x\) is a fixed label for that particle, its <i>comoving</i> distance, and \(a(t)\) is
+    the <i>scale factor</i>, normalised to \(a = 1\) today. The expansion rate is the
+    Hubble parameter, \(H \equiv \dot a/a\).</p>
 
-    <p>Pick any point as the centre and draw a sphere through a test particle of mass m at
-    radius R. Newton's shell theorem says a uniform spherical shell exerts no net force on
+    <p>Pick any point as the centre and draw a sphere through a test particle of mass \(m\) at
+    radius \(R\). Newton's shell theorem says a uniform spherical shell exerts no net force on
     anything inside it, so all the mass outside the sphere drops out. Only the mass inside
     pulls:</p>
 
     <div class="eq">\[ M = \tfrac{4\pi}{3}\,\rho\,R^3 . \tag{2} \]</div>
 
-    <p>No dust crosses the surface, because everything moves with the flow, so M stays
-    constant even as &rho; falls and R grows.</p>
+    <p>No dust crosses the surface, because everything moves with the flow, so \(M\) stays
+    constant even as \(\rho\) falls and \(R\) grows.</p>
 
     <figure class="diagram">
       <svg viewBox="0 0 440 250" role="img" aria-labelledby="sphT">
@@ -71,27 +71,27 @@
         <text x="196" y="112" fill="var(--scarlet)" font-family="ui-monospace, Menlo, monospace" font-size="11">&#8722;GM/R&#178;</text>
       </svg>
       <figcaption>The sphere can be centred anywhere. Because the density is the same
-      everywhere, every observer runs the same argument and gets the same a(t).</figcaption>
+      everywhere, every observer runs the same argument and gets the same \(a(t)\).</figcaption>
     </figure>
 
     <p>Newton's second law for the test particle is</p>
 
     <div class="eq">\[ \ddot R = -\frac{GM}{R^2}. \tag{3} \]</div>
 
-    <p>Multiply both sides by &#7768; and integrate once. The left side becomes the time
-    derivative of &frac12;&#7768;&sup2; and the right side the time derivative of GM/R, so
+    <p>Multiply both sides by \(\dot R\) and integrate once. The left side becomes the time
+    derivative of \(\tfrac12\dot R^2\) and the right side the time derivative of \(GM/R\), so
     what comes out is energy conservation per unit mass:</p>
 
     <div class="eq">\[ \tfrac12 \dot R^2 - \frac{GM}{R} = U = \text{constant}. \tag{4} \]</div>
 
-    <p>Now substitute R&nbsp;=&nbsp;ax and M&nbsp;=&nbsp;&#8308;&#8260;&#8323;&pi;&rho;a&sup3;x&sup3;,
-    and divide through by &frac12;a&sup2;x&sup2;:</p>
+    <p>Now substitute \(R = ax\) and \(M = \tfrac43\pi\rho a^3x^3\),
+    and divide through by \(\tfrac12 a^2x^2\):</p>
 
     <div class="eq">\[ \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho + \frac{2U}{a^2 x^2}. \]</div>
 
     <p>The left side and the first term on the right are the same for every particle in the
-    universe. For the expansion to stay uniform, U/x&sup2; has to be the same for every
-    particle too. Call that constant &minus;kc&sup2;/2, and the result is the
+    universe. For the expansion to stay uniform, \(U/x^2\) has to be the same for every
+    particle too. Call that constant \(-kc^2/2\), and the result is the
     <b>Friedmann equation</b>:</p>
 
     <div class="eq">\[ H^2 = \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho - \frac{k c^2}{a^2} . \tag{5} \]</div>
@@ -107,52 +107,52 @@
     the same thing: a spherically symmetric distribution of mass outside a sphere has no
     effect inside it. That is what really licenses the argument.</p>
 
-    <h2 id="k">What the constant k is</h2>
+    <h2 id="k">What the constant \(k\) is</h2>
 
-    <p>To Newton, k is just the sign of the energy U, and its meaning is the familiar one for a
+    <p>To Newton, \(k\) is just the sign of the energy \(U\), and its meaning is the familiar one for a
     ball thrown upward. In relativity the same constant is the curvature of space. The fates
     agree, at least for dust.</p>
 
     <div class="tblwrap"><table class="degtab">
-      <thead><tr><th>k</th><th class="c">Energy U</th><th class="c">Newtonian fate</th><th class="c">Geometry in GR</th></tr></thead>
+      <thead><tr><th>\(k\)</th><th class="c">Energy \(U\)</th><th class="c">Newtonian fate</th><th class="c">Geometry in GR</th></tr></thead>
       <tbody>
         <tr><td>+1</td><td class="t">negative: bound</td><td class="t">expands, stops, recollapses</td><td class="t">closed (spherical)</td></tr>
-        <tr><td>0</td><td class="t">zero: exactly escape speed</td><td class="t">expands forever, &#551;&nbsp;&rarr;&nbsp;0</td><td class="t">flat</td></tr>
-        <tr><td>&minus;1</td><td class="t">positive: unbound</td><td class="t">expands forever, &#551;&nbsp;&rarr;&nbsp;constant</td><td class="t">open (hyperbolic)</td></tr>
+        <tr><td>0</td><td class="t">zero: exactly escape speed</td><td class="t">expands forever, \(\dot a \to 0\)</td><td class="t">flat</td></tr>
+        <tr><td>&minus;1</td><td class="t">positive: unbound</td><td class="t">expands forever, \(\dot a \to \text{constant}\)</td><td class="t">open (hyperbolic)</td></tr>
       </tbody>
     </table></div>
 
-    <p>Setting k&nbsp;=&nbsp;0 defines the <i>critical density</i>,
-    &rho;<sub>c</sub>&nbsp;=&nbsp;3H&sup2;/8&pi;G. With H<sub>0</sub>&nbsp;=&nbsp;67.4 it is
-    8.5&nbsp;&times;&nbsp;10<sup>&minus;27</sup>&nbsp;kg&nbsp;m<sup>&minus;3</sup>, about five
-    hydrogen atoms per cubic metre. Dividing (5) by H&sup2; and writing each density as a
-    fraction &Omega;&nbsp;=&nbsp;&rho;/&rho;<sub>c</sub> turns the Friedmann equation into a
-    budget: the &Omega;s plus a curvature term add up to one. The curvature term is measured to
-    be below about 0.002 today, so from here on the universe is flat and k&nbsp;=&nbsp;0.</p>
+    <p>Setting \(k = 0\) defines the <i>critical density</i>,
+    \(\rho_\mathrm{c} = 3H^2/8\pi G\). With \(H_0 = 67.4\) it is
+    \(8.5 \times 10^{-27}\ \mathrm{kg\,m^{-3}}\), about five
+    hydrogen atoms per cubic metre. Dividing (5) by \(H^2\) and writing each density as a
+    fraction \(\Omega = \rho/\rho_\mathrm{c}\) turns the Friedmann equation into a
+    budget: the \(\Omega\)s plus a curvature term add up to one. The curvature term is measured to
+    be below about 0.002 today, so from here on the universe is flat and \(k = 0\).</p>
 
     <h2 id="fluid">Adding thermodynamics</h2>
 
-    <p>The Friedmann equation gives H once you know &rho;, but says nothing about how &rho;
+    <p>The Friedmann equation gives \(H\) once you know \(\rho\), but says nothing about how \(\rho\)
     changes. For dust it is easy: the mass in a comoving sphere is fixed, so
-    &rho;&nbsp;&prop;&nbsp;a<sup>&minus;3</sup>. For anything with pressure, the first law of
+    \(\rho \propto a^{-3}\). For anything with pressure, the first law of
     thermodynamics is needed.</p>
 
-    <p>Take a comoving sphere of volume V&nbsp;&prop;&nbsp;a&sup3; holding energy
-    E&nbsp;=&nbsp;&rho;c&sup2;V. In a uniform universe there is nowhere for heat to flow, so
+    <p>Take a comoving sphere of volume \(V \propto a^3\) holding energy
+    \(E = \rho c^2 V\). In a uniform universe there is nowhere for heat to flow, so
     the expansion is adiabatic and</p>
 
     <div class="eq">\[ dE = -P\,dV . \tag{6} \]</div>
 
-    <p>Write this as a rate, using V&#775;/V&nbsp;=&nbsp;3&#551;/a:</p>
+    <p>Write this as a rate, using \(\dot V/V = 3\dot a/a\):</p>
 
     <div class="eq">\[ \dot\rho + 3\,\frac{\dot a}{a}\left(\rho + \frac{P}{c^2}\right) = 0 . \tag{7} \]</div>
 
     <p>This is the <b>fluid equation</b>. A gas with positive pressure does work on its
     surroundings as it expands, so its energy density falls faster than its volume grows. The
-    P term is that work and nothing more.</p>
+    \(P\) term is that work and nothing more.</p>
 
-    <p class="aside"><b>Mass quietly becomes energy.</b> In this step &rho; changes meaning. It
-    is now the total energy density divided by c&sup2;, including heat and radiation, not just
+    <p class="aside"><b>Mass quietly becomes energy.</b> In this step \(\rho\) changes meaning. It
+    is now the total energy density divided by \(c^2\), including heat and radiation, not just
     the rest mass of the dust. Newton has no reason to do this, but relativity insists on it,
     because all energy gravitates.</p>
 
@@ -163,8 +163,8 @@
     <div class="eq">\[ \frac{\ddot a}{a} = -\frac{4\pi G}{3}\,\rho \qquad(\text{dust only}), \]</div>
 
     <p>so gravity always slows the expansion. Now differentiate the Friedmann equation (5) with
-    respect to time, use the fluid equation (7) to replace &rho;&#775;, and use (5) once more to
-    tidy up. The k term cancels, and the result is the <b>acceleration equation</b>:</p>
+    respect to time, use the fluid equation (7) to replace \(\dot\rho\), and use (5) once more to
+    tidy up. The \(k\) term cancels, and the result is the <b>acceleration equation</b>:</p>
 
     <div class="eq">\[ \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3P}{c^2}\right) . \tag{8} \]</div>
 
@@ -172,11 +172,11 @@
       <p class="feature__kicker">The key result</p>
       <p>Pressure is a source of gravity, and it counts three times over. Ordinary pressure
       makes gravity stronger, not weaker. If something has a pressure more negative than
-      &minus;&#8531;&rho;c&sup2;, the bracket in (8) changes sign and the expansion speeds up.
+      \(-\tfrac13\rho c^2\), the bracket in (8) changes sign and the expansion speeds up.
       Newtonian gravity has no way to produce this. Yet putting Newton's Friedmann equation
       together with the first law of thermodynamics gets it automatically. In general
-      relativity the reason is that the source of gravity is &rho;&nbsp;+&nbsp;3P/c&sup2;,
-      not &rho; alone.</p>
+      relativity the reason is that the source of gravity is \(\rho + 3P/c^2\),
+      not \(\rho\) alone.</p>
     </div>
 
     <p>Only two of (5), (7) and (8) are independent: any two give the third. That is why this
@@ -189,7 +189,7 @@
 
     <div class="eq">\[ P = w\,\rho c^2 , \tag{9} \]</div>
 
-    <p>and the dimensionless number <i>w</i> is the <b>equation of state</b>. Put it into the
+    <p>and the dimensionless number \(w\) is the <b>equation of state</b>. Put it into the
     fluid equation (7) and integrate:</p>
 
     <div class="eq">\[ \rho \propto a^{-3(1+w)} . \tag{10} \]</div>
@@ -199,42 +199,42 @@
     <div class="eq">\[ a(t) \propto t^{\,2/[3(1+w)]} \quad (w > -1), \qquad a(t) \propto e^{Ht} \quad (w = -1). \tag{11} \]</div>
 
     <p>And the acceleration equation (8) becomes
-    &auml;/a&nbsp;=&nbsp;&minus;&#8308;&#8260;&#8323;&pi;G&rho;&thinsp;(1&nbsp;+&nbsp;3w).
-    The expansion accelerates exactly when w&nbsp;&lt;&nbsp;&minus;&#8531;.</p>
+    \(\ddot a/a = -\tfrac43\pi G\rho\,(1 + 3w)\).
+    The expansion accelerates exactly when \(w &lt; -\tfrac13\).</p>
 
     <div class="tblwrap"><table class="degtab">
-      <thead><tr><th class="c">Ingredient</th><th>w</th><th>&rho;(a)</th><th>a(t) if it dominates</th><th class="c">Expansion</th></tr></thead>
+      <thead><tr><th class="c">Ingredient</th><th>\(w\)</th><th>\(\rho(a)\)</th><th>\(a(t)\) if it dominates</th><th class="c">Expansion</th></tr></thead>
       <tbody>
-        <tr><td class="t"><span class="sw" style="color:var(--gold)"></span>radiation, neutrinos while fast</td><td>+1/3</td><td>a<sup>&minus;4</sup></td><td>t<sup>1/2</sup></td><td class="t">slows</td></tr>
-        <tr><td class="t"><span class="sw" style="color:var(--ink-soft)"></span>matter: atoms, dark matter</td><td>0</td><td>a<sup>&minus;3</sup></td><td>t<sup>2/3</sup></td><td class="t">slows</td></tr>
-        <tr><td class="t"><span class="sw" style="color:var(--ink-faint)"></span>curvature, as an effective fluid</td><td>&minus;1/3</td><td>a<sup>&minus;2</sup></td><td>t</td><td class="t">coasts</td></tr>
-        <tr><td class="t"><span class="sw" style="color:var(--scarlet)"></span>cosmological constant &Lambda;</td><td class="big">&minus;1</td><td>constant</td><td>e<sup>Ht</sup></td><td class="t">speeds up</td></tr>
+        <tr><td class="t"><span class="sw" style="color:var(--gold)"></span>radiation, neutrinos while fast</td><td>+1/3</td><td>\(a^{-4}\)</td><td>\(t^{1/2}\)</td><td class="t">slows</td></tr>
+        <tr><td class="t"><span class="sw" style="color:var(--ink-soft)"></span>matter: atoms, dark matter</td><td>0</td><td>\(a^{-3}\)</td><td>\(t^{2/3}\)</td><td class="t">slows</td></tr>
+        <tr><td class="t"><span class="sw" style="color:var(--ink-faint)"></span>curvature, as an effective fluid</td><td>&minus;1/3</td><td>\(a^{-2}\)</td><td>\(t\)</td><td class="t">coasts</td></tr>
+        <tr><td class="t"><span class="sw" style="color:var(--scarlet)"></span>cosmological constant \(\Lambda\)</td><td class="big">&minus;1</td><td>constant</td><td>\(e^{Ht}\)</td><td class="t">speeds up</td></tr>
       </tbody>
     </table></div>
 
     <p>Radiation's 1/3 comes straight from kinetic theory. A photon carries momentum
-    p&nbsp;=&nbsp;E/c, and an isotropic gas of particles exerts pressure
-    &#8531;&thinsp;n&thinsp;p&thinsp;v, so P&nbsp;=&nbsp;&#8531;&rho;c&sup2;. It checks out
-    independently: the number of photons dilutes as a<sup>&minus;3</sup> and each one's energy
-    is redshifted as a<sup>&minus;1</sup>, giving a<sup>&minus;4</sup>, just as (10) says.</p>
+    \(p = E/c\), and an isotropic gas of particles exerts pressure
+    \(\tfrac13\,n\,p\,v\), so \(P = \tfrac13\rho c^2\). It checks out
+    independently: the number of photons dilutes as \(a^{-3}\) and each one's energy
+    is redshifted as \(a^{-1}\), giving \(a^{-4}\), just as (10) says.</p>
 
     <p>A cosmological constant is the opposite extreme. Its density does not dilute at all, so
-    the fluid equation forces &rho;&nbsp;+&nbsp;P/c&sup2;&nbsp;=&nbsp;0, and w&nbsp;=&nbsp;&minus;1.
+    the fluid equation forces \(\rho + P/c^2 = 0\), and \(w = -1\).
     That is a negative pressure, a tension. Stretching a box of it <i>creates</i> energy, at
-    exactly the rate &minus;P&thinsp;dV supplies.</p>
+    exactly the rate \(-P\,dV\) supplies.</p>
 
     </div>
 
     <div class="rig" id="rig-w">
       <div class="chart" id="chart-w"></div>
       <div class="legend">
-        <span class="swatch-model"><i></i>your w</span>
-        <span class="swatch-ref"><i class="dash"></i>radiation, dust, &Lambda;</span>
+        <span class="swatch-model"><i></i>your \(w\)</span>
+        <span class="swatch-ref"><i class="dash"></i>radiation, dust, \(\Lambda\)</span>
         <span class="swatch-mark"><i class="dot"></i>today</span>
       </div>
       <div class="knobs">
         <div class="knob knob--star">
-          <label for="w-slider">equation of state w</label><output id="w-out">0.00</output>
+          <label for="w-slider">equation of state \(w\)</label><output id="w-out">0.00</output>
           <input id="w-slider" type="range" min="-1" max="1" step="0.01" value="0">
           <p class="hint">&minus;1 is a cosmological constant, 0 is dust, +1/3 is radiation</p>
         </div>
@@ -243,46 +243,46 @@
         <button type="button" data-w="0.3333" aria-pressed="false">radiation</button>
         <button type="button" data-w="0" aria-pressed="true">dust</button>
         <button type="button" data-w="-0.3333" aria-pressed="false">coasting</button>
-        <button type="button" data-w="-1" aria-pressed="false">&Lambda;</button>
+        <button type="button" data-w="-1" aria-pressed="false">\(\Lambda\)</button>
       </div>
       <p class="derived" id="w-derived"></p>
       <p class="verdict" id="w-verdict"></p>
     </div>
 
     <div class="prose">
-    <p>Every curve passes through a&nbsp;=&nbsp;1 today with the same slope, because they share
-    today's H<sub>0</sub>. They differ in the past. The more negative <i>w</i> is, the more
+    <p>Every curve passes through \(a = 1\) today with the same slope, because they share
+    today's \(H_0\). They differ in the past. The more negative \(w\) is, the more
     slowly the universe has been slowing down, and the further back the big bang sits:
-    2/3(1+w) Hubble times ago. At w&nbsp;=&nbsp;&minus;1 there is no big bang at all, and the
+    \(2/3(1+w)\) Hubble times ago. At \(w = -1\) there is no big bang at all, and the
     curve runs back forever.</p>
 
-    <h2 id="weff">The universe's own w</h2>
+    <h2 id="weff">The universe's own \(w\)</h2>
 
     <p>The real universe is a mixture, and each ingredient dilutes at its own rate (10).
-    Whichever has the most negative <i>w</i> wins in the end. The equation of state of the
+    Whichever has the most negative \(w\) wins in the end. The equation of state of the
     whole universe is the energy-weighted average, and it sets the deceleration parameter
-    q&nbsp;&equiv;&nbsp;&minus;&auml;a/&#551;&sup2;:</p>
+    \(q \equiv -\ddot a a/\dot a^2\):</p>
 
-    <div class="eq">\[ w_{\rm eff}(a) = \frac{\sum_i w_i\,\rho_i(a)}{\sum_i \rho_i(a)}, \qquad q = \tfrac12\,(1 + 3\,w_{\rm eff}) . \tag{12} \]</div>
+    <div class="eq">\[ w_\mathrm{eff}(a) = \frac{\sum_i w_i\,\rho_i(a)}{\sum_i \rho_i(a)}, \qquad q = \tfrac12\,(1 + 3\,w_\mathrm{eff}) . \tag{12} \]</div>
 
-    <p>Today's budget is &Omega;<sub>m</sub>&nbsp;=&nbsp;0.315 in matter,
-    &Omega;<sub>r</sub>&nbsp;&asymp;&nbsp;9.2&nbsp;&times;&nbsp;10<sup>&minus;5</sup> in
+    <p>Today's budget is \(\Omega_\mathrm{m} = 0.315\) in matter,
+    \(\Omega_\mathrm{r} \approx 9.2 \times 10^{-5}\) in
     photons and neutrinos, and the rest, about 0.685, in dark energy. The Friedmann equation
     becomes</p>
 
-    <div class="eq">\[ \frac{H^2(a)}{H_0^2} = \Omega_r\,a^{-4} + \Omega_m\,a^{-3} + \Omega_{\rm DE}\,f_{\rm DE}(a) , \tag{13} \]</div>
+    <div class="eq">\[ \frac{H^2(a)}{H_0^2} = \Omega_\mathrm{r}\,a^{-4} + \Omega_\mathrm{m}\,a^{-3} + \Omega_\mathrm{DE}\,f_\mathrm{DE}(a) , \tag{13} \]</div>
 
-    <p>with f<sub>DE</sub>&nbsp;=&nbsp;1 for a cosmological constant. If dark energy is not a
+    <p>with \(f_\mathrm{DE} = 1\) for a cosmological constant. If dark energy is not a
     constant, the standard way to let it evolve is
-    w(a)&nbsp;=&nbsp;w<sub>0</sub>&nbsp;+&nbsp;w<sub>a</sub>(1&nbsp;&minus;&nbsp;a). Putting
+    \(w(a) = w_0 + w_a(1 - a)\). Putting
     that into the fluid equation and integrating gives</p>
 
-    <div class="eq">\[ f_{\rm DE}(a) = a^{-3(1+w_0+w_a)}\, e^{-3w_a(1-a)} . \]</div>
+    <div class="eq">\[ f_\mathrm{DE}(a) = a^{-3(1+w_0+w_a)}\, e^{-3w_a(1-a)} . \]</div>
 
     <p>That is the model DESI fits. Combined with the microwave background and supernovae,
-    DESI's second data release prefers w<sub>0</sub>&nbsp;&gt;&nbsp;&minus;1 and
-    w<sub>a</sub>&nbsp;&lt;&nbsp;0 over a cosmological constant, at between about 2.8 and
-    4.2&sigma; depending on which supernova sample is used. The panel below has both.</p>
+    DESI's second data release prefers \(w_0 &gt; -1\) and
+    \(w_a &lt; 0\) over a cosmological constant, at between about 2.8 and
+    \(4.2\sigma\) depending on which supernova sample is used. The panel below has both.</p>
     </div>
 
     <div class="rig" id="rig-u">
@@ -292,20 +292,20 @@
         <span class="swatch-rad"><i></i>radiation</span>
         <span class="swatch-mat"><i class="dot"></i>matter</span>
         <span class="swatch-de"><i class="dash"></i>dark energy</span>
-        <span class="swatch-de"><i></i>w<sub>eff</sub></span>
+        <span class="swatch-de"><i></i>\(w_\mathrm{eff}\)</span>
       </div>
       <div class="knobs">
         <div class="knob knob--star">
-          <label for="w0">w<sub>0</sub>, dark energy today</label><output id="w0-out">&minus;1.00</output>
+          <label for="w0">\(w_0\), dark energy today</label><output id="w0-out">&minus;1.00</output>
           <input id="w0" type="range" min="-1.5" max="-0.3" step="0.01" value="-1">
         </div>
         <div class="knob knob--star">
-          <label for="wa">w<sub>a</sub>, how fast it changes</label><output id="wa-out">0.00</output>
+          <label for="wa">\(w_a\), how fast it changes</label><output id="wa-out">0.00</output>
           <input id="wa" type="range" min="-2" max="1" step="0.01" value="0">
         </div>
       </div>
       <div class="bar">
-        <button type="button" id="p-lcdm" aria-pressed="true">&#8634;&nbsp; &Lambda;CDM</button>
+        <button type="button" id="p-lcdm" aria-pressed="true">&#8634;&nbsp; \(\Lambda\)CDM</button>
         <button type="button" id="p-desi" aria-pressed="false">DESI DR2 + CMB + DESY5</button>
       </div>
       <p class="derived" id="u-derived"></p>
@@ -313,21 +313,21 @@
 
       <p class="postlead">Turning points for these parameters</p>
       <div class="tblwrap"><table class="degtab" style="margin-bottom:0">
-        <thead><tr><th>Event</th><th>redshift z</th><th>scale factor a</th><th>cosmic time</th></tr></thead>
+        <thead><tr><th>Event</th><th>redshift \(z\)</th><th>scale factor \(a\)</th><th>cosmic time</th></tr></thead>
         <tbody id="epochs"></tbody>
       </table></div>
     </div>
 
     <div class="prose">
     <p>Read the lower panel from left to right. The universe began radiation-dominated, with
-    w<sub>eff</sub>&nbsp;=&nbsp;&#8531;. Matter overtook radiation at a redshift of about 3400,
-    some fifty thousand years in, and w<sub>eff</sub> sank to nearly zero, where it stayed for
+    \(w_\mathrm{eff} = \tfrac13\). Matter overtook radiation at a redshift of about 3400,
+    some fifty thousand years in, and \(w_\mathrm{eff}\) sank to nearly zero, where it stayed for
     most of cosmic history while galaxies formed. Only about six billion years ago did it
-    cross &minus;&#8531;, and the expansion began to speed up. With a cosmological constant it
+    cross \(-\tfrac13\), and the expansion began to speed up. With a cosmological constant it
     now heads steadily toward &minus;1 and exponential expansion.</p>
 
     <p>Press the DESI button and the history changes in an interesting way. The dark energy is
-    phantom in the past, with w&nbsp;&lt;&nbsp;&minus;1, and has drifted above &minus;1 in the
+    phantom in the past, with \(w &lt; -1\), and has drifted above &minus;1 in the
     last few billion years. It is less dense early on and more important late, which is what
     shifts the measured distances. The far right of the panel is the formula extrapolated well
     past the data, so take the future it shows as illustration rather than prediction.</p>
@@ -337,11 +337,11 @@
     <div class="tblwrap"><table class="degtab">
       <thead><tr><th class="c">Ingredient</th><th class="c">Newton</th><th class="c">Needs relativity</th></tr></thead>
       <tbody>
-        <tr><td class="t">Friedmann equation (5)</td><td class="t">exact, for dust</td><td class="t">&rho; as total energy density</td></tr>
-        <tr><td class="t">the constant k</td><td class="t">sign of the energy</td><td class="t">curvature of space</td></tr>
-        <tr><td class="t">fluid equation (7)</td><td class="t">first law, dE&nbsp;=&nbsp;&minus;P&thinsp;dV</td><td class="t">E&nbsp;=&nbsp;&rho;c&sup2;V counts all energy</td></tr>
-        <tr><td class="t">acceleration (8)</td><td class="t">only &minus;&#8308;&#8260;&#8323;&pi;G&rho;</td><td class="t">pressure gravitates: &rho;&nbsp;+&nbsp;3P/c&sup2;</td></tr>
-        <tr><td class="t">cosmological constant</td><td class="t">an extra force &#8531;&Lambda;c&sup2;R</td><td class="t">vacuum energy, w&nbsp;=&nbsp;&minus;1</td></tr>
+        <tr><td class="t">Friedmann equation (5)</td><td class="t">exact, for dust</td><td class="t">\(\rho\) as total energy density</td></tr>
+        <tr><td class="t">the constant \(k\)</td><td class="t">sign of the energy</td><td class="t">curvature of space</td></tr>
+        <tr><td class="t">fluid equation (7)</td><td class="t">first law, \(dE = -P\,dV\)</td><td class="t">\(E = \rho c^2 V\) counts all energy</td></tr>
+        <tr><td class="t">acceleration (8)</td><td class="t">only \(-\tfrac43\pi G\rho\)</td><td class="t">pressure gravitates: \(\rho + 3P/c^2\)</td></tr>
+        <tr><td class="t">cosmological constant</td><td class="t">an extra force \(\tfrac13\Lambda c^2 R\)</td><td class="t">vacuum energy, \(w = -1\)</td></tr>
         <tr><td class="t">why the sphere works</td><td class="t">shell theorem</td><td class="t">Birkhoff's theorem</td></tr>
       </tbody>
     </table></div>
@@ -350,23 +350,23 @@
     self-gravitating ball, thrown outward. The equation of state is where Newton runs out.
     Once pressure is a source of gravity, a negative enough pressure makes gravity push, and
     that is the simplest way to see why an accelerating universe needs something with
-    w&nbsp;&lt;&nbsp;&minus;&#8531;. Whether that something is a constant, as Einstein's
-    &Lambda; would be, or slowly changing, as the DESI data hint, is now a measurement.</p>
+    \(w &lt; -\tfrac13\). Whether that something is a constant, as Einstein's
+    \(\Lambda\) would be, or slowly changing, as the DESI data hint, is now a measurement.</p>
 
     <p class="note">Sources: E.&nbsp;A.&nbsp;Milne, <i>Q. J. Math.</i> 5, 64 (1934), and
     W.&nbsp;H.&nbsp;McCrea &amp; E.&nbsp;A.&nbsp;Milne, <i>Q. J. Math.</i> 5, 73 (1934), for
     the Newtonian derivation; Planck 2018 VI for the parameters; DESI DR2 results II,
-    <a href="https://arxiv.org/abs/2503.14738">arXiv:2503.14738</a>, for w<sub>0</sub> and
-    w<sub>a</sub>. The DESI preset uses w<sub>0</sub>&nbsp;=&nbsp;&minus;0.75,
-    w<sub>a</sub>&nbsp;=&nbsp;&minus;0.86 but keeps the Planck &Omega;<sub>m</sub>, so it
+    <a href="https://arxiv.org/abs/2503.14738">arXiv:2503.14738</a>, for \(w_0\) and
+    \(w_a\). The DESI preset uses \(w_0 = -0.75\),
+    \(w_a = -0.86\) but keeps the Planck \(\Omega_\mathrm{m}\), so it
     shows the shape of the effect rather than the exact best fit. The radiation density
     assumes three massless neutrino species. Cosmic times come from integrating (13)
     numerically.</p>
 
     <p class="note">Further afield: <a href="https://jamesrohlf.github.io/outreach/expansion.html">the expansion</a>
-    for what a(t) looks like in the data; <a href="https://jamesrohlf.github.io/outreach/lcdm.html">&Lambda;CDM and the six parameters</a>
+    for what \(a(t)\) looks like in the data; <a href="https://jamesrohlf.github.io/outreach/lcdm.html">\(\Lambda\)CDM and the six parameters</a>
     for the standard model this page assumes; <a href="https://jamesrohlf.github.io/outreach/w0wa.html">the evolving dark energy calculator</a>
-    to set w<sub>0</sub> and w<sub>a</sub> yourself and see what moves.</p>
+    to set \(w_0\) and \(w_a\) yourself and see what moves.</p>
     </div>
 
   </main>

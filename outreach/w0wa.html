@@ -83,41 +83,41 @@
     <p class="breadcrumb"><a href="index.html">&larr; Outreach</a></p>
 
     <h1>Evolving Dark Energy Calculator</h1>
-    <p class="subtitle">Set <em>w</em><sub>0</sub> and <em>w</em><sub>a</sub> and see what moves against flat
-      <a href="lcdm.html">&Lambda;CDM</a> at the same redshift</p>
+    <p class="subtitle">Set \(w_0\) and \(w_a\) and see what moves against flat
+      <a href="lcdm.html">\(\Lambda\)CDM</a> at the same redshift</p>
 
     <p class="prose">
-      &Lambda;CDM assumes the dark energy density never changes &mdash; that is what the
-      &Lambda; means. The usual way to relax it lets the equation of state run linearly
-      with scale factor, <em>w</em>(<em>a</em>)&nbsp;=&nbsp;<em>w</em><sub>0</sub>&nbsp;+&nbsp;<em>w</em><sub>a</sub>(1&nbsp;&minus;&nbsp;<em>a</em>),
-      so that <em>w</em><sub>0</sub> is the value today and <em>w</em><sub>0</sub>&nbsp;+&nbsp;<em>w</em><sub>a</sub>
-      the value in the distant past. Set <em>w</em><sub>0</sub>&nbsp;=&nbsp;&minus;1 and
-      <em>w</em><sub>a</sub>&nbsp;=&nbsp;0 and the two columns below agree to the last digit,
-      because the model has become &Lambda;CDM again. Move either one and the gap opens.
+      \(\Lambda\)CDM assumes the dark energy density never changes &mdash; that is what the
+      \(\Lambda\) means. The usual way to relax it lets the equation of state run linearly
+      with scale factor, \(w(a) = w_0 + w_a(1 - a)\),
+      so that \(w_0\) is the value today and \(w_0 + w_a\)
+      the value in the distant past. Set \(w_0 = -1\) and
+      \(w_a = 0\) and the two columns below agree to the last digit,
+      because the model has become \(\Lambda\)CDM again. Move either one and the gap opens.
     </p>
     <p class="prose">
       Every point in the plane below is a different dark energy history. Fitting the
       <a href="dr1.html">DESI DR1</a> BAO distances at that point &mdash; with
-      <em>r</em><sub>d</sub> held at the Planck value of 147.1&nbsp;Mpc &mdash; gives the
-      &Omega;<sub>m</sub> and <em>H</em>&#8320; that go with it. Move the pointer to read
+      \(r_\mathrm{d}\) held at the Planck value of 147.1&nbsp;Mpc &mdash; gives the
+      \(\Omega_\mathrm{m}\) and \(H_0\) that go with it. Move the pointer to read
       them off &mdash; the calculator beside it follows your pointer, and a click pins it.
     </p>
 
     <p class="prose">
-      At &Lambda;CDM the fit returns &Omega;<sub>m</sub>&nbsp;=&nbsp;0.295, which is the
+      At \(\Lambda\)CDM the fit returns \(\Omega_\mathrm{m} = 0.295\), which is the
       value DESI publishes from these data, so the machinery is doing what it should.
-      The <em>H</em>&#8320; beside it is worth reading carefully: BAO measures the product
-      <em>H</em>&#8320;<em>r</em><sub>d</sub>, never <em>H</em>&#8320; alone, so every
+      The \(H_0\) beside it is worth reading carefully: BAO measures the product
+      \(H_0 r_\mathrm{d}\), never \(H_0\) alone, so every
       number here is conditional on the 147.1&nbsp;Mpc. DESI quotes a lower
-      <em>H</em>&#8320; from the same distances because it derives a slightly larger
-      <em>r</em><sub>d</sub> from big bang nucleosynthesis rather than fixing Planck's.
+      \(H_0\) from the same distances because it derives a slightly larger
+      \(r_\mathrm{d}\) from big bang nucleosynthesis rather than fixing Planck's.
       The measured combination agrees; only the ruler differs.
     </p>
 
     <div class="pre">
       <span class="pre__lab">presets</span>
       <button type="button" data-w0="-1" data-wa="0" aria-pressed="false"
-        data-note="&Lambda;CDM: the dark energy density is constant.">&Lambda;CDM</button>
+        data-note="&Lambda;CDM: the dark energy density is constant.">\(\Lambda\)CDM</button>
       <button type="button" data-w0="-0.958" data-wa="-0.269" aria-pressed="false"
         data-note="A fit to the DESI BAO distances alone, without the CMB or supernovae.">DESI BAO fit</button>
       <button type="button" data-w0="-1.1" data-wa="0" aria-pressed="false"
@@ -128,13 +128,13 @@
     <div class="duo">
       <div class="calc" id="calc">
         <div class="calc__in">
-          <div class="calc__f"><label for="c-rd"><em>r</em><sub>d</sub> [Mpc]</label>
+          <div class="calc__f"><label for="c-rd">\(r_\mathrm{d}\) [Mpc]</label>
             <input id="c-rd" type="number" autocomplete="off" value="147.1" step="0.1" min="100" max="200"></div>
-          <div class="calc__f"><label for="c-z">redshift <em>z</em></label>
+          <div class="calc__f"><label for="c-z">redshift \(z\)</label>
             <input id="c-z" type="number" autocomplete="off" value="0" step="0.1" min="0" max="1100"></div>
-          <div class="calc__f"><label for="c-w0"><em>w</em><sub>0</sub></label>
+          <div class="calc__f"><label for="c-w0">\(w_0\)</label>
             <input id="c-w0" type="number" autocomplete="off" value="-1" step="0.01" min="-2" max="-0.3"></div>
-          <div class="calc__f"><label for="c-wa"><em>w</em><sub>a</sub></label>
+          <div class="calc__f"><label for="c-wa">\(w_a\)</label>
             <input id="c-wa" type="number" autocomplete="off" value="0" step="0.05" min="-3" max="1"></div>
           <div class="calc__f calc__f--act"><label aria-hidden="true">&nbsp;</label>
             <button type="button" id="c-reset" class="calc__reset">Reset</button></div>
@@ -143,25 +143,25 @@
         <p class="calc__title">DESI fits at this redshift</p>
         <table class="cmp">
           <thead>
-            <tr><th>&nbsp;</th><th>&Lambda;CDM</th><th><em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM</th><th>diff</th></tr>
+            <tr><th>&nbsp;</th><th>\(\Lambda\)CDM</th><th>\(w_0w_a\)CDM</th><th>diff</th></tr>
           </thead>
           <tbody>
-            <tr><th>&Omega;<sub>m</sub></th><td id="o-om-l">—</td><td id="o-om-w">—</td><td class="d" id="o-om-d">—</td></tr>
-            <tr><th><em>H</em>&#8320; [km/s/Mpc]</th><td id="o-h0-l">—</td><td id="o-h0-w">—</td><td class="d" id="o-h0-d">—</td></tr>
-            <tr><th><em>H</em>(<em>z</em>) [km/s/Mpc]</th><td id="o-hz-l">—</td><td id="o-hz-w">—</td><td class="d" id="o-hz-d">—</td></tr>
+            <tr><th>\(\Omega_\mathrm{m}\)</th><td id="o-om-l">—</td><td id="o-om-w">—</td><td class="d" id="o-om-d">—</td></tr>
+            <tr><th>\(H_0\) [km/s/Mpc]</th><td id="o-h0-l">—</td><td id="o-h0-w">—</td><td class="d" id="o-h0-d">—</td></tr>
+            <tr><th>\(H(z)\) [km/s/Mpc]</th><td id="o-hz-l">—</td><td id="o-hz-w">—</td><td class="d" id="o-hz-d">—</td></tr>
             <tr><th>age</th><td id="o-t-l">—</td><td id="o-t-w">—</td><td class="d" id="o-t-d">—</td></tr>
             <tr><th>lookback</th><td id="o-lb-l">—</td><td id="o-lb-w">—</td><td class="d" id="o-lb-d">—</td></tr>
-            <tr><th><em>D</em><sub>M</sub>/<em>r</em><sub>d</sub></th><td id="o-dmr-l">—</td><td id="o-dmr-w">—</td><td class="d" id="o-dmr-d">—</td></tr>
-            <tr><th><em>D</em><sub>H</sub>/<em>r</em><sub>d</sub></th><td id="o-dhr-l">—</td><td id="o-dhr-w">—</td><td class="d" id="o-dhr-d">—</td></tr>
-            <tr class="hi"><th><em>&theta;</em><sub>BAO</sub> [deg]</th><td id="o-th-l">—</td><td id="o-th-w">—</td><td class="d" id="o-th-d">—</td></tr>
-            <tr><th><em>w</em>(<em>z</em>)</th><td id="o-w-l">—</td><td id="o-w-w">—</td><td class="d" id="o-w-d">—</td></tr>
+            <tr><th>\(D_\mathrm{M}/r_\mathrm{d}\)</th><td id="o-dmr-l">—</td><td id="o-dmr-w">—</td><td class="d" id="o-dmr-d">—</td></tr>
+            <tr><th>\(D_\mathrm{H}/r_\mathrm{d}\)</th><td id="o-dhr-l">—</td><td id="o-dhr-w">—</td><td class="d" id="o-dhr-d">—</td></tr>
+            <tr class="hi"><th>\(\theta_\mathrm{BAO}\) [deg]</th><td id="o-th-l">—</td><td id="o-th-w">—</td><td class="d" id="o-th-d">—</td></tr>
+            <tr><th>\(w(z)\)</th><td id="o-w-l">—</td><td id="o-w-w">—</td><td class="d" id="o-w-d">—</td></tr>
           </tbody>
         </table>
-        <p class="calc__note">The diff column is the fractional change, (<em>w</em><sub>0</sub><em>w</em><sub>a</sub>CDM
-          &minus; &Lambda;CDM) / &Lambda;CDM, in percent. &Omega;<sub>m</sub> and
-          <em>H</em>&#8320; are not typed in: each column carries the values that fit the
+        <p class="calc__note">The diff column is the fractional change, (\(w_0w_a\)CDM
+          &minus; \(\Lambda\)CDM) / \(\Lambda\)CDM, in percent. \(\Omega_\mathrm{m}\) and
+          \(H_0\) are not typed in: each column carries the values that fit the
           DESI BAO distances for its own dark energy history, at the
-          <em>r</em><sub>d</sub> above.</p>
+          \(r_\mathrm{d}\) above.</p>
       </div>
 
       <div class="pl-col">
@@ -183,28 +183,28 @@
 
     <p class="prose">
       Both columns solve the same Friedmann equation. The dark energy term differs by
-      construction, and &Omega;<sub>m</sub> and <em>H</em>&#8320; differ because the data
-      make them: choosing <em>w</em><sub>0</sub> and <em>w</em><sub>a</sub> already fixes
+      construction, and \(\Omega_\mathrm{m}\) and \(H_0\) differ because the data
+      make them: choosing \(w_0\) and \(w_a\) already fixes
       what matter density and expansion rate the BAO distances will tolerate, so offering
       those as separate inputs would only let you build a universe the measurements
-      reject. Where &Lambda;CDM carries a constant &Omega;<sub>&Lambda;</sub>, the
+      reject. Where \(\Lambda\)CDM carries a constant \(\Omega_\Lambda\), the
       evolving model carries
-      &Omega;<sub>&Lambda;</sub>&nbsp;&times;&nbsp;<em>a</em><sup>&minus;3(1+<em>w</em><sub>0</sub>+<em>w</em><sub>a</sub>)</sup>
-      <em>e</em><sup>&minus;3<em>w</em><sub>a</sub>(1&minus;<em>a</em>)</sup>, which is
-      exactly 1 when <em>w</em><sub>0</sub>&nbsp;=&nbsp;&minus;1 and
-      <em>w</em><sub>a</sub>&nbsp;=&nbsp;0. At that setting the fit hands both columns
-      the same &Omega;<sub>m</sub> and <em>H</em>&#8320; as well, so the diff column reads
+      \(\Omega_\Lambda \times a^{-3(1+w_0+w_a)}
+      e^{-3w_a(1-a)}\), which is
+      exactly 1 when \(w_0 = -1\) and
+      \(w_a = 0\). At that setting the fit hands both columns
+      the same \(\Omega_\mathrm{m}\) and \(H_0\) as well, so the diff column reads
       zero throughout &mdash; the same arithmetic, not a close approximation.
     </p>
 
     <p class="prose">
-      For parameters this close to &Lambda;CDM the gaps are well under one percent, and
+      For parameters this close to \(\Lambda\)CDM the gaps are well under one percent, and
       they do not all move the same way. With the DESI BAO fit loaded,
-      <em>H</em>(<em>z</em>) sits <em>below</em> &Lambda;CDM at
-      <em>z</em>&nbsp;=&nbsp;1 and <em>above</em> it by <em>z</em>&nbsp;=&nbsp;0.3: the
+      \(H(z)\) sits <em>below</em> \(\Lambda\)CDM at
+      \(z = 1\) and <em>above</em> it by \(z = 0.3\): the
       evolving density crosses the constant one on the way, and the diff column changes
-      sign as it does. Sweep <em>z</em> downward and watch it happen near
-      <em>z</em>&nbsp;&asymp;&nbsp;0.5. That crossing is the whole content of an evolving
+      sign as it does. Sweep \(z\) downward and watch it happen near
+      \(z \approx 0.5\). That crossing is the whole content of an evolving
       equation of state, and it is why one measurement at one redshift cannot separate the
       two models. You need the shape, across a range &mdash; which is what a survey of
       millions of galaxies at many redshifts is for.
@@ -213,27 +213,27 @@
     <p class="prose">
       The preset labelled <em>DESI BAO fit</em> is a fit to the DESI BAO distance
       measurements on their own &mdash; not DESI's published constraint, which combines
-      BAO with the CMB and with supernovae and lands further from &Lambda;CDM. Use it as a
+      BAO with the CMB and with supernovae and lands further from \(\Lambda\)CDM. Use it as a
       starting point to move from, not as a result to quote. The
-      <a href="lcdm.html#evolving-dark-energy">&Lambda;CDM page</a> describes where the
+      <a href="lcdm.html#evolving-dark-energy">\(\Lambda\)CDM page</a> describes where the
       published preference for evolution stands.
     </p>
 
     <p class="prose muted">
-      The age integral, the comoving distance and &theta;<sub>BAO</sub> are computed as on
+      The age integral, the comoving distance and \(\theta_\mathrm{BAO}\) are computed as on
       the <a href="calculator.html">cosmology calculator</a>, by Simpson's rule under the
-      substitution <em>a</em>&nbsp;=&nbsp;1/(1+<em>z</em>). The linear
-      <em>w</em>(<em>a</em>) form is an extrapolation far outside the range it was built
+      substitution \(a = 1/(1+z)\). The linear
+      \(w(a)\) form is an extrapolation far outside the range it was built
       to describe, so the redshift here is capped at 1100 rather than the
-      10<sup>7</sup> the &Lambda;CDM calculator allows.
+      \(10^7\) the \(\Lambda\)CDM calculator allows.
     </p>
 
     <h2 class="section-title">Elsewhere on this site</h2>
 
     <ul class="link-list">
       <li><a href="calculator.html">Cosmology calculator
-        <span class="sub">the same quantities in flat &Lambda;CDM, with the cosmic timeline</span></a></li>
-      <li><a href="lcdm.html">&Lambda;CDM
+        <span class="sub">the same quantities in flat \(\Lambda\)CDM, with the cosmic timeline</span></a></li>
+      <li><a href="lcdm.html">\(\Lambda\)CDM
         <span class="sub">the standard model of cosmology — the six parameters, and the cosmic timeline</span></a></li>
       <li><a href="bao.html">Baryon acoustic oscillations
         <span class="sub">where the 147&nbsp;Mpc ruler comes from</span></a></li>
