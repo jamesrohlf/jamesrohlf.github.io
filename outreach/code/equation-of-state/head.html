@@ -121,6 +121,11 @@
     .bar button[aria-pressed="false"]:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
     .verdict .acc { color:var(--scarlet); font-weight:700; }
     .verdict .dec { color:var(--ink); font-weight:700; }
+    .more { margin:1.2rem 0 1.6rem; max-width:var(--measure); background:var(--paper);
+            border:1px solid var(--rule); border-radius:var(--radius-sm); padding:.2rem 1rem; }
+    .more summary { cursor:pointer; font-weight:600; color:var(--scarlet); padding:.5rem 0; }
+    .more[open] summary { border-bottom:1px solid var(--rule); margin-bottom:.6rem; }
+    .more p { color:var(--ink-soft); }
   </style>
 </head>
 <body>

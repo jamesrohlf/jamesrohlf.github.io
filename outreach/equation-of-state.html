@@ -121,6 +121,11 @@
     .bar button[aria-pressed="false"]:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
     .verdict .acc { color:var(--scarlet); font-weight:700; }
     .verdict .dec { color:var(--ink); font-weight:700; }
+    .more { margin:1.2rem 0 1.6rem; max-width:var(--measure); background:var(--paper);
+            border:1px solid var(--rule); border-radius:var(--radius-sm); padding:.2rem 1rem; }
+    .more summary { cursor:pointer; font-weight:600; color:var(--scarlet); padding:.5rem 0; }
+    .more[open] summary { border-bottom:1px solid var(--rule); margin-bottom:.6rem; }
+    .more p { color:var(--ink-soft); }
   </style>
 </head>
 <body>
@@ -307,7 +312,7 @@
       Newtonian gravity has no way to produce this. Yet putting Newton's Friedmann equation
       together with the first law of thermodynamics gets it automatically. In general
       relativity the reason is that the source of gravity is \(\rho + 3P/c^2\),
-      not \(\rho\) alone.</p>
+      not \(\rho\) alone (<a href="#gr">see below</a>).</p>
     </div>
 
     <p class="aside"><b>Why pressure doesn't just push.</b> Radiation pushes outward on a wall and
@@ -560,6 +565,97 @@
     the natural scale of gravity is the Planck mass, 31 powers of ten higher. As energy
     densities the gap is \(M_\mathrm{Pl}^4/\rho_\Lambda \approx 10^{123}\). No one knows why the
     vacuum carries so little energy. This is the cosmological constant problem.</p>
+
+    <h2 id="gr">The same equations from Einstein</h2>
+
+    <p>The Newtonian derivation needed three patches from relativity: \(\rho\) had to count all
+    energy, pressure had to gravitate, and \(k\) had to be curvature. General relativity
+    delivers all three at once. The full calculation is a page of index algebra, but what goes
+    in and what comes out are short.</p>
+
+    <p><b>What goes in.</b> First, the geometry. If the universe is the same everywhere and in
+    every direction, the most general spacetime is</p>
+
+    <div class="eq">\[ \begin{aligned}
+      ds^2 = -c^2\,dt^2 + a^2(t)\,\Bigg[&\frac{dr^2}{1 - kr^2} \\
+      &+ r^2\left(d\theta^2 + \sin^2\theta\,d\phi^2\right)\Bigg] .
+    \end{aligned} \]</div>
+
+    <p>This is the Friedmann&ndash;Lema&icirc;tre&ndash;Robertson&ndash;Walker metric. Everything
+    about it is fixed by symmetry except one function of time, \(a(t)\), and one constant,
+    \(k\). Here \(k\) is plainly the curvature of space: flat for \(k = 0\), closed like the
+    surface of a sphere for \(k &gt; 0\), and open for \(k &lt; 0\).</p>
+
+    <p>Second, the contents. A uniform fluid is described by its energy-momentum tensor. In a
+    frame moving with the fluid it is</p>
+
+    <div class="eq">\[ T^{\mu\nu} = \begin{pmatrix} \rho c^2 &amp; 0 &amp; 0 &amp; 0 \\
+      0 &amp; P &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; P &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; P \end{pmatrix} . \]</div>
+
+    <p>The first entry is the energy density, all of it: rest mass, heat and radiation alike. The
+    other three are the flow of momentum across a surface in each direction, which is the
+    pressure.</p>
+
+    <p>Third, Einstein's equations, which say that the curvature of spacetime is set by its
+    contents:</p>
+
+    <div class="eq">\[ G_{\mu\nu} = \frac{8\pi G}{c^4}\,T_{\mu\nu} . \]</div>
+
+    <p>The left side, the Einstein tensor, is built from the metric and its first and second
+    derivatives. Einstein's cosmological constant adds a term \(\Lambda g_{\mu\nu}\) to the left.
+    Moved to the right, it acts like a fluid with
+    \(\rho_\Lambda = \Lambda c^2/8\pi G\) and \(P_\Lambda = -\rho_\Lambda c^2\), that is, vacuum
+    energy with \(w = -1\). So it can be counted as one more ingredient in \(\rho\).</p>
+
+    <p><b>What comes out.</b> With this metric and this fluid, Einstein's ten equations reduce to
+    just two:</p>
+    <ul>
+      <li>the time&ndash;time component is the Friedmann equation (5);</li>
+      <li>the space&ndash;space components, combined with (5), give the acceleration equation (8).</li>
+    </ul>
+    <p>The fluid equation (7) is energy conservation, \(\nabla_\mu T^{\mu\nu} = 0\), and
+    Einstein's equations guarantee it automatically. This is why it is also called the continuity
+    equation, and it is the relativistic reason that any two of (5), (7) and (8) give the third.</p>
+
+    <p><b>Why pressure counts three times.</b> Einstein's equations can be rewritten with the
+    source on the right in a different form:</p>
+
+    <div class="eq">\[ R_{\mu\nu} = \frac{8\pi G}{c^4}\left(T_{\mu\nu} - \tfrac12\,T\,g_{\mu\nu}\right) , \]</div>
+
+    <p>where \(T\) is the trace of the energy-momentum tensor. With the signs of this metric,
+    \(T = -\rho c^2 + 3P\): the pressure appears once for each of the three directions of space.
+    For slow motion and weak fields, the time&ndash;time component \(R_{00}\) becomes
+    \(\nabla^2\Phi/c^2\), where \(\Phi\) is the Newtonian potential. Putting in \(T_{00} = \rho c^2\)
+    and \(g_{00} = -1\),</p>
+
+    <div class="eq">\[ \nabla^2\Phi = 4\pi G\left(\rho + \frac{3P}{c^2}\right) . \]</div>
+
+    <p>This is Newton's law of gravity, \(\nabla^2\Phi = 4\pi G\rho\), with the pressure added in.
+    For the dust Newton had in mind, \(P\) is negligible and nothing changes. Applied to the
+    sphere of the opening section, it gives the acceleration equation (8) directly.</p>
+
+    <details class="more">
+      <summary>Show the curvature for this metric</summary>
+      <p>Use \(x^0 = ct\) as the time coordinate, and keep the dot for \(d/dt\). The metric is
+      \(g_{00} = -1\) and \(g_{ij} = a^2\gamma_{ij}\), where \(\gamma_{ij}\) is the metric of the
+      bracket. The Christoffel symbols that involve time are</p>
+      <div class="eq">\[ \Gamma^0_{ij} = \frac{a\dot a}{c}\,\gamma_{ij}, \qquad
+        \Gamma^i_{0j} = \frac{\dot a}{c\,a}\,\delta^i_j , \]</div>
+      <p>and the rest are those of the curved 3-space \(\gamma_{ij}\) alone. The Ricci tensor
+      follows:</p>
+      <div class="eq">\[ \begin{aligned}
+        R_{00} &= -\frac{3}{c^2}\,\frac{\ddot a}{a}, \\
+        R_{ij} &= \left(\frac{a\ddot a + 2\dot a^2}{c^2} + 2k\right)\gamma_{ij} ,
+      \end{aligned} \]</div>
+      <p>so the Ricci scalar and the time&ndash;time part of the Einstein tensor are</p>
+      <div class="eq">\[ \begin{aligned}
+        R &= 6\left(\frac{\ddot a}{c^2 a} + \frac{\dot a^2}{c^2 a^2} + \frac{k}{a^2}\right), \\
+        G_{00} &= 3\left(\frac{\dot a^2}{c^2 a^2} + \frac{k}{a^2}\right) .
+      \end{aligned} \]</div>
+      <p>Setting \(G_{00} = (8\pi G/c^4)\,\rho c^2\) gives the Friedmann equation (5). The
+      time&ndash;time part of the rewritten equation,
+      \(R_{00} = (4\pi G/c^4)(\rho c^2 + 3P)\), gives the acceleration equation (8).</p>
+    </details>
 
     <h2 id="limits">What Newton got right, and what he could not</h2>
 
