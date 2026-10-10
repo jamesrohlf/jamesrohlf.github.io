@@ -128,6 +128,14 @@
     .more p { color:var(--ink-soft); }
     .eqname { display:block; font-size:.72rem; font-weight:700; letter-spacing:.11em;
               text-transform:uppercase; color:var(--ink-faint); margin-bottom:-.2rem; }
+    .eqsum { max-width:var(--measure); }
+    .eqsum__grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));
+                   gap:.2rem 1.6rem; }
+    .eqsum__grid > div { min-width:0; overflow-x:auto; overflow-y:hidden; }
+    .eqsum__grid mjx-container[display="true"] { margin:.2em 0 .6em !important; }
+    a.eqname { text-decoration:none; }
+    a.eqname:hover { color:var(--scarlet); }
+    .eqsum__note { font-size:.9rem; color:var(--ink-soft); margin:.4rem 0 0; }
   </style>
 </head>
 <body>
@@ -158,6 +166,24 @@
       641, A6 (2020): \(H_0 = 67.4\ \mathrm{km\,s^{-1}\,Mpc^{-1}}\),
       \(\Omega_\mathrm{m} = 0.315\). Dark energy: DESI Collaboration, <i>DESI DR2
       results II</i>, <a href="https://arxiv.org/abs/2503.14738">arXiv:2503.14738</a>.</p>
+    </div>
+
+    <div class="feature eqsum">
+      <p class="feature__kicker">The equations at a glance</p>
+      <div class="eqsum__grid">
+        <div><a class="eqname" href="#newton">Hubble parameter</a>\[ H \equiv \frac{\dot a}{a} \]</div>
+        <div><a class="eqname" href="#newton">Friedmann equation</a>\[ H^2 = \frac{8\pi G}{3}\,\rho - \frac{kc^2}{a^2} \]</div>
+        <div><a class="eqname" href="#k">critical density</a>\[ \rho_\mathrm{c} = \frac{3H^2}{8\pi G} \]</div>
+        <div><a class="eqname" href="#fluid">fluid equation</a>\[ \dot\rho + 3H\left(\rho + \frac{P}{c^2}\right) = 0 \]</div>
+        <div><a class="eqname" href="#accel">acceleration equation</a>\[ \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3P}{c^2}\right) \]</div>
+        <div><a class="eqname" href="#w">equation of state</a>\[ P = w\,\rho c^2 \]</div>
+        <div><a class="eqname" href="#w">dilution</a>\[ \rho \propto a^{-3(1+w)} \]</div>
+        <div><a class="eqname" href="#w">growth</a>\[ a \propto t^{\,2/[3(1+w)]} \]</div>
+        <div><a class="eqname" href="#w">acceleration condition</a>\[ \ddot a &gt; 0 \iff w &lt; -\tfrac13 \]</div>
+        <div><a class="eqname" href="#weff">expansion history</a>\[ \frac{H^2}{H_0^2} = \Omega_\mathrm{r}a^{-4} + \Omega_\mathrm{m}a^{-3} + \Omega_\mathrm{DE}\,f_\mathrm{DE}(a) \]</div>
+      </div>
+      <p class="eqsum__note">Matter has \(w = 0\), radiation \(w = +\tfrac13\), and a cosmological
+      constant \(w = -1\). Click a name to jump to its derivation.</p>
     </div>
 
     <div class="prose">

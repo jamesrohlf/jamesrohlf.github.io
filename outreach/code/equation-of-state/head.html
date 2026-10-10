@@ -128,6 +128,14 @@
     .more p { color:var(--ink-soft); }
     .eqname { display:block; font-size:.72rem; font-weight:700; letter-spacing:.11em;
               text-transform:uppercase; color:var(--ink-faint); margin-bottom:-.2rem; }
+    .eqsum { max-width:var(--measure); }
+    .eqsum__grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));
+                   gap:.2rem 1.6rem; }
+    .eqsum__grid > div { min-width:0; overflow-x:auto; overflow-y:hidden; }
+    .eqsum__grid mjx-container[display="true"] { margin:.2em 0 .6em !important; }
+    a.eqname { text-decoration:none; }
+    a.eqname:hover { color:var(--scarlet); }
+    .eqsum__note { font-size:.9rem; color:var(--ink-soft); margin:.4rem 0 0; }
   </style>
 </head>
 <body>
