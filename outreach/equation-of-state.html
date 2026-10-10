@@ -471,6 +471,58 @@
     shifts the measured distances. The far right of the panel is the formula extrapolated well
     past the data, so take the future it shows as illustration rather than prediction.</p>
 
+    <h2 id="units">Natural units</h2>
+
+    <p>Particle physicists and cosmologists usually set \(\hbar = c = 1\), and Boltzmann's
+    constant \(k = 1\) as well. Then mass, energy, temperature, inverse length and inverse time
+    are all measured in one unit, the electron volt. Three numbers take you back to everyday
+    units:</p>
+
+    <div class="eq">\[ \begin{aligned}
+      \hbar c &= 197.3\ \mathrm{MeV\,fm} = 1.973 \times 10^{-7}\ \mathrm{eV\,m}, \\
+      c &= 3.00 \times 10^{8}\ \mathrm{m\,s^{-1}}, \\
+      kT &= 0.0259\ \mathrm{eV} \approx \tfrac{1}{40}\ \mathrm{eV} \quad \text{at } T = 300\ \mathrm{K}.
+    \end{aligned} \]</div>
+
+    <p>The first turns an energy into an inverse length: \(1\ \mathrm{eV^{-1}} = 1.973 \times
+    10^{-7}\ \mathrm{m}\). Dividing it by the second gives \(\hbar = 6.58 \times 10^{-16}\
+    \mathrm{eV\,s}\), which turns an energy into an inverse time. The third turns an energy
+    into a temperature: \(1\ \mathrm{eV}\) is \(11\,600\ \mathrm{K}\).</p>
+
+    <p>The Hubble constant is a rate, so multiply by \(\hbar\):
+    \(H_0 = 67.4\ \mathrm{km\,s^{-1}\,Mpc^{-1}} = 2.18 \times 10^{-18}\ \mathrm{s^{-1}}\), which is
+    \(1.44 \times 10^{-33}\ \mathrm{eV}\). Newton's constant has dimensions of
+    \(\mathrm{energy}^{-2}\), and it defines the Planck mass,
+    \(M_\mathrm{Pl} = \sqrt{\hbar c/G} = 1.22 \times 10^{19}\ \mathrm{GeV}\), so that
+    \(G = 1/M_\mathrm{Pl}^2 = 6.71 \times 10^{-39}\ \mathrm{GeV^{-2}}\). The critical density is
+    then</p>
+
+    <div class="eq">\[ \rho_\mathrm{c} = \frac{3H_0^2 M_\mathrm{Pl}^2}{8\pi}
+      = \frac{3\,(1.44 \times 10^{-33}\ \mathrm{eV})^2\,(1.22 \times 10^{28}\ \mathrm{eV})^2}{8\pi}
+      = 3.7 \times 10^{-11}\ \mathrm{eV^4} = (2.5\ \mathrm{meV})^4 . \]</div>
+
+    <p>To get back to an energy per volume, divide by \((\hbar c)^3\):
+    \(3.7 \times 10^{-11}\ \mathrm{eV^4} / (1.973 \times 10^{-7}\ \mathrm{eV\,m})^3 =
+    4.8\ \mathrm{GeV\,m^{-3}}\), the same value as before.</p>
+
+    <div class="tblwrap"><table class="degtab">
+      <thead><tr><th class="c">Quantity</th><th class="c">Everyday units</th><th class="c">Natural units</th></tr></thead>
+      <tbody>
+        <tr><td class="t">Hubble constant \(H_0\)</td><td class="t">\(2.18 \times 10^{-18}\ \mathrm{s^{-1}}\)</td><td class="t">\(1.44 \times 10^{-33}\ \mathrm{eV}\)</td></tr>
+        <tr><td class="t">Hubble time \(1/H_0\)</td><td class="t">\(14.5\ \mathrm{Gyr}\)</td><td class="t">\(7.0 \times 10^{32}\ \mathrm{eV^{-1}}\)</td></tr>
+        <tr><td class="t">Newton's constant \(G\)</td><td class="t">\(6.67 \times 10^{-11}\ \mathrm{m^3\,kg^{-1}\,s^{-2}}\)</td><td class="t">\(6.71 \times 10^{-39}\ \mathrm{GeV^{-2}}\)</td></tr>
+        <tr><td class="t">Planck mass \(M_\mathrm{Pl}\)</td><td class="t">\(2.18 \times 10^{-8}\ \mathrm{kg}\)</td><td class="t">\(1.22 \times 10^{19}\ \mathrm{GeV}\)</td></tr>
+        <tr><td class="t">critical density \(\rho_\mathrm{c}\)</td><td class="t">\(4.8\ \mathrm{GeV\,m^{-3}}\)</td><td class="t">\((2.5\ \mathrm{meV})^4\)</td></tr>
+        <tr><td class="t">dark energy \(\rho_\Lambda = 0.685\,\rho_\mathrm{c}\)</td><td class="t">\(3.3\ \mathrm{GeV\,m^{-3}}\)</td><td class="t">\((2.2\ \mathrm{meV})^4\)</td></tr>
+        <tr><td class="t">CMB temperature \(T_0\)</td><td class="t">\(2.7255\ \mathrm{K}\)</td><td class="t">\(0.235\ \mathrm{meV}\)</td></tr>
+      </tbody>
+    </table></div>
+
+    <p>The dark energy row is the one that puzzles physicists. Its natural scale is a few meV, while
+    the natural scale of gravity is the Planck mass, 31 powers of ten higher. As energy
+    densities the gap is \(M_\mathrm{Pl}^4/\rho_\Lambda \approx 10^{123}\). No one knows why the
+    vacuum carries so little energy. This is the cosmological constant problem.</p>
+
     <h2 id="limits">What Newton got right, and what he could not</h2>
 
     <div class="tblwrap"><table class="degtab">
