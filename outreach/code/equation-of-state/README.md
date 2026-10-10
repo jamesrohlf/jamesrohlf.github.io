@@ -35,7 +35,7 @@ computed in the browser.
 
 ## Things that must not be undone
 
-- Display equations are MathJax: `<div class="eq">\[ ... \tag{n} \]</div>`.
+- Display equations are MathJax: `<div class="eq">\[ ... \]</div>`, unnumbered. The three main ones carry a name label, `<span class="eqname">Friedmann equation</span>` before the `\[`, and the text refers to them by name. (A `\tag{name}` at the right margin made them too wide for a phone.)
   `assets/js/chrome.js` loads MathJax on any page whose `<main>` contains TeX,
   and `.eq` is styled in `site.css`. Don't add a MathJax `<script>` here.
 - Inline math is MathJax too: time derivatives are `\dot a`, `\ddot a`, `\dot\rho`, never HTML entities.
