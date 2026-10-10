@@ -13,7 +13,7 @@
   <style>
     .rig { border:1px solid var(--rule); border-radius:10px; padding:.9rem 1rem 1rem;
            margin:1.4rem 0 1.6rem; background:var(--paper); }
-    .rig__plot svg { display:block; width:100%; height:auto; }
+    .rig__plot svg:not(mjx-container svg) { display:block; width:100%; height:auto; }
 
     .knobs { display:grid; grid-template-columns:repeat(auto-fit, minmax(15.5rem, 1fr));
              gap:.5rem 1.4rem; margin:.9rem 0 0; }
@@ -108,10 +108,10 @@
                   vertical-align:middle; margin-right:.4rem; }
     .tblwrap { overflow-x:auto; max-width:100%; }
     .diagram { margin:1.4rem 0 1.6rem; }
-    .diagram svg { display:block; width:100%; max-width:440px; height:auto; margin:0 auto;
+    .diagram svg:not(mjx-container svg) { display:block; width:100%; max-width:440px; height:auto; margin:0 auto;
                    background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-sm); }
     .chart { position:relative; width:100%; }
-    .chart svg { display:block; width:100%; overflow:visible; }
+    .chart svg:not(mjx-container svg) { display:block; width:100%; overflow:visible; }
     .chart + .chart { margin-top:.5rem; }
     .swatch-rad { color:var(--gold); } .swatch-mat { color:var(--ink-soft); }
     .swatch-de  { color:var(--scarlet); }

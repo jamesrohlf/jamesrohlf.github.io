@@ -61,10 +61,10 @@
     .duo .calc { margin:0; flex:0 1 auto; }
     .pl-col { flex:1 1 21rem; min-width:17rem; max-width:30rem; }
     .pl-col .plane { margin:0; }
-    .pl-col .plane svg { max-width:100%; }
+    .pl-col .plane svg:not(mjx-container svg) { max-width:100%; }
     .pl-col .pl-out { min-height:4.6em; }
     .plane { margin:1.2rem 0 .3rem; }
-    .plane svg { display:block; width:100%; height:auto; cursor:crosshair;
+    .plane svg:not(mjx-container svg) { display:block; width:100%; height:auto; cursor:crosshair;
                  max-width:36rem; }
     .pl-ax { font:400 11px system-ui,sans-serif; fill:var(--ink-faint); text-anchor:middle; }
     .pl-ttl { font:600 12px system-ui,sans-serif; fill:var(--ink-soft); text-anchor:middle; }
