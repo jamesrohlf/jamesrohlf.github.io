@@ -509,8 +509,18 @@
     delivers all three at once. The full calculation is a page of index algebra, but what goes
     in and what comes out are short.</p>
 
-    <p><b>What goes in.</b> First, the geometry. If the universe is the same everywhere and in
-    every direction, the most general spacetime is</p>
+    <p><b>What goes in.</b> First, the geometry. Relativity measures it with the spacetime
+    interval \(ds^2\), the squared length of a small step \(dx^\mu = (c\,dt,\, dx,\, dy,\, dz)\)
+    in space and time. In flat, empty spacetime it is</p>
+
+    <div class="eq">\[ ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2 , \]</div>
+
+    <p>and every observer, however they move, gets the same value. The minus sign is what makes
+    time different from space: a step along a light ray has \(ds^2 = 0\). In general the interval
+    is written \(ds^2 = g_{\mu\nu}\,dx^\mu dx^\nu\), summed over repeated indices, and the
+    coefficients \(g_{\mu\nu}\) are the <i>metric</i>. In flat spacetime \(g_{00} = -1\) and
+    \(g_{11} = g_{22} = g_{33} = +1\). If the universe is the same everywhere and in every
+    direction, the most general interval is</p>
 
     <div class="eq">\[ \begin{aligned}
       ds^2 = -c^2\,dt^2 + a^2(t)\,\Bigg[&\frac{dr^2}{1 - kr^2} \\
@@ -523,9 +533,9 @@
     surface of a sphere for \(k &gt; 0\), and open for \(k &lt; 0\).</p>
 
     <p>Second, the contents. A uniform fluid is described by its energy-momentum tensor. In a
-    frame moving with the fluid it is</p>
+    small region, where spacetime looks flat, and in a frame moving with the fluid, it is</p>
 
-    <div class="eq">\[ T^{\mu\nu} = \begin{pmatrix} \rho c^2 &amp; 0 &amp; 0 &amp; 0 \\
+    <div class="eq">\[ T_{\mu\nu} = \begin{pmatrix} \rho c^2 &amp; 0 &amp; 0 &amp; 0 \\
       0 &amp; P &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; P &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; P \end{pmatrix} . \]</div>
 
     <p>The first entry is the energy density, all of it: rest mass, heat and radiation alike. The
@@ -549,7 +559,7 @@
       <li>the time&ndash;time component is the Friedmann equation;</li>
       <li>the space&ndash;space components, combined with the Friedmann equation, give the acceleration equation.</li>
     </ul>
-    <p>The fluid equation is energy conservation, \(\nabla_\mu T^{\mu\nu} = 0\), and
+    <p>The fluid equation is energy conservation, \(\nabla^\mu T_{\mu\nu} = 0\), and
     Einstein's equations guarantee it automatically. This is why it is also called the continuity
     equation, and it is the relativistic reason that any two of the three give the third.</p>
 
@@ -558,7 +568,7 @@
 
     <div class="eq">\[ R_{\mu\nu} = \frac{8\pi G}{c^4}\left(T_{\mu\nu} - \tfrac12\,T\,g_{\mu\nu}\right) , \]</div>
 
-    <p>where \(T\) is the trace of the energy-momentum tensor. With the signs of this metric,
+    <p>where \(T = g^{\mu\nu}T_{\mu\nu}\) is the trace of the energy-momentum tensor. With the signs of this metric,
     \(T = -\rho c^2 + 3P\): the pressure appears once for each of the three directions of space.
     For slow motion and weak fields, the time&ndash;time component \(R_{00}\) becomes
     \(\nabla^2\Phi/c^2\), where \(\Phi\) is the Newtonian potential. Putting in \(T_{00} = \rho c^2\)
