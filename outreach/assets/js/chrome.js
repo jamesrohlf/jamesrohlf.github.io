@@ -104,6 +104,27 @@
     Array.prototype.forEach.call(document.querySelectorAll(".js-only"), function (el) {
       el.style.display = "";
     });
+
+    loadMath();
+  }
+
+  // Equations: write \( ... \) inline and \[ ... \] for display, usually inside
+  // <div class="eq">. MathJax is fetched only on pages that contain TeX, and it
+  // renders to SVG in currentColor, so equations follow the light/dark theme.
+  function loadMath() {
+    var main = document.getElementById("main") || document.body;
+    var text = main.textContent;
+    if (text.indexOf("\\(") < 0 && text.indexOf("\\[") < 0) return;
+    if (window.MathJax) return;
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+      svg: { fontCache: "global" },
+      options: { enableMenu: false }
+    };
+    var s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js";
+    s.async = true;
+    document.head.appendChild(s);
   }
 
   if (document.readyState === "loading") {

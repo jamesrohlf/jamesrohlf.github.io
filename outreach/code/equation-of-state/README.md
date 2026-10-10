@@ -35,7 +35,8 @@ computed in the browser.
 
 ## Things that must not be undone
 
-- Equations are plain HTML in the site's centred-monospace style, like
-  `matter-spectrum.html`. No MathJax: no other page uses it.
+- Display equations are MathJax: `<div class="eq">\[ ... \tag{n} \]</div>`.
+  `assets/js/chrome.js` loads MathJax on any page whose `<main>` contains TeX,
+  and `.eq` is styled in `site.css`. Don't add a MathJax `<script>` here.
 - Time derivatives are combining dots: ȧ is `&#551;`, ρ̇ and V̇ are the letter
   plus `&#775;`. `&#7841;` looks similar but is a with a dot *below*.

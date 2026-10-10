@@ -32,8 +32,7 @@
     it expand uniformly, which means every distance grows by the same factor. Write the
     physical distance of a particle from any chosen centre as</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      R(t) = a(t)&nbsp;x</p>
+    <div class="eq">\[ R(t) = a(t)\, x , \tag{1} \]</div>
 
     <p>where x is a fixed label for that particle, its <i>comoving</i> distance, and a(t) is
     the <i>scale factor</i>, normalised to a&nbsp;=&nbsp;1 today. The expansion rate is the
@@ -44,8 +43,7 @@
     anything inside it, so all the mass outside the sphere drops out. Only the mass inside
     pulls:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      M = &#8308;&#8260;&#8323;&nbsp;&pi;&nbsp;&rho;&nbsp;R&sup3;</p>
+    <div class="eq">\[ M = \tfrac{4\pi}{3}\,\rho\,R^3 . \tag{2} \]</div>
 
     <p>No dust crosses the surface, because everything moves with the flow, so M stays
     constant even as &rho; falls and R grows.</p>
@@ -78,29 +76,25 @@
 
     <p>Newton's second law for the test particle is</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      R&#776; = &minus;GM&thinsp;/&thinsp;R&sup2;</p>
+    <div class="eq">\[ \ddot R = -\frac{GM}{R^2}. \tag{3} \]</div>
 
     <p>Multiply both sides by &#7768; and integrate once. The left side becomes the time
     derivative of &frac12;&#7768;&sup2; and the right side the time derivative of GM/R, so
     what comes out is energy conservation per unit mass:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      &frac12;&nbsp;&#7768;&sup2; &minus; GM&thinsp;/&thinsp;R = U = constant</p>
+    <div class="eq">\[ \tfrac12 \dot R^2 - \frac{GM}{R} = U = \text{constant}. \tag{4} \]</div>
 
     <p>Now substitute R&nbsp;=&nbsp;ax and M&nbsp;=&nbsp;&#8308;&#8260;&#8323;&pi;&rho;a&sup3;x&sup3;,
     and divide through by &frac12;a&sup2;x&sup2;:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      (&#551;/a)&sup2; = (8&pi;G/3)&nbsp;&rho; + 2U&thinsp;/&thinsp;(a&sup2;x&sup2;)</p>
+    <div class="eq">\[ \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho + \frac{2U}{a^2 x^2}. \]</div>
 
     <p>The left side and the first term on the right are the same for every particle in the
     universe. For the expansion to stay uniform, U/x&sup2; has to be the same for every
     particle too. Call that constant &minus;kc&sup2;/2, and the result is the
     <b>Friedmann equation</b>:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      H&sup2; = (&#551;/a)&sup2; = (8&pi;G/3)&nbsp;&rho; &minus; kc&sup2;&thinsp;/&thinsp;a&sup2;</p>
+    <div class="eq">\[ H^2 = \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho - \frac{k c^2}{a^2} . \tag{5} \]</div>
 
     <p>This is exactly the equation general relativity gives for a homogeneous, isotropic
     universe. Friedmann found it in 1922 by solving Einstein's equations. Milne and McCrea
@@ -131,7 +125,7 @@
     <p>Setting k&nbsp;=&nbsp;0 defines the <i>critical density</i>,
     &rho;<sub>c</sub>&nbsp;=&nbsp;3H&sup2;/8&pi;G. With H<sub>0</sub>&nbsp;=&nbsp;67.4 it is
     8.5&nbsp;&times;&nbsp;10<sup>&minus;27</sup>&nbsp;kg&nbsp;m<sup>&minus;3</sup>, about five
-    hydrogen atoms per cubic metre. Dividing the Friedmann equation by H&sup2; and writing each density as a
+    hydrogen atoms per cubic metre. Dividing (5) by H&sup2; and writing each density as a
     fraction &Omega;&nbsp;=&nbsp;&rho;/&rho;<sub>c</sub> turns the Friedmann equation into a
     budget: the &Omega;s plus a curvature term add up to one. The curvature term is measured to
     be below about 0.002 today, so from here on the universe is flat and k&nbsp;=&nbsp;0.</p>
@@ -147,13 +141,11 @@
     E&nbsp;=&nbsp;&rho;c&sup2;V. In a uniform universe there is nowhere for heat to flow, so
     the expansion is adiabatic and</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      dE = &minus;P&nbsp;dV</p>
+    <div class="eq">\[ dE = -P\,dV . \tag{6} \]</div>
 
     <p>Write this as a rate, using V&#775;/V&nbsp;=&nbsp;3&#551;/a:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      &rho;&#775; + 3&nbsp;(&#551;/a)&nbsp;(&rho; + P/c&sup2;) = 0</p>
+    <div class="eq">\[ \dot\rho + 3\,\frac{\dot a}{a}\left(\rho + \frac{P}{c^2}\right) = 0 . \tag{7} \]</div>
 
     <p>This is the <b>fluid equation</b>. A gas with positive pressure does work on its
     surroundings as it expands, so its energy density falls faster than its volume grows. The
@@ -166,30 +158,28 @@
 
     <h2 id="accel">Pressure gravitates</h2>
 
-    <p>Newton's law on its own gives</p>
+    <p>Newton's law (3) on its own gives</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      &auml;/a = &minus;(4&pi;G/3)&nbsp;&rho; &nbsp;&nbsp;(dust only)</p>
+    <div class="eq">\[ \frac{\ddot a}{a} = -\frac{4\pi G}{3}\,\rho \qquad(\text{dust only}), \]</div>
 
-    <p>so gravity always slows the expansion. Now differentiate the Friedmann equation with
-    respect to time, use the fluid equation to replace &rho;&#775;, and use the Friedmann equation once more to
+    <p>so gravity always slows the expansion. Now differentiate the Friedmann equation (5) with
+    respect to time, use the fluid equation (7) to replace &rho;&#775;, and use (5) once more to
     tidy up. The k term cancels, and the result is the <b>acceleration equation</b>:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      &auml;/a = &minus;(4&pi;G/3)&nbsp;(&rho; + 3P/c&sup2;)</p>
+    <div class="eq">\[ \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3P}{c^2}\right) . \tag{8} \]</div>
 
     <div class="feature">
       <p class="feature__kicker">The key result</p>
       <p>Pressure is a source of gravity, and it counts three times over. Ordinary pressure
       makes gravity stronger, not weaker. If something has a pressure more negative than
-      &minus;&#8531;&rho;c&sup2;, the bracket in the acceleration equation changes sign and the expansion speeds up.
+      &minus;&#8531;&rho;c&sup2;, the bracket in (8) changes sign and the expansion speeds up.
       Newtonian gravity has no way to produce this. Yet putting Newton's Friedmann equation
       together with the first law of thermodynamics gets it automatically. In general
       relativity the reason is that the source of gravity is &rho;&nbsp;+&nbsp;3P/c&sup2;,
       not &rho; alone.</p>
     </div>
 
-    <p>Only two of the three equations are independent: any two give the third. That is why this
+    <p>Only two of (5), (7) and (8) are independent: any two give the third. That is why this
     derivation worked.</p>
 
     <h2 id="w">The equation of state</h2>
@@ -197,21 +187,18 @@
     <p>One more relation is needed to close the system, between pressure and density. For
     every ingredient that matters in cosmology it is a straight proportion,</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      P = w&nbsp;&rho;&nbsp;c&sup2;</p>
+    <div class="eq">\[ P = w\,\rho c^2 , \tag{9} \]</div>
 
     <p>and the dimensionless number <i>w</i> is the <b>equation of state</b>. Put it into the
-    fluid equation and integrate:</p>
+    fluid equation (7) and integrate:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      &rho; &prop; a<sup>&minus;3(1+w)</sup></p>
+    <div class="eq">\[ \rho \propto a^{-3(1+w)} . \tag{10} \]</div>
 
     <p>Put that into the flat Friedmann equation and integrate again:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      a(t) &prop; t<sup>2/3(1+w)</sup> &nbsp;for w &gt; &minus;1, &nbsp;&nbsp; a(t) &prop; e<sup>Ht</sup> &nbsp;for w = &minus;1</p>
+    <div class="eq">\[ a(t) \propto t^{\,2/[3(1+w)]} \quad (w > -1), \qquad a(t) \propto e^{Ht} \quad (w = -1). \tag{11} \]</div>
 
-    <p>And the acceleration equation becomes
+    <p>And the acceleration equation (8) becomes
     &auml;/a&nbsp;=&nbsp;&minus;&#8308;&#8260;&#8323;&pi;G&rho;&thinsp;(1&nbsp;+&nbsp;3w).
     The expansion accelerates exactly when w&nbsp;&lt;&nbsp;&minus;&#8531;.</p>
 
@@ -229,7 +216,7 @@
     p&nbsp;=&nbsp;E/c, and an isotropic gas of particles exerts pressure
     &#8531;&thinsp;n&thinsp;p&thinsp;v, so P&nbsp;=&nbsp;&#8531;&rho;c&sup2;. It checks out
     independently: the number of photons dilutes as a<sup>&minus;3</sup> and each one's energy
-    is redshifted as a<sup>&minus;1</sup>, giving a<sup>&minus;4</sup>, just as the fluid equation says.</p>
+    is redshifted as a<sup>&minus;1</sup>, giving a<sup>&minus;4</sup>, just as (10) says.</p>
 
     <p>A cosmological constant is the opposite extreme. Its density does not dilute at all, so
     the fluid equation forces &rho;&nbsp;+&nbsp;P/c&sup2;&nbsp;=&nbsp;0, and w&nbsp;=&nbsp;&minus;1.
@@ -271,29 +258,26 @@
 
     <h2 id="weff">The universe's own w</h2>
 
-    <p>The real universe is a mixture, and each ingredient dilutes at its own rate, a<sup>&minus;3(1+w)</sup>.
+    <p>The real universe is a mixture, and each ingredient dilutes at its own rate (10).
     Whichever has the most negative <i>w</i> wins in the end. The equation of state of the
     whole universe is the energy-weighted average, and it sets the deceleration parameter
     q&nbsp;&equiv;&nbsp;&minus;&auml;a/&#551;&sup2;:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      w<sub>eff</sub> = &Sigma;&nbsp;w<sub>i</sub>&rho;<sub>i</sub>&thinsp;/&thinsp;&Sigma;&nbsp;&rho;<sub>i</sub>, &nbsp;&nbsp; q = &frac12;&nbsp;(1 + 3w<sub>eff</sub>)</p>
+    <div class="eq">\[ w_{\rm eff}(a) = \frac{\sum_i w_i\,\rho_i(a)}{\sum_i \rho_i(a)}, \qquad q = \tfrac12\,(1 + 3\,w_{\rm eff}) . \tag{12} \]</div>
 
     <p>Today's budget is &Omega;<sub>m</sub>&nbsp;=&nbsp;0.315 in matter,
     &Omega;<sub>r</sub>&nbsp;&asymp;&nbsp;9.2&nbsp;&times;&nbsp;10<sup>&minus;5</sup> in
     photons and neutrinos, and the rest, about 0.685, in dark energy. The Friedmann equation
     becomes</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      H&sup2;(a)/H<sub>0</sub>&sup2; = &Omega;<sub>r</sub>a<sup>&minus;4</sup> + &Omega;<sub>m</sub>a<sup>&minus;3</sup> + &Omega;<sub>DE</sub>&thinsp;f<sub>DE</sub>(a)</p>
+    <div class="eq">\[ \frac{H^2(a)}{H_0^2} = \Omega_r\,a^{-4} + \Omega_m\,a^{-3} + \Omega_{\rm DE}\,f_{\rm DE}(a) , \tag{13} \]</div>
 
     <p>with f<sub>DE</sub>&nbsp;=&nbsp;1 for a cosmological constant. If dark energy is not a
     constant, the standard way to let it evolve is
     w(a)&nbsp;=&nbsp;w<sub>0</sub>&nbsp;+&nbsp;w<sub>a</sub>(1&nbsp;&minus;&nbsp;a). Putting
     that into the fluid equation and integrating gives</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      f<sub>DE</sub>(a) = a<sup>&minus;3(1+w<sub>0</sub>+w<sub>a</sub>)</sup>&nbsp;e<sup>&minus;3w<sub>a</sub>(1&minus;a)</sup></p>
+    <div class="eq">\[ f_{\rm DE}(a) = a^{-3(1+w_0+w_a)}\, e^{-3w_a(1-a)} . \]</div>
 
     <p>That is the model DESI fits. Combined with the microwave background and supernovae,
     DESI's second data release prefers w<sub>0</sub>&nbsp;&gt;&nbsp;&minus;1 and
@@ -353,10 +337,10 @@
     <div class="tblwrap"><table class="degtab">
       <thead><tr><th class="c">Ingredient</th><th class="c">Newton</th><th class="c">Needs relativity</th></tr></thead>
       <tbody>
-        <tr><td class="t">Friedmann equation</td><td class="t">exact, for dust</td><td class="t">&rho; as total energy density</td></tr>
+        <tr><td class="t">Friedmann equation (5)</td><td class="t">exact, for dust</td><td class="t">&rho; as total energy density</td></tr>
         <tr><td class="t">the constant k</td><td class="t">sign of the energy</td><td class="t">curvature of space</td></tr>
-        <tr><td class="t">fluid equation</td><td class="t">first law, dE&nbsp;=&nbsp;&minus;P&thinsp;dV</td><td class="t">E&nbsp;=&nbsp;&rho;c&sup2;V counts all energy</td></tr>
-        <tr><td class="t">acceleration equation</td><td class="t">only &minus;&#8308;&#8260;&#8323;&pi;G&rho;</td><td class="t">pressure gravitates: &rho;&nbsp;+&nbsp;3P/c&sup2;</td></tr>
+        <tr><td class="t">fluid equation (7)</td><td class="t">first law, dE&nbsp;=&nbsp;&minus;P&thinsp;dV</td><td class="t">E&nbsp;=&nbsp;&rho;c&sup2;V counts all energy</td></tr>
+        <tr><td class="t">acceleration (8)</td><td class="t">only &minus;&#8308;&#8260;&#8323;&pi;G&rho;</td><td class="t">pressure gravitates: &rho;&nbsp;+&nbsp;3P/c&sup2;</td></tr>
         <tr><td class="t">cosmological constant</td><td class="t">an extra force &#8531;&Lambda;c&sup2;R</td><td class="t">vacuum energy, w&nbsp;=&nbsp;&minus;1</td></tr>
         <tr><td class="t">why the sphere works</td><td class="t">shell theorem</td><td class="t">Birkhoff's theorem</td></tr>
       </tbody>
@@ -376,7 +360,7 @@
     w<sub>a</sub>. The DESI preset uses w<sub>0</sub>&nbsp;=&nbsp;&minus;0.75,
     w<sub>a</sub>&nbsp;=&nbsp;&minus;0.86 but keeps the Planck &Omega;<sub>m</sub>, so it
     shows the shape of the effect rather than the exact best fit. The radiation density
-    assumes three massless neutrino species. Cosmic times come from integrating the Friedmann equation
+    assumes three massless neutrino species. Cosmic times come from integrating (13)
     numerically.</p>
 
     <p class="note">Further afield: <a href="https://jamesrohlf.github.io/outreach/expansion.html">the expansion</a>

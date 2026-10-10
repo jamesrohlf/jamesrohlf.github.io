@@ -66,9 +66,7 @@
     random &mdash; drawn from a Gaussian with zero mean &mdash; and predicts only their
     <em>variance</em>. That variance is the power spectrum:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      C<sub>&#8467;</sub> = &#12296;|a<sub>&#8467;m</sub>|&sup2;&#12297; =
-      (1 / (2&#8467;+1)) &sum;<sub>m</sub> |a<sub>&#8467;m</sub>|&sup2;</p>
+    <div class="eq">\[ C_\ell = \big\langle |a_{\ell m}|^2 \big\rangle = \frac{1}{2\ell+1} \sum_m |a_{\ell m}|^2 \]</div>
 
     <p>So the procedure is: take the cleaned map, project it onto every Y<sub>&#8467;m</sub>
     to get the coefficients, square them, and average over the 2&#8467;+1 orientations at each
@@ -80,9 +78,7 @@
     single linear operation on the map, the same integral you would do to extract a Fourier
     coefficient, one pixel at a time.</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      a<sub>&#8467;m</sub> = &int; &Delta;T(<b>n&#770;</b>)
-      Y*<sub>&#8467;m</sub>(<b>n&#770;</b>) d&Omega;</p>
+    <div class="eq">\[ a_{\ell m} = \int \Delta T(\hat{\mathbf n})\, Y^*_{\ell m}(\hat{\mathbf n})\, d\Omega \]</div>
 
     <p>The two-point function arrives only at the <em>next</em> step, when those coefficients are
     squared. And it turns out that squaring-and-averaging is the same operation as measuring how
@@ -92,9 +88,7 @@
     directions separated by &theta;, and the two descriptions are related by a Legendre
     transform:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      C(&theta;) = (1 / 4&pi;) &sum;<sub>&#8467;</sub>
-      (2&#8467;+1) C<sub>&#8467;</sub> P<sub>&#8467;</sub>(cos&nbsp;&theta;)</p>
+    <div class="eq">\[ C(\theta) = \frac{1}{4\pi} \sum_\ell (2\ell+1)\, C_\ell\, P_\ell(\cos\theta) \]</div>
 
     <p>So the power spectrum and the angular correlation function carry exactly the same
     information, packaged two ways, and in practice C<sub>&#8467;</sub> can be estimated by
@@ -185,9 +179,7 @@
     <p>The precision available at each multipole is just the statistics of averaging
     2&#8467;+1 squared Gaussians:</p>
 
-    <p style="text-align:center; font-family:var(--font-mono); font-size:.95rem;">
-      &Delta;C<sub>&#8467;</sub> / C<sub>&#8467;</sub> =
-      &radic;(2 / (2&#8467;+1))</p>
+    <div class="eq">\[ \frac{\Delta C_\ell}{C_\ell} = \sqrt{\frac{2}{2\ell+1}} \]</div>
 
     <table class="scales">
       <thead><tr><th>Multipole</th><th>Modes</th><th>Best possible</th><th>Planck&rsquo;s lower bar</th></tr></thead>
