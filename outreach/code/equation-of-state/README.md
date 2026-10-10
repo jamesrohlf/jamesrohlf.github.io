@@ -1,0 +1,41 @@
+# equation-of-state.html
+
+From Newton to the equation of state. A uniform ball of dust and the shell
+theorem give the Friedmann equation; the first law of thermodynamics gives the
+fluid equation; together they give the acceleration equation, whose
+ρ + 3P/c² term is the one thing Newton cannot supply. Then P = wρc², and the
+universe's own w_eff(a) under ΛCDM or a DESI-like w₀wₐ.
+
+## Build
+
+    python3 assemble.py                                 # -> ../../equation-of-state.html
+
+Edit the fragments, never the built page: an edit to `equation-of-state.html`
+is silently lost on the next rebuild. There is no data file; everything is
+computed in the browser.
+
+## Fragments
+
+| file | holds |
+|---|---|
+| `head.html` | `<head>`, page-specific CSS (shared styles come from `assets/css/site.css`) |
+| `mid.html`  | `<main>`: the derivation, both panels' markup, sources |
+| `js.html`   | both panels: single-component a(t) for a chosen w, and the real mixture |
+
+## Numbers, and where they come from
+
+- Planck 2018 VI: h = 0.674, Ω_m = 0.315. Ω_r h² = 4.18e-5 (photons plus three
+  massless neutrinos), Ω_DE = 1 − Ω_m − Ω_r, flat.
+- DESI preset: w₀ = −0.75, wₐ = −0.86, near the DR2 BAO + CMB + DESY5 best fit
+  (arXiv:2503.14738). Ω_m is kept at the Planck value, so the preset shows the
+  shape of the effect, not the joint best fit. The page says so.
+- Cosmic time: ∫ d ln a / H on 4000 log-spaced steps from a = 1e-9, started at
+  t = 1/(2H) (radiation era). ΛCDM gives 13.79 Gyr, matter–radiation equality
+  at ~50 kyr (z ≈ 3420), acceleration from 6.1 Gyr ago (z ≈ 0.63).
+
+## Things that must not be undone
+
+- Equations are plain HTML in the site's centred-monospace style, like
+  `matter-spectrum.html`. No MathJax: no other page uses it.
+- Time derivatives are combining dots: ȧ is `&#551;`, ρ̇ and V̇ are the letter
+  plus `&#775;`. `&#7841;` looks similar but is a with a dot *below*.

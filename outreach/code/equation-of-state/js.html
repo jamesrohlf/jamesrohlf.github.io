@@ -1,0 +1,308 @@
+<script>
+(function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function txt(parent, s, attrs) {
+    var t = el('text', Object.assign({ 'font-family': 'var(--font-mono)', 'font-size': 11, fill: 'var(--ink-faint)' }, attrs), parent);
+    t.textContent = s;
+    return t;
+  }
+  var neg = function (s) { return String(s).replace(/-/g, '−'); };
+  var fmt = function (x, d) { return neg(x.toFixed(d == null ? 2 : d)); };
+
+  /* ---------- a small line-chart frame, redrawn at the container's width ---------- */
+  function makeChart(host, cfg) {
+    var st = { hx: null, pts: null, setCross: null };
+    function render() {
+      var W = Math.max(300, host.clientWidth), H = cfg.height;
+      var pad = Object.assign({ l: 46, r: 14, t: 12, b: 32 }, cfg.pad || {});
+      host.innerHTML = '';
+      var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, height: H, role: 'img', 'aria-label': cfg.label }, host);
+      var sx = function (v) { return pad.l + (v - cfg.x[0]) / (cfg.x[1] - cfg.x[0]) * (W - pad.l - pad.r); };
+      var sy = function (v) { return pad.t + (1 - (v - cfg.y[0]) / (cfg.y[1] - cfg.y[0])) * (H - pad.t - pad.b); };
+      var ix = function (px) { return cfg.x[0] + (px - pad.l) / (W - pad.l - pad.r) * (cfg.x[1] - cfg.x[0]); };
+      cfg.yticks.forEach(function (t) {
+        el('line', { x1: pad.l, x2: W - pad.r, y1: sy(t), y2: sy(t), stroke: 'var(--rule)', 'stroke-width': 1 }, svg);
+        txt(svg, cfg.yfmt(t), { x: pad.l - 7, y: sy(t) + 4, 'text-anchor': 'end' });
+      });
+      var every = W < 480 ? 2 : 1;
+      cfg.xticks.forEach(function (t, i) {
+        el('line', { x1: sx(t), x2: sx(t), y1: H - pad.b, y2: H - pad.b + 4, stroke: 'var(--ink-faint)', 'stroke-width': 1 }, svg);
+        if (i % every === 0) txt(svg, cfg.xfmt(t), { x: sx(t), y: H - pad.b + 17, 'text-anchor': 'middle' });
+      });
+      el('line', { x1: pad.l, x2: W - pad.r, y1: H - pad.b, y2: H - pad.b, stroke: 'var(--ink-faint)', 'stroke-width': 1 }, svg);
+      var cid = 'c' + Math.random().toString(36).slice(2);
+      el('rect', { x: pad.l, y: pad.t - 2, width: W - pad.l - pad.r, height: H - pad.t - pad.b + 4 }, el('clipPath', { id: cid }, el('defs', {}, svg)));
+      var g = el('g', { 'clip-path': 'url(#' + cid + ')' }, svg);
+      var over = el('g', {}, svg);
+      cfg.draw({ g: g, over: over, sx: sx, sy: sy, W: W, H: H, pad: pad });
+      var cross = el('line', { y1: pad.t, y2: H - pad.b, stroke: 'var(--ink-faint)', 'stroke-width': 1, 'stroke-dasharray': '2 3', visibility: 'hidden' }, svg);
+      var dots = el('g', {}, svg);
+      var hit = el('rect', { x: pad.l, y: 0, width: W - pad.l - pad.r, height: H, fill: 'transparent', style: 'cursor:crosshair;touch-action:pan-y' }, svg);
+      function move(ev) {
+        var r = svg.getBoundingClientRect();
+        var xv = Math.min(cfg.x[1], Math.max(cfg.x[0], ix((ev.clientX - r.left) * W / r.width)));
+        cfg.onHover(xv);
+      }
+      hit.addEventListener('pointermove', move);
+      hit.addEventListener('pointerdown', move);
+      hit.addEventListener('pointerleave', function () { cfg.onHover(null); });
+      st.setCross = function (xv, pts) {
+        dots.innerHTML = '';
+        if (xv == null) { cross.setAttribute('visibility', 'hidden'); return; }
+        cross.setAttribute('visibility', 'visible');
+        cross.setAttribute('x1', sx(xv)); cross.setAttribute('x2', sx(xv));
+        (pts || []).forEach(function (p) {
+          if (!isFinite(p.y) || p.y < cfg.y[0] || p.y > cfg.y[1]) return;
+          el('circle', { cx: sx(xv), cy: sy(p.y), r: 4.5, fill: p.color, stroke: 'var(--paper)', 'stroke-width': 2 }, dots);
+        });
+      };
+      if (st.hx != null) st.setCross(st.hx, st.pts);
+    }
+    if (window.ResizeObserver) new ResizeObserver(render).observe(host);
+    else window.addEventListener('resize', render);
+    return {
+      render: render,
+      cross: function (xv, pts) { st.hx = xv; st.pts = pts; if (st.setCross) st.setCross(xv, pts); }
+    };
+  }
+  function path(pts, sx, sy) {
+    var d = '', pen = false;
+    pts.forEach(function (p) {
+      if (!isFinite(p[1])) { pen = false; return; }
+      d += (pen ? 'L' : 'M') + sx(p[0]).toFixed(1) + ',' + sy(p[1]).toFixed(1);
+      pen = true;
+    });
+    return d;
+  }
+
+  var h = 0.674, HUBBLE_TIME = 9.7779 / h;   // 1/H0 in Gyr
+  function fmtT(gyr) {
+    var yr = gyr * 1e9;
+    if (yr < 1e3) return Math.round(yr) + ' yr';
+    if (yr < 1e6) return (yr / 1e3).toPrecision(3) + ' thousand yr';
+    if (yr < 1e9) return (yr / 1e6).toPrecision(3) + ' million yr';
+    return (yr / 1e9).toFixed(2) + ' Gyr';
+  }
+
+  /* ---------- panel 1: a universe with one ingredient ---------- */
+  var wS = document.getElementById('w-slider');
+  var wBtns = Array.prototype.slice.call(document.querySelectorAll('#rig-w .bar button'));
+  var TAU = [-2.2, 1.5];
+  function aOf(w, tau) {
+    var e = 1 + w;
+    if (Math.abs(e) < 1e-6) return Math.exp(tau);
+    var b = 1 + 1.5 * e * tau;
+    return b > 0 ? Math.pow(b, 2 / (3 * e)) : 0;
+  }
+  function sample(w) {
+    var pts = [], e = 1 + w, tb = Math.abs(e) < 1e-6 ? -Infinity : -2 / (3 * e);
+    if (isFinite(tb) && tb >= TAU[0]) pts.push([tb, 0]);
+    for (var i = 0; i <= 400; i++) {
+      var t = TAU[0] + (TAU[1] - TAU[0]) * i / 400;
+      if (t > tb) pts.push([t, aOf(w, t)]);
+    }
+    return pts;
+  }
+  var REFS = [{ w: 1 / 3, name: 'radiation' }, { w: 0, name: 'dust' }, { w: -1, name: 'Λ' }];
+  var curW = 0;
+  var chartW = makeChart(document.getElementById('chart-w'), {
+    height: 290, x: TAU, y: [0, 3.2], xticks: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5], yticks: [0, 1, 2, 3],
+    xfmt: function (t) { return t === 0 ? 'today' : neg(t); }, yfmt: String, pad: { b: 40 },
+    label: 'Scale factor against time for a flat universe with a single ingredient',
+    draw: function (c) {
+      REFS.forEach(function (r) {
+        el('path', { d: path(sample(r.w), c.sx, c.sy), fill: 'none', stroke: 'var(--ink-faint)', 'stroke-width': 1.6, 'stroke-dasharray': '5 3', opacity: 0.9 }, c.g);
+        var y = Math.min(aOf(r.w, TAU[1]), 3.1);
+        txt(c.over, r.name, { x: c.W - c.pad.r - 4, y: c.sy(y) + (r.w === -1 ? -6 : 14), 'text-anchor': 'end' });
+      });
+      el('path', { d: path(sample(curW), c.sx, c.sy), fill: 'none', stroke: 'var(--scarlet)', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, c.g);
+      el('circle', { cx: c.sx(0), cy: c.sy(1), r: 4.5, fill: 'var(--gold)' }, c.over);
+      txt(c.over, 'H₀ (t − t₀), in Hubble times', { x: c.sx(-0.35), y: c.H - 4, 'text-anchor': 'middle', fill: 'var(--ink-soft)', 'font-family': 'var(--font-body)', 'font-size': 12.5 });
+      txt(c.over, 'scale factor a', { x: c.pad.l + 8, y: c.pad.t + 11, fill: 'var(--ink-soft)', 'font-family': 'var(--font-body)', 'font-size': 12.5 });
+    },
+    onHover: function (xv) {
+      if (xv == null) { chartW.cross(null); return; }
+      chartW.cross(xv, [{ y: aOf(curW, xv), color: 'var(--scarlet)' }]);
+    }
+  });
+  function updateW() {
+    curW = parseFloat(wS.value);
+    document.getElementById('w-out').textContent = fmt(curW);
+    var e = 1 + curW, n = -3 * e, lam = Math.abs(e) < 1e-6;
+    var rho = Math.abs(n) < 1e-9 ? 'constant' : 'a<sup>' + fmt(n) + '</sup>';
+    var at = lam ? 'e<sup>Ht</sup>' : 't<sup>' + fmt(2 / (3 * e), 3) + '</sup>';
+    var age = lam ? 'infinite (no big bang)' : fmt(2 / (3 * e), 3) + '/H<sub>0</sub> = ' + (2 / (3 * e) * HUBBLE_TIME).toFixed(2) + ' Gyr';
+    document.getElementById('w-derived').innerHTML =
+      '<span>&rho; &prop; <b>' + rho + '</b></span><span>a(t) &prop; <b>' + at + '</b></span><span>age <b>' + age + '</b></span>';
+    var q = 0.5 * (1 + 3 * curW), v = document.getElementById('w-verdict');
+    if (Math.abs(curW + 1 / 3) < 0.005) v.innerHTML = '<span class="dec">coasting</span> &mdash; q = 0: gravity and pressure exactly cancel';
+    else if (curW < -1 / 3) v.innerHTML = '<span class="acc">accelerating</span> &mdash; q = ' + fmt(q) + ', since w &lt; &minus;1/3';
+    else v.innerHTML = '<span class="dec">decelerating</span> &mdash; q = ' + fmt(q) + ', since w &gt; &minus;1/3';
+    wBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(Math.abs(parseFloat(b.dataset.w) - curW) < 0.006)); });
+  }
+  wS.addEventListener('input', function () { updateW(); chartW.render(); });
+  wBtns.forEach(function (b) {
+    b.addEventListener('click', function () { wS.value = b.dataset.w; updateW(); chartW.render(); });
+  });
+  updateW(); chartW.render();
+
+  /* ---------- panel 2: the real mixture ---------- */
+  var Om = 0.315, Or = 4.18e-5 / (h * h), Ode = 1 - Om - Or;
+  var H0 = 1 / HUBBLE_TIME;   // per Gyr
+  var w0 = -1, wa = 0;
+  function fDE(a) { return Math.pow(a, -3 * (1 + w0 + wa)) * Math.exp(-3 * wa * (1 - a)); }
+  function parts(a) {
+    var r = Or * Math.pow(a, -4), m = Om * Math.pow(a, -3), d = Ode * fDE(a);
+    return { r: r, m: m, d: d, E2: r + m + d };
+  }
+  function weff(a) { var p = parts(a); return (p.r / 3 + p.d * (w0 + wa * (1 - a))) / p.E2; }
+
+  var LA0 = Math.log(1e-9), LA1 = Math.log(12), NT = 4000, tGrid;
+  function buildTime() {
+    tGrid = new Float64Array(NT + 1);
+    var dl = (LA1 - LA0) / NT;
+    var invH = function (la) { return 1 / (H0 * Math.sqrt(parts(Math.exp(la)).E2)); };
+    tGrid[0] = 0.5 * invH(LA0);                   // radiation era: t = 1/(2H)
+    for (var i = 1; i <= NT; i++) {
+      var la = LA0 + i * dl;
+      tGrid[i] = tGrid[i - 1] + 0.5 * dl * (invH(la - dl) + invH(la));
+    }
+  }
+  function tOf(a) {
+    var f = (Math.log(a) - LA0) / (LA1 - LA0) * NT;
+    var i = Math.max(0, Math.min(NT - 1, Math.floor(f))), u = f - i;
+    return tGrid[i] * (1 - u) + tGrid[i + 1] * u;
+  }
+  function fmtZ(z) { return z >= 100 ? Math.round(z).toLocaleString('en-US') : neg(z.toFixed(2)); }
+  function fmtA(a) { return a < 0.01 ? neg(a.toExponential(2)) : a.toFixed(3); }
+
+  var XR = [-6, 1], XT = [-6, -5, -4, -3, -2, -1, 0, 1];
+  var SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+  function pow10(t) {
+    if (t === 0) return '1';
+    if (t === 1) return '10';
+    return '10' + (t < 0 ? '⁻' : '') + String(Math.abs(t)).replace(/\d/g, function (d) { return SUP[d]; });
+  }
+  var S;
+  function series() {
+    var o = { r: [], m: [], d: [], w: [] };
+    for (var i = 0; i <= 500; i++) {
+      var la = XR[0] + (XR[1] - XR[0]) * i / 500, a = Math.pow(10, la), p = parts(a);
+      o.r.push([la, p.r / p.E2]); o.m.push([la, p.m / p.E2]); o.d.push([la, p.d / p.E2]); o.w.push([la, weff(a)]);
+    }
+    return o;
+  }
+  function today(c) {
+    el('line', { x1: c.sx(0), x2: c.sx(0), y1: c.pad.t, y2: c.H - c.pad.b, stroke: 'var(--gold)', 'stroke-width': 1.4, 'stroke-dasharray': '3 3' }, c.g);
+    txt(c.over, 'today', { x: c.sx(0) - 5, y: c.pad.t + 11, 'text-anchor': 'end', fill: 'var(--gold)' });
+  }
+  var chartF = makeChart(document.getElementById('chart-frac'), {
+    height: 220, x: XR, y: [0, 1], xticks: XT, yticks: [0, 0.5, 1], xfmt: pow10, yfmt: String,
+    label: 'Share of the energy density in radiation, matter and dark energy, against scale factor',
+    draw: function (c) {
+      today(c);
+      el('path', { d: path(S.r, c.sx, c.sy), fill: 'none', stroke: 'var(--gold)', 'stroke-width': 2.2 }, c.g);
+      el('path', { d: path(S.m, c.sx, c.sy), fill: 'none', stroke: 'var(--ink-soft)', 'stroke-width': 2.4, 'stroke-dasharray': '1 3', 'stroke-linecap': 'round' }, c.g);
+      el('path', { d: path(S.d, c.sx, c.sy), fill: 'none', stroke: 'var(--scarlet)', 'stroke-width': 2, 'stroke-dasharray': '6 3' }, c.g);
+      txt(c.over, 'radiation', { x: c.sx(-5.85), y: c.sy(1) + 16, fill: 'var(--ink-soft)' });
+      txt(c.over, 'matter', { x: c.sx(-2.3), y: c.sy(1) + 16, fill: 'var(--ink-soft)' });
+      txt(c.over, 'dark energy', { x: c.sx(0.95), y: c.sy(1) + 30, 'text-anchor': 'end', fill: 'var(--ink-soft)' });
+      txt(c.over, 'share of energy, Ω(a)', { x: c.pad.l + 8, y: c.sy(0.5) - 6, fill: 'var(--ink-faint)', 'font-family': 'var(--font-body)', 'font-size': 12 });
+    },
+    onHover: hoverU
+  });
+  var chartE = makeChart(document.getElementById('chart-weff'), {
+    height: 220, x: XR, y: [-1.3, 0.45], xticks: XT, yticks: [-1, -1 / 3, 0, 1 / 3], pad: { b: 40 },
+    xfmt: pow10, yfmt: function (t) { return t === -1 ? '−1' : t === 0 ? '0' : t > 0 ? '+1/3' : '−1/3'; },
+    label: 'Effective equation of state of the universe against scale factor',
+    draw: function (c) {
+      today(c);
+      el('line', { x1: c.pad.l, x2: c.W - c.pad.r, y1: c.sy(-1 / 3), y2: c.sy(-1 / 3), stroke: 'var(--ink-faint)', 'stroke-width': 1.2, 'stroke-dasharray': '5 3' }, c.g);
+      txt(c.over, 'accelerating below this line', { x: c.pad.l + 8, y: c.sy(-1 / 3) + 15 });
+      el('path', { d: path(S.w, c.sx, c.sy), fill: 'none', stroke: 'var(--scarlet)', 'stroke-width': 2.2 }, c.g);
+      txt(c.over, 'w_eff', { x: c.pad.l + 8, y: c.pad.t + 11, fill: 'var(--ink-soft)', 'font-family': 'var(--font-body)', 'font-size': 12.5 });
+      txt(c.over, 'scale factor a  (today = 1)', { x: (c.sx(XR[0]) + c.sx(XR[1])) / 2, y: c.H - 4, 'text-anchor': 'middle', fill: 'var(--ink-soft)', 'font-family': 'var(--font-body)', 'font-size': 12.5 });
+    },
+    onHover: hoverU
+  });
+
+  function describe(la) {
+    var a = Math.pow(10, la), p = parts(a), w = weff(a), q = 0.5 * (1 + 3 * w);
+    var at = la === 0 ? 'today' : 'at a = ' + fmtA(a) + ', z = ' + fmtZ(1 / a - 1);
+    document.getElementById('u-derived').innerHTML =
+      '<span><b>' + at + '</b></span>' +
+      '<span>t = <b>' + fmtT(tOf(a)) + '</b></span>' +
+      '<span>&Omega;<sub>r</sub> <b>' + (p.r / p.E2).toFixed(2) + '</b></span>' +
+      '<span>&Omega;<sub>m</sub> <b>' + (p.m / p.E2).toFixed(2) + '</b></span>' +
+      '<span>&Omega;<sub>DE</sub> <b>' + (p.d / p.E2).toFixed(2) + '</b></span>';
+    document.getElementById('u-verdict').innerHTML =
+      'w<sub>eff</sub> = ' + fmt(w) + ', q = ' + fmt(q) + ' &mdash; ' +
+      (q < 0 ? '<span class="acc">accelerating</span>' : '<span class="dec">decelerating</span>');
+    return { p: p, w: w };
+  }
+  function hoverU(la) {
+    if (la == null) { chartF.cross(null); chartE.cross(null); describe(0); return; }
+    var r = describe(la), p = r.p;
+    chartF.cross(la, [{ y: p.r / p.E2, color: 'var(--gold)' }, { y: p.m / p.E2, color: 'var(--ink-soft)' }, { y: p.d / p.E2, color: 'var(--scarlet)' }]);
+    chartE.cross(la, [{ y: r.w, color: 'var(--scarlet)' }]);
+  }
+
+  function firstCross(f, lo, hi) {
+    var n = 600, prev = f(lo), x0 = lo;
+    for (var i = 1; i <= n; i++) {
+      var x = lo + (hi - lo) * i / n, v = f(x);
+      if ((v > 0) !== (prev > 0)) {
+        var a = x0, b = x, fa = prev;
+        for (var k = 0; k < 60; k++) {
+          var m = 0.5 * (a + b), fm = f(m);
+          if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m;
+        }
+        return 0.5 * (a + b);
+      }
+      prev = v; x0 = x;
+    }
+    return null;
+  }
+  function epochs() {
+    var P = function (l) { return parts(Math.pow(10, l)); };
+    var rows = [
+      ['Matter overtakes radiation', firstCross(function (l) { var p = P(l); return p.r - p.m; }, -7, 1)],
+      ['Expansion starts to accelerate', firstCross(function (l) { return 1 + 3 * weff(Math.pow(10, l)); }, -2, 1)],
+      ['Dark energy overtakes matter', firstCross(function (l) { var p = P(l); return p.m - p.d; }, -2, 1)],
+      ['Today', 0]
+    ];
+    document.getElementById('epochs').innerHTML = rows.map(function (r) {
+      if (r[1] == null) return '<tr><td>' + r[0] + '</td><td colspan="3">not in range</td></tr>';
+      var a = Math.pow(10, r[1]);
+      return '<tr><td>' + r[0] + '</td><td>' + fmtZ(1 / a - 1) + '</td><td>' + fmtA(a) + '</td><td>' + fmtT(tOf(a)) + '</td></tr>';
+    }).join('');
+  }
+
+  var w0S = document.getElementById('w0'), waS = document.getElementById('wa');
+  var pL = document.getElementById('p-lcdm'), pD = document.getElementById('p-desi');
+  function updateU() {
+    w0 = parseFloat(w0S.value); wa = parseFloat(waS.value);
+    document.getElementById('w0-out').textContent = fmt(w0);
+    document.getElementById('wa-out').textContent = fmt(wa);
+    pL.setAttribute('aria-pressed', String(w0 === -1 && wa === 0));
+    pD.setAttribute('aria-pressed', String(w0 === -0.75 && wa === -0.86));
+    buildTime(); S = series();
+    chartF.render(); chartE.render(); describe(0); epochs();
+  }
+  function preset(a, b) { w0S.value = a; waS.value = b; updateU(); }
+  pL.addEventListener('click', function () { preset(-1, 0); });
+  pD.addEventListener('click', function () { preset(-0.75, -0.86); });
+  w0S.addEventListener('input', updateU);
+  waS.addEventListener('input', updateU);
+  updateU();
+})();
+</script>
+</body>
+</html>

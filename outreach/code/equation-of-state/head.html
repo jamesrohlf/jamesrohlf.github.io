@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Equation of State of the Universe — Jim Rohlf</title>
+  <meta property="og:site_name" content="Jim Rohlf — DESI">
+  <meta name="description" content="Derive the Friedmann equation from Newton's law of gravity, add the first law of thermodynamics, and see why pressure gravitates: the equation of state w decides whether the expansion slows or speeds up, from radiation to dust to dark energy and DESI's evolving w0wa.">
+  <link rel="canonical" href="https://jamesrohlf.github.io/outreach/equation-of-state.html">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/desi-emblem.jpg">
+  <script src="assets/js/chrome.js" defer></script>
+  <style>
+    .rig { border:1px solid var(--rule); border-radius:10px; padding:.9rem 1rem 1rem;
+           margin:1.4rem 0 1.6rem; background:var(--paper); }
+    .rig__plot svg { display:block; width:100%; height:auto; }
+
+    .knobs { display:grid; grid-template-columns:repeat(auto-fit, minmax(15.5rem, 1fr));
+             gap:.5rem 1.4rem; margin:.9rem 0 0; }
+    .knob { display:grid; grid-template-columns:1fr auto; align-items:baseline; gap:.1rem .5rem; }
+    .knob label { font-size:.84rem; font-weight:600; color:var(--ink-soft); }
+    .knob output { font-family:var(--font-mono); font-size:.82rem; color:var(--ink);
+                   font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .knob input[type=range] { grid-column:1 / -1; width:100%; accent-color:var(--scarlet);
+                              margin:.1rem 0 .25rem; }
+    .knob .hint { grid-column:1 / -1; font-size:.72rem; color:var(--ink-faint);
+                  margin:-.15rem 0 .1rem; }
+    .knob .sig  { grid-column:1 / -1; font-size:.72rem; color:var(--ink-faint);
+                  font-family:var(--font-mono); margin:0 0 .15rem;
+                  display:flex; justify-content:space-between; gap:.6rem; }
+    .knob .sig b { font-weight:700; }
+    /* the neutrino-mass knob is the point of the page: give it the accent rail */
+    .knob--star input[type=range] { accent-color:var(--gold); }
+    .knob--star label { color:var(--ink); }
+    .dev--on  { color:#1a7f37; }
+    .dev--few { color:var(--gold); }
+    .dev--far { color:var(--scarlet); }
+
+    .bar { display:flex; flex-wrap:wrap; gap:.5rem .7rem; align-items:center; margin-top:.9rem; }
+    .bar button { font:700 .85rem var(--font-body); cursor:pointer; padding:.44rem 1rem;
+                  border:1px solid var(--scarlet); border-radius:5px;
+                  background:var(--scarlet); color:#fff;
+                  transition:background var(--ease), border-color var(--ease); }
+    .bar button:hover { background:var(--scarlet-bright); border-color:var(--scarlet-bright); }
+    .bar button:active { transform:translateY(1px); }
+    .bar button.demo { background:var(--cream); color:var(--ink); border-color:var(--rule); }
+    .bar button.demo:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
+    .bar label { font-size:.82rem; color:var(--ink-soft); display:flex; align-items:center; gap:.3rem; }
+    .bar select { font:inherit; font-size:.82rem; padding:.15rem .3rem; border-radius:4px;
+                  border:1px solid var(--rule); background:var(--paper); color:var(--ink); }
+
+    .zpick { display:inline-flex; align-items:center; gap:.45rem; font-size:.82rem;
+             color:var(--ink-soft); padding-left:.6rem; border-left:1px solid var(--rule); }
+
+    .derived { display:flex; flex-wrap:wrap; gap:.15rem 1.3rem; margin:.7rem 0 0;
+               font-size:.82rem; font-family:var(--font-mono); color:var(--ink-soft);
+               font-variant-numeric:tabular-nums; }
+    .derived b { font-weight:700; color:var(--ink); }
+    .verdict { margin:.55rem 0 0; font-size:.84rem; font-family:var(--font-mono);
+               font-variant-numeric:tabular-nums; }
+    .verdict .ok  { color:#1a7f37; font-weight:700; }
+    .verdict .mid { color:var(--gold);    font-weight:700; }
+    .verdict .no  { color:var(--scarlet); font-weight:700; }
+
+    .legend { display:flex; flex-wrap:wrap; gap:.2rem 1.1rem; font-size:.78rem;
+              color:var(--ink-faint); margin:.5rem 0 0; }
+    .legend i { display:inline-block; width:1.4rem; height:0; vertical-align:middle;
+                border-top:2px solid currentColor; margin-right:.3rem; }
+    .swatch-model { color:var(--scarlet); } .swatch-ref { color:var(--ink-faint); }
+    .swatch-mark  { color:var(--gold); }
+
+    .topnote { border-left:3px solid var(--scarlet); background:var(--cream);
+               padding:.6rem .85rem; margin:1.1rem 0 1.3rem; font-size:.86rem;
+               border-radius:0 6px 6px 0; max-width:var(--measure); }
+    .topnote p { margin:0; }
+    .topnote p + p { margin-top:.45rem; }
+    .topnote .src { font-size:.78rem; color:var(--ink-soft); }
+
+    .degtab { border-collapse:collapse; font-size:.84rem; margin:1rem 0 1.3rem;
+              font-variant-numeric:tabular-nums; }
+    .degtab th, .degtab td { padding:.2rem .7rem; border-bottom:1px dotted var(--rule);
+                             text-align:right; }
+    .degtab th:first-child, .degtab td:first-child { text-align:left; }
+    .degtab thead th { border-bottom:1px solid var(--rule); font:700 .7rem var(--font-body);
+                       text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); }
+    .degtab td { font-family:var(--font-mono); }
+    .degtab .big { color:var(--scarlet); font-weight:700; }
+
+    .postlead { font-size:.84rem; color:var(--ink-soft); margin:1.1rem 0 .1rem;
+                display:flex; flex-wrap:wrap; align-items:center; gap:.4rem;
+                border-top:1px solid var(--rule); padding-top:.9rem; }
+    .postlead select { font:inherit; font-size:.8rem; padding:.15rem .3rem; border-radius:4px;
+                       border:1px solid var(--rule); background:var(--paper); color:var(--ink);
+                       max-width:100%; }
+    #post { display:block; width:100%; height:auto; }
+
+    .note { font-size:.78rem; color:var(--ink-faint); margin:.9rem 0 0; max-width:var(--measure); }
+  
+
+    /* --- equation-of-state page ------------------------------------------ */
+    .prose li { color:var(--ink-soft); }
+    .aside b { color:var(--ink-soft); }
+    .feature p { color:var(--ink-soft); }
+    .feature p:last-child { margin-bottom:0; }
+    .degtab td.t { font-family:var(--font-body); text-align:left; }
+    .degtab td.c, .degtab th.c { text-align:left; }
+    .degtab .sw { display:inline-block; width:1.2rem; height:0; border-top:2px solid currentColor;
+                  vertical-align:middle; margin-right:.4rem; }
+    .tblwrap { overflow-x:auto; max-width:100%; }
+    .diagram { margin:1.4rem 0 1.6rem; }
+    .diagram svg { display:block; width:100%; max-width:440px; height:auto; margin:0 auto;
+                   background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-sm); }
+    .chart { position:relative; width:100%; }
+    .chart svg { display:block; width:100%; overflow:visible; }
+    .chart + .chart { margin-top:.5rem; }
+    .swatch-rad { color:var(--gold); } .swatch-mat { color:var(--ink-soft); }
+    .swatch-de  { color:var(--scarlet); }
+    .legend i.dash { border-top-style:dashed; }
+    .legend i.dot  { border-top-style:dotted; border-top-width:3px; }
+    .bar button[aria-pressed="false"] { background:var(--cream); color:var(--ink); border-color:var(--rule); }
+    .bar button[aria-pressed="false"]:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
+    .verdict .acc { color:var(--scarlet); font-weight:700; }
+    .verdict .dec { color:var(--ink); font-weight:700; }
+  </style>
+</head>
+<body>
