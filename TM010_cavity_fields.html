@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TM010 Cavity Fields</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a lab-bench instrument. Two synchronized cross-sections on top, one control strip, then a radial
+   profile with the energy split and the cavity's numbers. Field colours carry the meaning everywhere. */
+:root {
+  --bg: #f2f4f7; --panel: #ffffff; --fg: #18202b; --muted: #5d6877; --line: #d5dae2;
+  --wall: #7c8796; --e: #cf4a26; --b: #1f5fc4; --s: #14855c; --accent: #18202b; --on-accent: #ffffff;
+  --display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141a; --panel: #171e27; --fg: #e6ebf2; --muted: #96a2b2; --line: #2a3441;
+    --wall: #8a96a6; --e: #ff7f57; --b: #6ea8ff; --s: #4fd3a0; --accent: #e6ebf2; --on-accent: #0f141a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141a; --panel: #171e27; --fg: #e6ebf2; --muted: #96a2b2; --line: #2a3441;
+  --wall: #8a96a6; --e: #ff7f57; --b: #6ea8ff; --s: #4fd3a0; --accent: #e6ebf2; --on-accent: #0f141a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 28px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 20px; }
+header { display: flex; flex-direction: column; gap: 6px; }
+h1 { font-family: var(--display); font-weight: 600; font-size: 28px; line-height: 1.15; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h2 { font-family: var(--display); font-weight: 600; font-size: 15px; margin: 0; }
+.lead { margin: 0; color: var(--muted); max-width: 68ch; }
+.eq { font-family: var(--mono); font-size: 13px; color: var(--fg); display: flex; flex-wrap: wrap; gap: 4px 22px; margin-top: 4px; }
+.eq .e { color: var(--e); } .eq .b { color: var(--b); } .eq .s { color: var(--s); }
+.views { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px; min-width: 0;
+  display: flex; flex-direction: column; gap: 8px; }
+.panel p { margin: 0; color: var(--muted); font-size: 13px; }
+canvas { display: block; width: 100%; max-width: 100%; }
+#side, #top { aspect-ratio: 1 / 1; }
+#prof { aspect-ratio: 16 / 9; }
+.controls.panel { display: flex; flex-direction: row; flex-wrap: wrap; gap: 14px 26px; align-items: center; }
+.group { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; min-width: 0; }
+.label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+button, select { font: inherit; font-size: 13px; color: var(--fg); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 4px; padding: 6px 12px; cursor: pointer; }
+button:hover, select:hover { border-color: var(--wall); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--b); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); min-width: 76px; font-weight: 500; }
+button[aria-pressed="true"] { border-color: var(--fg); box-shadow: inset 0 0 0 1px var(--fg); }
+input[type="range"] { accent-color: var(--fg); width: 170px; max-width: 100%; }
+label.chk { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+label.chk input { accent-color: var(--fg); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; }
+.lower { display: grid; grid-template-columns: 1.35fr 1fr; gap: 16px; }
+.energy { display: flex; height: 18px; border-radius: 3px; overflow: hidden; border: 1px solid var(--line); }
+.energy span { display: block; height: 100%; }
+.energy .ue { background: var(--e); } .energy .ub { background: var(--b); }
+.erow { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 13px; }
+dt { color: var(--muted); } dd { margin: 0; text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.notes { color: var(--muted); font-size: 13.5px; max-width: 72ch; display: flex; flex-direction: column; gap: 8px; }
+.notes p { margin: 0; } .notes strong { color: var(--fg); font-weight: 600; }
+@media (max-width: 760px) {
+  .views, .lower { grid-template-columns: 1fr; }
+  h1 { font-size: 23px; }
+}
+</style>
+</head>
+<body style="margin:0">
+
+<div class="wrap">
+  <header>
+    <h1>TM<sub>010</sub> cavity fields</h1>
+    <p class="lead">The lowest mode of a cylindrical cavity. The electric field runs along the axis and the magnetic field circles it, a quarter cycle apart, so the energy moves out to the magnetic field and back twice per cycle.</p>
+    <div class="eq">
+      <span class="e">E<sub>z</sub> = E<sub>0</sub> J<sub>0</sub>(kr) cos ωt</span>
+      <span class="b">cB<sub>φ</sub> = −E<sub>0</sub> J<sub>1</sub>(kr) sin ωt</span>
+      <span class="s">S<sub>r</sub> ∝ J<sub>0</sub>J<sub>1</sub> sin 2ωt</span>
+      <span>kR = 2.405</span>
+    </div>
+  </header>
+
+  <section class="views">
+    <div class="panel">
+      <h2>Side view, cut through the axis</h2>
+      <canvas id="side" role="img" aria-label="Side cross-section: vertical electric field arrows, strongest on the axis, and magnetic field markers into and out of the page"></canvas>
+      <p>Arrows: E<sub>z</sub>, uniform along the length. ⊙ and ⊗: B<sub>φ</sub> out of and into the page. Signs on the end caps are surface charge; arrows on the side walls are wall current.</p>
+    </div>
+    <div class="panel">
+      <h2>End view, looking down the axis</h2>
+      <canvas id="top" role="img" aria-label="End-on cross-section: electric field shading strongest at the centre and magnetic field arrows circling the axis"></canvas>
+      <p>Shading: E<sub>z</sub> toward (⊙) or away from (⊗) you. Circling arrows: B<sub>φ</sub>, largest at r = 0.77 R and zero on the axis.</p>
+    </div>
+  </section>
+
+  <section class="controls panel" aria-label="Controls">
+    <div class="group">
+      <button class="primary" id="play" type="button">Pause</button>
+      <select id="speed" aria-label="Playback speed">
+        <option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option>
+      </select>
+    </div>
+    <div class="group">
+      <span class="label">Phase</span>
+      <input type="range" id="phase" min="0" max="360" step="1" value="36" aria-label="Phase in degrees">
+      <span class="num" id="phaseOut">36°</span>
+    </div>
+    <div class="group">
+      <span class="label">Radius R</span>
+      <input type="range" id="radius" min="5" max="15" step="0.01" value="8.26" aria-label="Cavity radius in centimetres">
+      <span class="num" id="radiusOut">8.26 cm</span>
+      <button type="button" class="preset" data-r="9.17">A</button>
+      <button type="button" class="preset" data-r="8.26" aria-pressed="true">B</button>
+      <button type="button" class="preset" data-r="7.51">C</button>
+    </div>
+    <div class="group">
+      <label class="chk"><input type="checkbox" id="showE" checked><span class="sw" style="background:var(--e)"></span>E</label>
+      <label class="chk"><input type="checkbox" id="showB" checked><span class="sw" style="background:var(--b)"></span>B</label>
+      <label class="chk"><input type="checkbox" id="showS"><span class="sw" style="background:var(--s)"></span>Energy flow</label>
+      <label class="chk"><input type="checkbox" id="showJ" checked><span class="sw" style="background:var(--wall)"></span>Charge and current</label>
+    </div>
+  </section>
+
+  <section class="lower">
+    <div class="panel">
+      <h2>Radial profile</h2>
+      <canvas id="prof" role="img" aria-label="Electric and magnetic field amplitude against radius at the current phase"></canvas>
+      <p>Solid: the fields now. Dashed: their envelopes J<sub>0</sub> and J<sub>1</sub>. E vanishes at the wall; B does not.</p>
+    </div>
+    <div class="panel">
+      <h2>Stored energy</h2>
+      <div class="energy" aria-hidden="true"><span class="ue" id="ueBar"></span><span class="ub" id="ubBar"></span></div>
+      <div class="erow"><span>Electric <span class="num" id="ueOut"></span></span><span>Magnetic <span class="num" id="ubOut"></span></span></div>
+      <h2 style="margin-top:8px">This cavity</h2>
+      <dl>
+        <dt>Frequency f<sub>010</sub></dt><dd id="fOut"></dd>
+        <dt>Period</dt><dd id="tOut"></dd>
+        <dt>Free-space wavelength</dt><dd id="lamOut"></dd>
+        <dt>Photon energy hf</dt><dd id="evOut"></dd>
+        <dt>Slowed by</dt><dd id="slowOut"></dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="notes">
+    <p><strong>Nothing travels.</strong> This is a standing wave: the pattern stays put and only its size and sign change. It is the sum of an inward and an outward cylindrical wave, and their energy flows cancel on average. Turn on Energy flow to see what is left, a radial sloshing at twice the frequency.</p>
+    <p><strong>Frequency depends only on the radius,</strong> f = 2.405 c / 2πR, not on the length, because nothing varies along z. Presets A, B and C are the DAPHNE radii with the cavity empty; the tuning rod raises each by 7% or more.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+  var K = 2.404826, C0 = 299792458;
+  function J0(x) { var s = 1, t = 1, q = x * x / 4; for (var m = 1; m < 24; m++) { t *= -q / (m * m); s += t; } return s; }
+  function J1(x) { var t = x / 2, s = t, q = x * x / 4; for (var m = 1; m < 24; m++) { t *= -q / (m * (m + 1)); s += t; } return s; }
+  var J1MAX = 0.5819, SMAX = 0.3396;       // max of J1, max of J0*J1 on [0, 2.405]
+
+  var st = { phase: 36 * Math.PI / 180, playing: true, speed: 1, R: 8.26 };
+  try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) st.playing = false; } catch (e) {}
+  var $ = function (id) { return document.getElementById(id); };
+  var cv = { side: $('side'), top: $('top'), prof: $('prof') };
+  var col = {};
+  function readTokens() {
+    var cs = getComputedStyle(document.documentElement);
+    ['bg', 'panel', 'fg', 'muted', 'line', 'wall', 'e', 'b', 's'].forEach(function (k) { col[k] = cs.getPropertyValue('--' + k).trim(); });
+  }
+  readTokens();
+  try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTokens); } catch (e) {}
+  try { new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); } catch (e) {}
+
+  function fit(c) {
+    var r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    var w = Math.max(50, Math.round(r.width)), h = Math.max(50, Math.round(r.height));
+    if (c.width !== Math.round(w * d) || c.height !== Math.round(h * d)) { c.width = Math.round(w * d); c.height = Math.round(h * d); }
+    var g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, w, h);
+    return { g: g, w: w, h: h };
+  }
+  function arrow(g, x, y, dx, dy, color, lw, alpha) {
+    var len = Math.hypot(dx, dy); if (len < 1.2) return;
+    var ux = dx / len, uy = dy / len, hd = Math.min(7, len * 0.45);
+    g.globalAlpha = alpha == null ? 1 : alpha; g.strokeStyle = color; g.fillStyle = color; g.lineWidth = lw || 1.5; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(x - dx / 2, y - dy / 2); g.lineTo(x + dx / 2 - ux * hd * 0.6, y + dy / 2 - uy * hd * 0.6); g.stroke();
+    var tx = x + dx / 2, ty = y + dy / 2;
+    g.beginPath(); g.moveTo(tx, ty); g.lineTo(tx - ux * hd - uy * hd * 0.5, ty - uy * hd + ux * hd * 0.5);
+    g.lineTo(tx - ux * hd + uy * hd * 0.5, ty - uy * hd - ux * hd * 0.5); g.closePath(); g.fill(); g.globalAlpha = 1;
+  }
+  // field marker normal to the page: out = dot, in = cross
+  function marker(g, x, y, size, out, color, alpha) {
+    if (size < 1.2) return;
+    g.globalAlpha = alpha; g.strokeStyle = color; g.fillStyle = color; g.lineWidth = 1.3;
+    g.beginPath(); g.arc(x, y, size, 0, 2 * Math.PI); g.stroke();
+    if (out) { g.beginPath(); g.arc(x, y, Math.max(1, size * 0.3), 0, 2 * Math.PI); g.fill(); }
+    else { var q = size * 0.62; g.beginPath(); g.moveTo(x - q, y - q); g.lineTo(x + q, y + q); g.moveTo(x + q, y - q); g.lineTo(x - q, y + q); g.stroke(); }
+    g.globalAlpha = 1;
+  }
+  function on(id) { return $(id).checked; }
+
+  function drawSide() {
+    var f = fit(cv.side), g = f.g, w = f.w, h = f.h, cs = Math.cos(st.phase), sn = Math.sin(st.phase);
+    var pad = 30, ch = h - 2 * pad, cw = ch * 2 / 3.0;                 // drawn length 3 R (the real cavities are 3.9 R)
+    if (cw > w - 2 * pad - 24) { cw = w - 2 * pad - 24; ch = cw * 1.5; }
+    var x0 = (w - cw) / 2, y0 = (h - ch) / 2, xc = w / 2, Rp = cw / 2;
+    g.fillStyle = col.bg; g.fillRect(x0, y0, cw, ch);
+    g.strokeStyle = col.line; g.lineWidth = 1; g.setLineDash([4, 4]);
+    g.beginPath(); g.moveTo(xc, y0 - 12); g.lineTo(xc, y0 + ch + 12); g.stroke(); g.setLineDash([]);
+    var nr = 6, rows = [], i, j, u;
+    for (i = 0; i < nr; i++) rows.push(y0 + ch * (i + 0.5) / nr);
+    var cell = ch / nr;
+    if (on('showE')) for (j = -6; j <= 6; j++) { u = j / 6.6; var a = J0(K * Math.abs(u)) * cs;
+      for (i = 0; i < nr; i++) arrow(g, xc + u * Rp, rows[i], 0, -a * cell * 0.78, col.e, 1.6, 0.35 + 0.65 * Math.abs(a)); }
+    if (on('showB')) { var us = [0.23, 0.45, 0.68, 0.9];
+      for (j = 0; j < us.length; j++) { var bm = J1(K * us[j]) / J1MAX, bp = -bm * sn, sz = 8 * Math.abs(bp);
+        for (i = 0; i <= nr; i++) { var y = y0 + ch * i / nr; if (i === 0) y += 11; if (i === nr) y -= 11;
+          marker(g, xc + us[j] * Rp, y, sz, bp < 0, col.b, 0.4 + 0.6 * Math.abs(bp));
+          marker(g, xc - us[j] * Rp, y, sz, bp > 0, col.b, 0.4 + 0.6 * Math.abs(bp)); } } }
+    if (on('showS')) { var ss = [0.3, 0.5, 0.72];
+      for (j = 0; j < ss.length; j++) { var sv = J0(K * ss[j]) * J1(K * ss[j]) / SMAX * 2 * cs * sn, L = sv * Rp * 0.2;
+        for (i = 1; i < nr; i++) { var yy = y0 + ch * i / nr;
+          arrow(g, xc + ss[j] * Rp, yy, L, 0, col.s, 2, 0.9); arrow(g, xc - ss[j] * Rp, yy, -L, 0, col.s, 2, 0.9); } } }
+    g.strokeStyle = col.wall; g.lineWidth = 5; g.lineJoin = 'miter'; g.strokeRect(x0 - 2.5, y0 - 2.5, cw + 5, ch + 5);
+    if (on('showJ')) {
+      g.font = '600 13px ' + 'ui-monospace, Menlo, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = col.fg;
+      for (j = -5; j <= 5; j++) { u = j / 5.5; var q = J0(K * Math.abs(u)) * cs; if (Math.abs(q) < 0.06) continue;
+        g.globalAlpha = Math.min(1, 0.2 + Math.abs(q));
+        g.fillText(q > 0 ? '−' : '+', xc + u * Rp, y0 - 14); g.fillText(q > 0 ? '+' : '−', xc + u * Rp, y0 + ch + 15); }
+      g.globalAlpha = 1;
+      var kz = sn * cell * 0.7;                                       // wall current, up for sin > 0
+      for (i = 1; i < nr; i += 2) { arrow(g, x0 - 16, rows[i], 0, -kz, col.wall, 2.2, 1); arrow(g, x0 + cw + 16, rows[i], 0, -kz, col.wall, 2.2, 1); }
+    }
+    g.fillStyle = col.muted; g.font = '11px ui-monospace, Menlo, monospace'; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.fillText('axis', xc, h - 4); g.textAlign = 'left'; g.fillText('z ↑', 6, 14);
+  }
+
+  function drawTop() {
+    var f = fit(cv.top), g = f.g, w = f.w, h = f.h, cs = Math.cos(st.phase), sn = Math.sin(st.phase);
+    var xc = w / 2, yc = h / 2, Rp = Math.min(w, h) / 2 - 24, i, n, k;
+    g.fillStyle = col.bg; g.beginPath(); g.arc(xc, yc, Rp, 0, 2 * Math.PI); g.fill();
+    if (on('showE')) {
+      var gr = g.createRadialGradient(xc, yc, 0, xc, yc, Rp);
+      g.globalAlpha = 1; for (i = 0; i <= 12; i++) { var u = i / 12; gr.addColorStop(u, withAlpha(col.e, 0.62 * Math.abs(J0(K * u) * cs))); }
+      g.fillStyle = gr; g.beginPath(); g.arc(xc, yc, Rp, 0, 2 * Math.PI); g.fill();
+      var rings = [[0, 1], [0.3, 6], [0.58, 10]];
+      for (k = 0; k < rings.length; k++) { var a = J0(K * rings[k][0]) * cs;
+        for (i = 0; i < rings[k][1]; i++) { var ph = 2 * Math.PI * (i + 0.5) / rings[k][1];
+          marker(g, xc + rings[k][0] * Rp * Math.cos(ph), yc - rings[k][0] * Rp * Math.sin(ph), 7 * Math.abs(a), a > 0, col.e, 0.45 + 0.55 * Math.abs(a)); } }
+    }
+    if (on('showB')) { var br = [[0.2, 6], [0.44, 10], [0.7, 16], [0.9, 20]];
+      for (k = 0; k < br.length; k++) { var b = -J1(K * br[k][0]) / J1MAX * sn, L = b * Rp * 0.17;
+        for (i = 0; i < br[k][1]; i++) { var p2 = 2 * Math.PI * i / br[k][1];
+          arrow(g, xc + br[k][0] * Rp * Math.cos(p2), yc - br[k][0] * Rp * Math.sin(p2), -Math.sin(p2) * L, -Math.cos(p2) * L, col.b, 1.7, 0.4 + 0.6 * Math.abs(b)); } } }
+    if (on('showS')) { n = 12; var s = 2 * cs * sn, Ls = s * Rp * 0.16;
+      for (i = 0; i < n; i++) { var p3 = 2 * Math.PI * (i + 0.5) / n;
+        arrow(g, xc + 0.57 * Rp * Math.cos(p3), yc - 0.57 * Rp * Math.sin(p3), Math.cos(p3) * Ls, -Math.sin(p3) * Ls, col.s, 2.2, 0.95); } }
+    g.strokeStyle = col.wall; g.lineWidth = 5; g.beginPath(); g.arc(xc, yc, Rp + 2.5, 0, 2 * Math.PI); g.stroke();
+    g.strokeStyle = col.muted; g.lineWidth = 1; g.setLineDash([3, 4]); g.globalAlpha = 0.7;
+    g.beginPath(); g.arc(xc, yc, 0.7655 * Rp, 0, 2 * Math.PI); g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+    g.fillStyle = col.muted; g.font = '11px ui-monospace, Menlo, monospace'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+    g.fillText('dashed: r = 0.77 R', 6, h - 5);
+  }
+  function withAlpha(c, a) {
+    var m = /^#([0-9a-f]{6})$/i.exec(c); if (!m) return c;
+    var v = parseInt(m[1], 16); return 'rgba(' + (v >> 16) + ',' + ((v >> 8) & 255) + ',' + (v & 255) + ',' + a.toFixed(3) + ')';
+  }
+
+  function drawProf() {
+    var f = fit(cv.prof), g = f.g, w = f.w, h = f.h, cs = Math.cos(st.phase), sn = Math.sin(st.phase);
+    var l = 40, r = 14, t = 12, b = 30, pw = w - l - r, ph = h - t - b, i, x, u;
+    var X = function (u) { return l + u * pw; }, Y = function (v) { return t + (1 - v) / 2 * ph; };
+    g.strokeStyle = col.line; g.lineWidth = 1; g.fillStyle = col.muted; g.font = '11px ui-monospace, Menlo, monospace';
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    [-1, -0.5, 0, 0.5, 1].forEach(function (v) { g.beginPath(); g.moveTo(l, Y(v)); g.lineTo(l + pw, Y(v)); g.stroke(); g.fillText(v.toFixed(1), l - 6, Y(v)); });
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    [0, 0.25, 0.5, 0.75, 1].forEach(function (v) { g.fillText(v === 1 ? 'r = R' : (v === 0 ? '0' : v + ' R'), X(v) - (v === 1 ? 10 : 0), t + ph + 8); });
+    g.strokeStyle = col.muted; g.setLineDash([3, 4]); g.beginPath(); g.moveTo(X(0.7655), t); g.lineTo(X(0.7655), t + ph); g.stroke(); g.setLineDash([]);
+    function curve(fn, color, lw, dash, alpha) {
+      g.strokeStyle = color; g.lineWidth = lw; g.globalAlpha = alpha; g.setLineDash(dash); g.beginPath();
+      for (i = 0; i <= 80; i++) { u = i / 80; x = X(u); var y = Y(fn(u)); if (i) g.lineTo(x, y); else g.moveTo(x, y); }
+      g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+    }
+    if (on('showE')) { curve(function (u) { return J0(K * u); }, col.e, 1, [4, 4], 0.6); curve(function (u) { return -J0(K * u); }, col.e, 1, [4, 4], 0.6);
+      curve(function (u) { return J0(K * u) * cs; }, col.e, 2.4, [], 1); }
+    if (on('showB')) { curve(function (u) { return J1(K * u); }, col.b, 1, [4, 4], 0.6); curve(function (u) { return -J1(K * u); }, col.b, 1, [4, 4], 0.6);
+      curve(function (u) { return -J1(K * u) * sn; }, col.b, 2.4, [], 1); }
+    g.textAlign = 'right'; g.textBaseline = 'top'; g.font = '12px ui-monospace, Menlo, monospace';
+    g.fillStyle = col.b; g.fillText('cB\u03c6 / E\u2080', l + pw - 6, t + 4); g.fillStyle = col.e; g.fillText('E\u1d69 / E\u2080'.replace('\u1d69', 'z'), l + pw - 96, t + 4);
+  }
+
+  function fmt(x, n) { return x.toFixed(n); }
+  function readouts() {
+    var f = K * C0 / (2 * Math.PI * st.R * 1e-2), cs2 = Math.pow(Math.cos(st.phase), 2);
+    $('fOut').textContent = fmt(f / 1e9, 3) + ' GHz';
+    $('tOut').textContent = fmt(1e9 / f, 3) + ' ns';
+    $('lamOut').textContent = fmt(C0 / f * 100, 1) + ' cm';
+    $('evOut').textContent = fmt(4.135667696 * f / 1e9, 2) + ' µeV';
+    var real = 4 / st.speed;                                           // seconds per cycle on screen
+    var sl = real * f, ex = Math.floor(Math.log10(sl));
+    $('slowOut').textContent = fmt(sl / Math.pow(10, ex), 1) + ' × 10' + sup(ex);
+    $('radiusOut').textContent = fmt(st.R, 2) + ' cm';
+    $('ueBar').style.width = (cs2 * 100).toFixed(1) + '%'; $('ubBar').style.width = ((1 - cs2) * 100).toFixed(1) + '%';
+    $('ueOut').textContent = Math.round(cs2 * 100) + '%'; $('ubOut').textContent = Math.round((1 - cs2) * 100) + '%';
+    var deg = Math.round(st.phase * 180 / Math.PI) % 360;
+    $('phaseOut').textContent = deg + '°';
+    if (document.activeElement !== $('phase')) $('phase').value = deg;
+  }
+  function sup(n) { var m = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻' }; return String(n).split('').map(function (c) { return m[c] || c; }).join(''); }
+  function draw() { drawSide(); drawTop(); drawProf(); readouts(); }
+
+  var last = null;
+  function tick(ts) {
+    if (last != null && st.playing) { var dt = Math.min(0.1, (ts - last) / 1000); st.phase = (st.phase + 2 * Math.PI * dt * st.speed / 4) % (2 * Math.PI); }
+    last = ts; draw(); requestAnimationFrame(tick);
+  }
+  function setPlay(p) { st.playing = p; $('play').textContent = p ? 'Pause' : 'Play'; }
+  setPlay(st.playing);
+  $('play').addEventListener('click', function () { setPlay(!st.playing); });
+  $('speed').addEventListener('change', function () { st.speed = parseFloat(this.value); });
+  $('phase').addEventListener('input', function () { st.phase = parseFloat(this.value) * Math.PI / 180; setPlay(false); });
+  function setR(r) { st.R = r; $('radius').value = r;
+    Array.prototype.forEach.call(document.querySelectorAll('.preset'), function (b) { b.setAttribute('aria-pressed', Math.abs(parseFloat(b.dataset.r) - r) < 0.005 ? 'true' : 'false'); }); }
+  $('radius').addEventListener('input', function () { setR(parseFloat(this.value)); });
+  Array.prototype.forEach.call(document.querySelectorAll('.preset'), function (b) { b.addEventListener('click', function () { setR(parseFloat(b.dataset.r)); }); });
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
